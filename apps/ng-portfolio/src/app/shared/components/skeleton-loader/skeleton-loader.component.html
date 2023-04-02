@@ -1,0 +1,18 @@
+<ng-container [ngSwitch]="type">
+  <div *ngSwitchCase="'card'" class="skeleton-card animate"></div>
+  <div *ngSwitchCase="'text'" class="skeleton-card-text-height animate"></div>
+  <div *ngSwitchCase="'paragraph'" class="w-full py-2 rounded-md animate">
+    <div class="skeleton-text"></div>
+    <div class="skeleton-text"></div>
+    <div class="skeleton-text-short"></div>
+  </div>
+  <div *ngSwitchCase="'profile'" class="flex w-full py-2 rounded-md animate">
+    <span class="skeleton-profile-icon material-icons">
+      account_circle
+    </span>
+    <div class="skeleton-profile-text">
+      <div class="skeleton-text"></div>
+    <div class="skeleton-text"></div>
+    </div>
+  </div>
+</ng-container>

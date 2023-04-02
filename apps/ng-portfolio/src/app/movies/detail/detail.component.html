@@ -1,0 +1,57 @@
+<div @fadeIn *ngIf="movie; else loading" class="relative text-white h-[1280px]">
+  <img class="movie-image" [src]="movie.imageUrl">
+  <div class="poster-overlay"></div>
+  <div class="text-container">
+    <span class="block text-2xl font-medium md:text-3xl">
+      {{ movie.title }} ({{ movie.year }})
+      <ng-container *ngIf="user$ | async">
+        <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="editMovie()">
+          <mat-icon class="-mb-[6px]">movie_edit</mat-icon> Edit
+        </dvoss-button>
+      </ng-container>
+    </span>
+    <div class="block">
+      <div class="rating-container">
+        <ng-container *ngFor="let num of [1,2,3,4,5]">
+          <span class="text-2xl md:text-3xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
+        </ng-container>
+      </div>
+      <div class="inline-block">
+        <mat-chip-set>
+          <mat-chip *ngFor="let genre of movie.genre" [color]="'accent'" [highlighted]="true">{{ genre }}</mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
+    <div class="flex flex-wrap mt-3 -mx-4">
+      <div class="mx-4 my-2">
+        <span class="block">Directed By</span>
+        <span class="mt-2 text-lg font-medium">{{ movie.director }}</span>
+      </div>
+      <div class="mx-4 my-2">
+        <span class="block">Rated</span>
+        <span class="mt-2 text-lg font-medium">{{ movie.mpaaRating }}</span>
+      </div>
+      <div class="mx-4 my-2">
+        <span class="block">Duration</span>
+        <span class="mt-2 text-lg font-medium">{{ movie.runtimeMinutes | minutes }}</span>
+      </div>
+      <div class="mx-4 my-2">
+        <span class="block">Starring</span>
+        <span *ngFor="let actor of movie.actors; let i = index" class="mt-2 text-lg font-medium">{{ i > 0 ? ', ' + actor : actor }}</span>
+      </div>
+      <div class="w-full mx-4 my-2 text-black bg-dvLightBrown-50">
+        <span class="block p-2 font-medium bg-dvBrown-50">Synopsis</span>
+        <p class="p-2 mt-1">{{ movie.synopsis }}</p>
+      </div>
+      <div class="w-full mx-4 my-2 text-black bg-dvGreen-50">
+        <span class="block p-2 font-medium bg-dvGreen-100">My Thoughts</span>
+        <p class="p-2 mt-1">{{ movie.notes }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #loading>
+  <div class="center-container">
+    <dvoss-skeleton-loader class="w-full"></dvoss-skeleton-loader>
+  </div>
+</ng-template>

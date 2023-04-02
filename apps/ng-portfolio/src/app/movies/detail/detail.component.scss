@@ -1,0 +1,20 @@
+.movie-image {
+  @apply left-0 object-cover w-full h-[1280px] overflow-hidden absolute;
+}
+
+.poster-overlay {
+  @apply absolute top-0 left-0 h-[1280px] w-full bg-black opacity-70;
+}
+
+.text-container {
+  @apply absolute top-0 left-0 h-[1280px] w-full p-4;
+}
+
+.rating-container {
+  @apply align-top inline-block md:pt-[1px] pt-1 mr-4;
+}
+
+.edit-button {
+  background-color: white;
+  color: black;
+}

@@ -1,0 +1,17 @@
+<div [ngSwitch]="navItem.type">
+  <ng-container *ngSwitchCase="navType.Menu">
+    <button type="button" (click)="toggleNav()" [class]="'nav-item level-'+level" [ngClass]="{ 'nav-active': navItem.isOpen }">
+      {{ navItem.name }}
+      <mat-icon matSuffix class="float-right mr-2 text-white">chevron_right</mat-icon>
+    </button>
+    <div *ngIf="navItem.isOpen">
+      <dvoss-nav-item *ngFor="let item of navItem.items" [navItem]="item" [level]="nextLevel"></dvoss-nav-item>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="navType.Internal">
+    <a [routerLink]="navItem.route" [class]="'nav-item level-'+level" [ngClass]="{ 'nav-active': navItem.isActive }">{{ navItem.name }}</a>
+  </ng-container>
+  <ng-container *ngSwitchCase="navType.External">
+    <a [href]="navItem.route" [class]="'nav-item level-'+level" target="_blank">{{ navItem.name }}</a>
+  </ng-container>
+</div>

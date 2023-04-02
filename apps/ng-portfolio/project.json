@@ -16,10 +16,13 @@
         "tsConfig": "apps/ng-portfolio/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
-          "apps/ng-portfolio/src/favicon.ico",
+          "apps/ng-portfolio/src/favicon.png",
           "apps/ng-portfolio/src/assets"
         ],
-        "styles": ["apps/ng-portfolio/src/styles.scss"],
+        "styles": [
+          "apps/ng-portfolio/src/styles/theme.scss",
+          "apps/ng-portfolio/src/styles/styles.scss"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -36,6 +39,12 @@
               "maximumError": "4kb"
             }
           ],
+          "fileReplacements": [
+            {
+              "replace": "apps/ng-portfolio/src/environments/environment.ts",
+              "with": "apps/ng-portfolio/src/environments/environment.prod.ts"
+            }
+          ],
           "outputHashing": "all"
         },
         "development": {
@@ -44,7 +53,13 @@
           "vendorChunk": true,
           "extractLicenses": false,
           "sourceMap": true,
-          "namedChunks": true
+          "namedChunks": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/ng-portfolio/src/environments/environment.ts",
+              "with": "apps/ng-portfolio/src/environments/environment.dev.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"
@@ -59,7 +74,10 @@
           "browserTarget": "ng-portfolio:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/ng-portfolio/proxy.conf.json"
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -83,6 +101,35 @@
       "options": {
         "jestConfig": "apps/ng-portfolio/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "apps/ng-portfolio/.storybook",
+        "browserTarget": "ng-portfolio:build",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/ng-portfolio",
+        "configDir": "apps/ng-portfolio/.storybook",
+        "browserTarget": "ng-portfolio:build",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
       }
     }
   },

@@ -1,0 +1,22 @@
+<div class="fixed z-10 w-full">
+  <mat-toolbar color="gray">
+    <dvoss-button [class]="'px-2 mr-1 dv-icon-button'" type="button" (click)="toggleNav()">
+      <mat-icon class="mt-2">menu</mat-icon>
+    </dvoss-button>
+    <div class="flex items-center justify-center h-full hover:cursor-pointer" tabindex="0" (click)="goHome()" (keyup.enter)="goHome()" (keyup.space)="goHome()">
+      <h2 class="my-auto text-white">Devin Voss' Portfolio</h2>
+    </div>
+    <div class="flex-1"></div>
+    <ng-container *ngIf="(user$ | async) as user; else unauthenticated">
+      <dvoss-button [class]="'dv-button clear'" type="button" (click)="logout()">
+        Log Out
+      </dvoss-button>
+    </ng-container>
+    <ng-template #unauthenticated>
+      <dvoss-button [class]="'dv-button clear'" type="button" (click)="login()">
+        Log In
+      </dvoss-button>
+    </ng-template>
+  </mat-toolbar>
+  <div class="toolbar-border"></div>
+</div>

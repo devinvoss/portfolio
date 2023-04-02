@@ -1,0 +1,109 @@
+<div @fadeIn class="center-container">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
+    <div class="relative w-full max-w-xl p-4 mx-auto mt-2 lg:ml-auto lg:mr-0 bg-dvLightGray-50">
+      <h1 class="mb-4">{{ mode }} Movie</h1>
+      <form [formGroup]="movieForm" (ngSubmit)="save()">
+        <div class="grid grid-cols-2 gap-x-1">
+          <mat-form-field class="w-full">
+            <mat-label>Title</mat-label>
+            <input name="title" matInput type="text" formControlName="title">
+          </mat-form-field>
+          <mat-form-field class="w-full">
+            <mat-label>Director</mat-label>
+            <input name="director" matInput type="text" formControlName="director">
+          </mat-form-field>
+        </div>
+        <div class="grid grid-cols-2 gap-x-1">
+          <mat-form-field class="w-full">
+            <mat-label>Genre</mat-label>
+            <mat-select name="genre" multiple formControlName="genre">
+              <mat-option *ngFor="let genre of genres" [value]="genre">
+                {{ genre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="w-full">
+            <mat-label>Year</mat-label>
+            <mat-select name="year" formControlName="year">
+              <mat-option *ngFor="let year of yearRange" [value]="year">
+                {{ year }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="grid grid-cols-3 gap-x-1">
+          <mat-form-field class="w-full">
+            <mat-label>Runtime in Minutes</mat-label>
+            <input name="runtime" matInput type="number" formControlName="runtimeMinutes">
+          </mat-form-field>
+          <mat-form-field class="w-full">
+            <mat-label>MPAA Rating</mat-label>
+            <mat-select name="runtimeMinutes" formControlName="mpaaRating">
+              <mat-option *ngFor="let rating of mpaaRatings" [value]="rating">
+                {{ rating }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="w-full">
+            <mat-label>Rating</mat-label>
+            <mat-select name="rating" formControlName="rating">
+              <mat-option *ngFor="let rating of ratings" [value]="rating">
+                {{ rating }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <mat-form-field class="w-full">
+          <mat-label>Actors</mat-label>
+          <mat-chip-grid #actorList aria-label="Actor input">
+            <mat-chip-row
+              *ngFor="let actor of selectedActors; let i = index"
+              [removable]="true"
+              (removed)="removeActor(i)">
+              {{ actor }}
+              <button matChipRemove>
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            <input
+              #actorInput
+              formControlName="actors"
+              [matChipInputFor]="actorList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addActor($event)">
+          </mat-chip-grid>
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Synopsis</mat-label>
+          <textarea name="synopsis" class="fix-textarea-arrows" matInput cdkTextareaAutosize
+            #synposisAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="synopsis"></textarea>
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Notes</mat-label>
+          <textarea name="notes" class="fix-textarea-arrows" matInput cdkTextareaAutosize
+            #notesAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="notes"></textarea>
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Poster URL</mat-label>
+          <input name="imageUrl" matInput type="text" formControlName="imageUrl">
+        </mat-form-field>
+        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving" type="submit" (click)="save()">Save</dvoss-button>
+      </form>
+    </div>
+    <ng-container *ngIf="imageUrl$ | async as imageUrl; else imagePreview">
+      <img [src]="imageUrl" class="max-h-[800px] mx-auto px-4 lg:mt-20 lg:mr-auto lg:ml-0">
+    </ng-container>
+    <ng-template #imagePreview>
+      <div class="mx-4">
+        <div class="flex items-center justify-center w-full h-full max-w-xl mx-auto mt-6 mb-20 text-center border-2 border-black border-dashed rounded-lg lg:mt-20 max-h-96 lg:mr-auto lg:ml-0 bg-dvLightGray-50">
+          <div  class="flex items-center h-80">
+            <div class="inline">
+              <mat-icon class="block large-icon">movie_filter</mat-icon>
+              <span class="block font-semibold">Poster Preview</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

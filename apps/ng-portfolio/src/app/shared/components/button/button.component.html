@@ -1,0 +1,10 @@
+<button [class]="class" [ngClass]="{ 'disabled-button': disabled }" [type]="type" [disabled]="disabled || loading">
+  <span class="font-medium" [ngClass]="{ 'loading-hidden': loading }">
+    <ng-content></ng-content>
+  </span>
+  <ng-container *ngIf="loading">
+    <div class="absolute block py-1 spinner-container">
+      <mat-progress-spinner class="m-auto" color="white" diameter="20" mode="indeterminate"></mat-progress-spinner>
+    </div>
+  </ng-container>
+</button>

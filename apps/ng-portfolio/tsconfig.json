@@ -7,7 +7,19 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@app/*": [
+        "apps/ng-portfolio/src/app/*"
+      ],
+      "@shared/*": [
+        "apps/ng-portfolio/src/app/shared/*"
+      ],
+      "@env": [
+        "apps/ng-portfolio/src/environments/environment.ts"
+      ],
+      "@portfolio/models": ["libs/models/src/index.ts"]
+    },
   },
   "files": [],
   "include": [],
@@ -20,6 +32,9 @@
     },
     {
       "path": "./tsconfig.editor.json"
+    },
+    {
+      "path": "./.storybook/tsconfig.json"
     }
   ],
   "extends": "../../tsconfig.base.json",

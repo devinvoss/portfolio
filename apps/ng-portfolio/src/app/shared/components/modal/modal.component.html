@@ -1,0 +1,18 @@
+<ng-template>
+  <div class="relative w-full pb-4 pl-4 pr-2 bg-white rounded" cdkDrag>
+    <div class="text-lg font-medium">
+      <ng-content select="[modal-header]"></ng-content>
+    </div>
+    <div class="absolute right-3 top-3" *ngIf="canDismiss">
+      <button mat-icon-button (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="pr-2 overflow-y-auto break-words modal-content">
+      <ng-content select="[modal-content]"></ng-content>
+    </div>
+    <div class="pt-3 pr-2 text-right modal-buttons">
+      <ng-content select="[modal-buttons]"></ng-content>
+    </div>
+  </div>
+</ng-template>

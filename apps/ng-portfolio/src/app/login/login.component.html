@@ -1,0 +1,19 @@
+<div class="center-container">
+  <div class="relative w-full max-w-xl p-4 mx-auto mt-6 border-2 bg-dvLightGray-50">
+    <h1 class="mb-4">Admin Login</h1>
+    <form #form [formGroup]="loginForm" (ngSubmit)="login()">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label #nameLabel>Username</mat-label>
+        <input aria-describedby="nameLabel" name="username" matInput formControlName="username" type="text">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label #passwordLabel>Password</mat-label>
+        <input aria-describedby="passwordLabel" name="password" matInput formControlName="password" type="password">
+      </mat-form-field>
+      <mat-error>
+        <div class="mb-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+      </mat-error>
+      <dvoss-button [class]="'dv-button w-full'" class="w-full" [disabled]="!loginForm.valid" [loading]="submitting" type="submit">Log In</dvoss-button>
+    </form>
+  </div>
+</div>

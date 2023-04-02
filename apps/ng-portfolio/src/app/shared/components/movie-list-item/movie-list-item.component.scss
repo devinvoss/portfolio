@@ -1,0 +1,21 @@
+.movie-list-item-container {
+  @apply h-32 text-center bg-white shadow-md hover:shadow-xl hover:cursor-pointer;
+
+  & .poster-overlay {
+    @apply absolute top-0 left-0 w-full h-32 bg-black opacity-60 hover:opacity-30;
+  }
+
+  &:focus {
+    & .poster-overlay {
+      @apply absolute top-0 left-0 w-full h-32 bg-black opacity-30;
+    }
+  }
+}
+
+.movie-list-item-text-container {
+  @apply absolute top-0 left-0 w-full h-32 m-auto text-2xl font-medium text-white pointer-events-none;
+}
+
+.movie-list-item-image {
+  @apply left-0 object-cover w-full h-32 overflow-hidden absolute;
+}

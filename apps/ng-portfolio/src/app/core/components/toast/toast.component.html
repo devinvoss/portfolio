@@ -1,0 +1,14 @@
+<div class="toast-container">
+  <div @trigger *ngFor="let item of items; trackBy: trackById" class="flex">
+    <div class="toast {{item.class}}" role="alert">
+      <mat-icon class="mr-2 -mt-1 align-middle">{{ item.icon }}</mat-icon>
+      <ng-container *ngIf="item.title">
+        <div class="inline-block mr-2 font-bold">{{ item.title }}</div>
+      </ng-container>
+      <button class="float-right ml-1" type="button" (click)="removeItem(item.id)" aria-label="Click to close" autofocus>
+        <mat-icon class="-mt-1 align-middle">clear</mat-icon>
+      </button>
+      <div class="inline" [innerHTML]="item.message"></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="center-container">
+  <form #titleSearch [formGroup]="movieSearchForm" (ngSubmit)="search()" class="p-2 mt-2">
+    <div class="flex flex-wrap justify-center gap-x-4">
+      <mat-form-field>
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Person</mat-label>
+        <input matInput formControlName="person">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Genre</mat-label>
+        <mat-select matNativeControl formControlName="genre" multiple>
+          <mat-option *ngFor="let genre of genres" [value]="genre">
+            {{ genre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="w-36">
+        <mat-label>Rating</mat-label>
+        <mat-select matNativeControl formControlName="rating" multiple>
+          <mat-option *ngFor="let rating of ratingOptions" [value]="rating">
+            {{ rating }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <dvoss-button [class]="'dv-button w-44 h-12 mt-1 rounded-md'" class="w-44" [loading]="loading" type="submit">Search</dvoss-button>
+    </div>
+  </form>
+  <ng-container *ngIf="loading">
+    <div class="grid grid-cols-4 gap-3 m-1">
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="$movies | async as movies">
+    <div *ngIf="!loading" class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5">
+      <div @trigger *ngFor="let movie of movies; trackBy:trackByMovie" class="col-span-4 sm:col-span-2 2xl:col-span-1">
+        <dvoss-movie-list-item [movie]="movie" (movieSelected)="navigateToMovie($event)"></dvoss-movie-list-item>
+      </div>
+    </div>
+    <mat-paginator #paginator
+      (page)="handlePage($event)"
+      [length]="searchCriteria.totalCount"
+      [pageSize]="searchCriteria.pageSize"
+      [showFirstLastButtons]="true"
+      [pageSizeOptions]="[20, 40]"
+      [pageIndex]="searchCriteria.page"
+      aria-label="Select page">
+    </mat-paginator>
+  </ng-container>
+</div>

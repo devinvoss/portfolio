@@ -1,0 +1,17 @@
+::ng-deep .mat-progress-spinner.mat-white circle, .mat-spinner.mat-white circle {
+  stroke: white;
+}
+
+.loading-hidden {
+  visibility: hidden;
+  display: block;
+}
+
+.spinner-container {
+  top: 2px;
+  left: calc(50% - 10px);
+}
+
+.mat-white {
+  color: white;
+}

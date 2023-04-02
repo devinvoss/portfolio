@@ -1,1 +1,12 @@
-<portfolio-nx-welcome></portfolio-nx-welcome>
+<dvoss-header (toggleSideNav)="toggleSideNav()"></dvoss-header>
+<mat-sidenav-container [hasBackdrop]="false" class="main-container">
+  <mat-sidenav #sideNav [mode]="sideNavMode" class="side-nav" [opened]="sideNavIsOpen">
+    <dvoss-nav></dvoss-nav>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="w-full min-h-full bg-dvLightGray-50">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+<dvoss-toast></dvoss-toast>

@@ -1,0 +1,9 @@
+<div class="flex bg-white shadow-md hover:shadow-xl hover:cursor-pointer">
+  <img style="object-fit: contain;" [src]="movie.imageUrl" class="h-40">
+  <div class="p-2">
+    <ng-container *ngFor="let num of [1,2,3,4,5]">
+      <span class="text-sm md:text-lg material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
+    </ng-container>
+    <span class="block text-lg font-medium">{{movie.title}}</span>
+  </div>
+</div>

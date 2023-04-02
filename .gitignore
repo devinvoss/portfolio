@@ -39,3 +39,7 @@ testem.log
 Thumbs.db
 
 .angular
+apps/api/src/environments/environment.prod.ts
+apps/api/src/environments/environment.dev.ts
+apps/ng-portfolio/src/environments/environment.dev.ts
+apps/ng-portfolio/src/environments/environment.prod.ts

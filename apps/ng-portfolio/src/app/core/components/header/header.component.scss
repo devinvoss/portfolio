@@ -1,0 +1,25 @@
+@import '../../../../styles/global/colors.scss';
+
+@media (max-width: 599px) {
+  .mat-toolbar-row, .mat-toolbar-single-row {
+    height: 64px;
+  }
+}
+
+.mat-button-focus-overlay {
+  background-color: white;
+}
+
+.reset-line-height {
+  line-height: inherit;
+}
+
+.mat-gray {
+  background-color: $nav-background-color;
+}
+
+.toolbar-border {
+  @apply w-full;
+  background-color: #a5d6a7;
+  height: 3px;
+}

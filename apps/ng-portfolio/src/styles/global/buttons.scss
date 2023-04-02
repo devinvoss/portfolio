@@ -1,0 +1,50 @@
+@import './colors.scss';
+
+.dv-button {
+  @apply text-white py-1 px-4 dark:bg-dvDarkGray-50 dark:text-white relative;
+  min-width: 72px;
+  background-color: $button;
+
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) {
+    @apply text-white dark:bg-gray-500 outline-none;
+    background-color: $button-focus;
+  }
+
+  &.clear {
+    height: 100%;
+    box-shadow: none;
+    border-radius: 0px;
+    color: white;
+    background-color: transparent;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+}
+
+.disabled-button {
+  @apply cursor-not-allowed;
+  opacity: .35;
+}
+
+.dv-icon-button {
+  @apply text-white h-full bg-transparent;
+  margin-top: -2px;
+
+  &:hover,
+  &:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.dv-edit-button {
+  @apply bg-white text-dvOrange-50 py-1 px-3 relative;
+
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) {
+    @apply outline-none bg-slate-200;
+  }
+}
