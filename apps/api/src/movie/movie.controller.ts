@@ -13,13 +13,13 @@ export class MovieController {
     return this.movieService.findMovie(params.id);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   async addMovie(@Body() movie: Movie): Promise<Movie> {
     return this.movieService.insertMovie(movie);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put()
   async updateMovie(@Body() movie: Movie): Promise<Movie> {
     return this.movieService.updateMovie(movie);

@@ -8,7 +8,6 @@ import jwt_decode from 'jwt-decode';
 
 import { INavigation, LoginResponse, NavigationType, User } from '../models';
 import { CookieService } from './cookie.service';
-import { environment } from '../../environments/environment';
 import { Constants } from '@app/shared/common/constants';
 
 @Injectable({
@@ -96,12 +95,8 @@ export class UserService {
     }
   }
 
-  registerUser(username: string, password: string): Observable<User> {
-    return this.http.post<User>('api/user/register', { username, password });
-  }
-
   login(username: string, password: string): Observable<User> {
-    return this.http.post<LoginResponse>('/auth/login', { username, password }).pipe(
+    return this.http.post<LoginResponse>('api/auth/login', { username, password }).pipe(
       map((res: LoginResponse) => {
         this.cookieService.setCookie(Constants.ACCESS_TOKEN, res.access_token, 1);
         this.userInfo = <User>jwt_decode(res.access_token);
