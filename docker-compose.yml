@@ -28,7 +28,7 @@ services:
       dockerfile: ./apps/ng-portfolio/Dockerfile
     image: ng-portfolio
     ports:
-      - 4900:80
+      - 80:80
     networks:
       - corp
     restart: on-failure
