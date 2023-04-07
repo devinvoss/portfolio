@@ -13,9 +13,9 @@ import { NgxsStoragePluginModule } from '@ngxs/storage-plugin';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
+import { httpInterceptorProviders } from './core/interceptors';
 import { MovieState } from './store/state/movie.state';
 import { HomeModule } from './home';
-import { ImagekitioAngularModule } from 'imagekitio-angular';
 
 @NgModule({
   declarations: [
@@ -35,6 +35,7 @@ import { ImagekitioAngularModule } from 'imagekitio-angular';
     NgxsStoragePluginModule.forRoot()
   ],
   providers: [
+    httpInterceptorProviders,
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {
