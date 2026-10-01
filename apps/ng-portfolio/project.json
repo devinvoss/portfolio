@@ -4,6 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/ng-portfolio/src",
   "prefix": "portfolio",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -79,7 +80,8 @@
       "defaultConfiguration": "development",
       "options": {
         "proxyConfig": "apps/ng-portfolio/proxy.conf.json"
-      }
+      },
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -95,9 +97,9 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/ng-portfolio/jest.config.ts"
+        "jestConfig": "apps/ng-portfolio/jest.config.ts",
+        "tsConfig": "apps/ng-portfolio/tsconfig.spec.json"
       }
     }
-  },
-  "tags": []
+  }
 }
