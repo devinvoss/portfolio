@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '@app/services';
 
@@ -6,6 +6,7 @@ import { UserService } from '@app/services';
   selector: 'dvoss-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class HeaderComponent {

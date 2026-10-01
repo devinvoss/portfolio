@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService, UserService } from '@app/services';
@@ -12,6 +12,7 @@ import { Movie } from '@portfolio/models';
   ],
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DetailComponent extends DestroyableComponent implements OnInit {

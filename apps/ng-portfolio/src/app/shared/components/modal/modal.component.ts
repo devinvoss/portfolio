@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Overlay, OverlayRef} from '@angular/cdk/overlay';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'dvoss-modal',
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconModule,
     DragDropModule

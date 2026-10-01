@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { DestroyableComponent } from './core/components';
@@ -8,6 +8,7 @@ import { UserService, WindowService } from './services';
   selector: 'portfolio-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AppComponent extends DestroyableComponent implements OnInit {

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, RouterOutlet } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -12,7 +12,7 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CoreModule, MatSidenavModule, NoopAnimationsModule, RouterOutlet],
       declarations: [AppComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
   });
 

@@ -1,5 +1,5 @@
 import { trigger, transition, style, animate } from '@angular/animations';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
 import { MovieService } from '@app/services';
@@ -38,6 +38,7 @@ export const defaultCriteria: MovieSearchCriteria = {
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SearchComponent extends DestroyableComponent implements OnInit {

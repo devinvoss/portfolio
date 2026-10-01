@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { environment } from '@env';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -34,7 +34,7 @@ import { HomeModule } from './home';
     NgxsStoragePluginModule.forRoot({ keys: '*' })
   ],
   providers: [
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
     httpInterceptorProviders,
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,

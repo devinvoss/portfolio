@@ -9,10 +9,10 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@app/*": ["apps/ng-portfolio/src/app/*"],
-      "@shared/*": ["apps/ng-portfolio/src/app/shared/*"],
-      "@env": ["apps/ng-portfolio/src/environments/environment.ts"],
-      "@portfolio/models": ["libs/models/src/index.ts"]
+      "@app/*": ["./src/app/*"],
+      "@shared/*": ["./src/app/shared/*"],
+      "@env": ["./src/environments/environment.ts"],
+      "@portfolio/models": ["../../libs/models/src/index.ts"]
     },
     "esModuleInterop": true,
     "module": "preserve",

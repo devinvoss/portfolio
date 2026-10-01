@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Toast } from '@app/models';
 import { ToastService } from '@app/services';
 import { DestroyableComponent } from '../destroyable/destroyable.component';
@@ -19,6 +19,7 @@ import { DestroyableComponent } from '../destroyable/destroyable.component';
       ])
     ])
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ToastComponent extends DestroyableComponent implements OnInit {

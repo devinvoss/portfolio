@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { filter, map, mergeMap, Observable } from 'rxjs';
 
@@ -10,6 +10,7 @@ import { UserService } from '@app/services';
   selector: 'dvoss-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NavComponent extends DestroyableComponent {

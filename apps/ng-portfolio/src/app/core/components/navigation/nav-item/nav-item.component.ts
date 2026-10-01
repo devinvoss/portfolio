@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { INavigation, NavigationType } from '@app/models';
 
 @Component({
   selector: 'dvoss-nav-item',
   templateUrl: './nav-item.component.html',
   styleUrls: ['./nav-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NavItemComponent {
