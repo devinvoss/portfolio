@@ -30,7 +30,7 @@ export class ModalComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (!this.overlay) return;
+    if (!this.overlayRef) return;
     this.overlayRef.dispose();
   }
 

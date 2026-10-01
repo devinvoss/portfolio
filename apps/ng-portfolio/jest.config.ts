@@ -2,6 +2,7 @@
 export default {
   displayName: 'ng-portfolio',
   preset: '../../jest.preset.js',
+  globalSetup: 'jest-preset-angular/global-setup',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
     'ts-jest': {

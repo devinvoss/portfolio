@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
 import { MovieService } from './movie.service';
 
 describe('MovieService', () => {
@@ -6,7 +7,7 @@ describe('MovieService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MovieService],
+      providers: [MovieService, { provide: getModelToken('Movie'), useValue: {} }],
     }).compile();
 
     service = module.get<MovieService>(MovieService);
