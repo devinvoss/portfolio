@@ -123,5 +123,6 @@
         "openTargetName": "open-cypress"
       }
     }
-  ]
+  ],
+  "analytics": false
 }
