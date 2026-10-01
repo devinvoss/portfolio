@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'dvoss-modal',
-  standalone: true,
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
   imports: [

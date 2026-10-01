@@ -7,7 +7,8 @@ import { fadeInAnimation } from '@app/shared/animations';
   styleUrls: ['./home.component.scss'],
   animations: [
     fadeInAnimation()
-  ]
+  ],
+  standalone: false
 })
 export class HomeComponent implements OnInit {
 

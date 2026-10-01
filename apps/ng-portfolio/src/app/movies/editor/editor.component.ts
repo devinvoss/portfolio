@@ -18,6 +18,7 @@ import { map } from 'rxjs';
   ],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
+  standalone: false
 })
 export class EditorComponent extends DestroyableComponent implements OnInit {
 

@@ -6,7 +6,6 @@ import { MatProgressSpinnerModule  } from '@angular/material/progress-spinner';
   selector: 'dvoss-button',
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
-  standalone: true,
   encapsulation: ViewEncapsulation.None,
   imports: [CommonModule, MatProgressSpinnerModule]
 })

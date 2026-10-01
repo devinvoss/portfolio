@@ -12,6 +12,7 @@ import { Movie } from '@portfolio/models';
   ],
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
+  standalone: false
 })
 export class DetailComponent extends DestroyableComponent implements OnInit {
 

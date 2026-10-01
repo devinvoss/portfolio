@@ -18,7 +18,8 @@ import { DestroyableComponent } from '../destroyable/destroyable.component';
         animate('.1s', style({ opacity: 0 }))
       ])
     ])
-  ]
+  ],
+  standalone: false
 })
 export class ToastComponent extends DestroyableComponent implements OnInit {
   items: Toast[] = [];

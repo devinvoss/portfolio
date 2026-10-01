@@ -7,7 +7,8 @@ import { ToastService, UserService } from '@app/services';
 @Component({
   selector: 'dvoss-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  standalone: false
 })
 export class LoginComponent extends DestroyableComponent {
 

@@ -9,7 +9,8 @@ import { UserService } from '@app/services';
 @Component({
   selector: 'dvoss-nav',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.scss']
+  styleUrls: ['./nav.component.scss'],
+  standalone: false
 })
 export class NavComponent extends DestroyableComponent {
 

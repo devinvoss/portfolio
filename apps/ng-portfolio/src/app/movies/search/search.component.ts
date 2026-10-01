@@ -32,12 +32,13 @@ export const defaultCriteria: MovieSearchCriteria = {
     trigger('trigger', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(100%)' }),
-        animate('.3s', style({ opacity: 1, transform: 'translateY(0)'}))
+        animate('.3s', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ])
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
+  standalone: false
 })
 export class SearchComponent extends DestroyableComponent implements OnInit {
 

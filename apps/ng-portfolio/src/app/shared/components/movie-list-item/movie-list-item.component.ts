@@ -4,7 +4,6 @@ import { ImagekitioAngularModule } from 'imagekitio-angular';
 
 @Component({
   selector: 'dvoss-movie-list-item',
-  standalone: true,
   imports: [ImagekitioAngularModule],
   templateUrl: './movie-list-item.component.html',
   styleUrls: ['./movie-list-item.component.scss']

@@ -4,7 +4,8 @@ import { INavigation, NavigationType } from '@app/models';
 @Component({
   selector: 'dvoss-nav-item',
   templateUrl: './nav-item.component.html',
-  styleUrls: ['./nav-item.component.scss']
+  styleUrls: ['./nav-item.component.scss'],
+  standalone: false
 })
 export class NavItemComponent {
 

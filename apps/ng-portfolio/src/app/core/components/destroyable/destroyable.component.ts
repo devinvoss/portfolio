@@ -2,7 +2,8 @@ import { Component, OnDestroy } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
-  template: ''
+  template: '',
+  standalone: false
 })
 export class DestroyableComponent implements OnDestroy {
 

@@ -23,7 +23,8 @@
             "prefix": "portfolio",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/prefer-standalone": "off"
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
