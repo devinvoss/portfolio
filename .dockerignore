@@ -5,3 +5,6 @@
 /tools
 /.angular/*
 .gitignore
+/dist
+/.nx
+/coverage
