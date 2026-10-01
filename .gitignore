@@ -42,6 +42,7 @@ Thumbs.db
 
 # Nx cache
 .nx/cache
+.nx/workspace-data
 apps/api/src/environments/environment.prod.ts
 apps/api/src/environments/environment.dev.ts
 apps/ng-portfolio/src/environments/environment.dev.ts

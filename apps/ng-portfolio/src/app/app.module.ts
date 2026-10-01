@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from '@env';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -23,7 +23,6 @@ import { HomeModule } from './home';
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     CoreModule,
@@ -32,9 +31,10 @@ import { HomeModule } from './home';
     NgxsModule.forRoot([MovieState], {
       developmentMode: !environment.production
     }),
-    NgxsStoragePluginModule.forRoot()
+    NgxsStoragePluginModule.forRoot({ keys: '*' })
   ],
   providers: [
+    provideHttpClient(withInterceptorsFromDi()),
     httpInterceptorProviders,
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
