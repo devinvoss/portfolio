@@ -68,10 +68,10 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "ng-portfolio:build:production"
+          "buildTarget": "ng-portfolio:build:production"
         },
         "development": {
-          "browserTarget": "ng-portfolio:build:development"
+          "buildTarget": "ng-portfolio:build:development"
         }
       },
       "defaultConfiguration": "development",
@@ -82,25 +82,18 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "ng-portfolio:build"
+        "buildTarget": "ng-portfolio:build"
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "apps/ng-portfolio/**/*.ts",
-          "apps/ng-portfolio/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/ng-portfolio/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/ng-portfolio/jest.config.ts"
       }
     }
   },
