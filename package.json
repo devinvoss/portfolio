@@ -25,7 +25,7 @@
     "@ngxs/store": "^22.0.0",
     "@nx/angular": "23.2.1",
     "cors": "^2.8.5",
-    "imagekit": "^4.1.2",
+    "imagekit": "^6.0.0",
     "imagekit-javascript": "^3.0.2",
     "imagekitio-angular": "^5.1.0",
     "jwt-decode": "^4.0.0",
