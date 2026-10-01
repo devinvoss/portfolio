@@ -3,11 +3,13 @@
     <div class="text-lg font-medium">
       <ng-content select="[modal-header]"></ng-content>
     </div>
-    <div class="absolute right-3 top-3" *ngIf="canDismiss">
-      <button mat-icon-button (click)="close()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
+    @if (canDismiss) {
+      <div class="absolute right-3 top-3">
+        <button mat-icon-button (click)="close()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
     <div class="pr-2 overflow-y-auto break-words modal-content">
       <ng-content select="[modal-content]"></ng-content>
     </div>

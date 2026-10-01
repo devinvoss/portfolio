@@ -116,10 +116,6 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
     this.router.navigate([`/movie/detail/${movie.id}`]);
   }
 
-  trackByMovie(index: number, movie: Movie): string {
-    return movie.id;
-  }
-  
   handlePage(event: PageEvent) {
     this.searchCriteria = {
       ...this.searchCriteria,

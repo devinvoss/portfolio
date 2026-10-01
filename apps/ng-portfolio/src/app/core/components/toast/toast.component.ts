@@ -55,8 +55,4 @@ export class ToastComponent extends DestroyableComponent implements OnInit {
       ...this.items.slice(index+1)
     ];
   }
-
-  trackById(index: number, item: Toast): number {
-    return item.id;
-  }
 }

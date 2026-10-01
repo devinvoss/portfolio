@@ -17,17 +17,21 @@
           <mat-form-field class="w-full">
             <mat-label>Genre</mat-label>
             <mat-select name="genre" multiple formControlName="genre">
-              <mat-option *ngFor="let genre of genres" [value]="genre">
-                {{ genre }}
-              </mat-option>
+              @for (genre of genres; track genre) {
+                <mat-option [value]="genre">
+                  {{ genre }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="w-full">
             <mat-label>Year</mat-label>
             <mat-select name="year" formControlName="year">
-              <mat-option *ngFor="let year of yearRange" [value]="year">
-                {{ year }}
-              </mat-option>
+              @for (year of yearRange; track year) {
+                <mat-option [value]="year">
+                  {{ year }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
@@ -39,32 +43,37 @@
           <mat-form-field class="w-full">
             <mat-label>MPAA Rating</mat-label>
             <mat-select name="runtimeMinutes" formControlName="mpaaRating">
-              <mat-option *ngFor="let rating of mpaaRatings" [value]="rating">
-                {{ rating }}
-              </mat-option>
+              @for (rating of mpaaRatings; track rating) {
+                <mat-option [value]="rating">
+                  {{ rating }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="w-full">
             <mat-label>Rating</mat-label>
             <mat-select name="rating" formControlName="rating">
-              <mat-option *ngFor="let rating of ratings" [value]="rating">
-                {{ rating }}
-              </mat-option>
+              @for (rating of ratings; track rating) {
+                <mat-option [value]="rating">
+                  {{ rating }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
         <mat-form-field class="w-full">
           <mat-label>Actors</mat-label>
           <mat-chip-grid #actorList aria-label="Actor input">
-            <mat-chip-row
-              *ngFor="let actor of selectedActors; let i = index"
-              [removable]="true"
-              (removed)="removeActor(i)">
-              {{ actor }}
-              <button matChipRemove>
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </button>
-            </mat-chip-row>
+            @for (actor of selectedActors; track i; let i = $index) {
+              <mat-chip-row
+                [removable]="true"
+                (removed)="removeActor(i)">
+                {{ actor }}
+                <button matChipRemove>
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            }
             <input
               #actorInput
               formControlName="actors"
@@ -76,12 +85,12 @@
         <mat-form-field class="w-full">
           <mat-label>Synopsis</mat-label>
           <textarea name="synopsis" class="fix-textarea-arrows" matInput cdkTextareaAutosize
-            #synposisAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="synopsis"></textarea>
+          #synposisAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="synopsis"></textarea>
         </mat-form-field>
         <mat-form-field class="w-full">
           <mat-label>Notes</mat-label>
           <textarea name="notes" class="fix-textarea-arrows" matInput cdkTextareaAutosize
-            #notesAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="notes"></textarea>
+          #notesAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="notes"></textarea>
         </mat-form-field>
         <mat-form-field class="w-full">
           <mat-label>Poster URL</mat-label>
@@ -90,10 +99,9 @@
         <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving" type="submit" (click)="save()">Save</dvoss-button>
       </form>
     </div>
-    <ng-container *ngIf="imageUrl$ | async as imageUrl; else imagePreview">
+    @if (imageUrl$ | async; as imageUrl) {
       <img [src]="imageUrl" class="max-h-[800px] mx-auto px-4 lg:mt-20 lg:mr-auto lg:ml-0">
-    </ng-container>
-    <ng-template #imagePreview>
+    } @else {
       <div class="mx-4">
         <div class="flex items-center justify-center w-full h-full max-w-xl mx-auto mt-6 mb-20 text-center border-2 border-black border-dashed rounded-lg lg:mt-20 max-h-96 lg:mr-auto lg:ml-0 bg-dvLightGray-50">
           <div  class="flex items-center h-80">
@@ -104,6 +112,6 @@
           </div>
         </div>
       </div>
-    </ng-template>
+    }
   </div>
 </div>

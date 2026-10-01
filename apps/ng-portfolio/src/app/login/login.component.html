@@ -11,7 +11,9 @@
         <input aria-describedby="passwordLabel" name="password" matInput formControlName="password" type="password">
       </mat-form-field>
       <mat-error>
-        <div class="mb-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+        @if (errorMessage) {
+          <div class="mb-3">{{ errorMessage }}</div>
+        }
       </mat-error>
       <dvoss-button [class]="'dv-button w-full'" class="w-full" [disabled]="!loginForm.valid" [loading]="submitting" type="submit">Log In</dvoss-button>
     </form>

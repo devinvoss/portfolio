@@ -2,7 +2,6 @@ import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, Vie
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Overlay, OverlayRef} from '@angular/cdk/overlay';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -11,7 +10,6 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
   imports: [
-    CommonModule,
     MatIconModule,
     DragDropModule
   ]

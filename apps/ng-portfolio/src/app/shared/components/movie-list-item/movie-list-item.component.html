@@ -7,11 +7,11 @@
         <div class="inline">
           {{movie.title}}
           <br>
-          <ng-container *ngFor="let num of [1,2,3,4,5]">
-            <span class="text-2xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
-          </ng-container>
+            @for (num of [1,2,3,4,5]; track num) {
+              <span class="text-2xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
+            }
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
