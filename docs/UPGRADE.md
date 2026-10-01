@@ -103,6 +103,9 @@ Useful environment settings when running Nx from scripts: `NX_DAEMON=false` (the
 - **Packages `nx migrate` doesn't bump.** NGXS (its major version follows Angular's), `zone.js` (sometimes), TypeScript for Angular 22 (`~6.0`), `ts-jest` (29.4.14 for Babel 8), and `@nestjs/schematics` (Nest 11+ needs Prettier 3).
 - **Migration side effects.** Some migrations reformat code (decorator indentation, `app.module.ts`, `main.ts`). Review the diffs and restore the repo's style.
 - **Deprecated Cypress executor.** `@nx/cypress:cypress` exited 0 without running Cypress. It was replaced by the `@nx/cypress/plugin` inferred targets, with `baseUrl` set in `cypress.config.ts`.
+- **Leftover `@nrwl/js:node` executor.** The migrations missed the API's `serve` target, so `nx serve api` failed. Renamed to `@nx/js:node`.
+- **`import * as cors` broke at runtime.** The API's `module: node16` implies `esModuleInterop`, so the namespace import wasn't callable (`TypeError: s is not a function` after Nest started). Changed to a default import. Namespace imports that only read properties (`mongoose.Schema`) are fine.
+- **`nx serve api` uses the empty `environment.ts`.** There's no `development` configuration that swaps in `environment.dev.ts`, and this predates the upgrade. Use `--configuration=production` only for a quick boot check; the dev file points at the prod DB too.
 - **Dev server cleanup on Windows.** Stopping a background `nx serve` doesn't kill its node/esbuild children. Kill them by command line before the next `npm install`.
 
 ## Commit history (oldest first)
