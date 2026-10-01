@@ -6,12 +6,14 @@
   "prefix": "portfolio",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath.base}"],
       "options": {
-        "outputPath": "dist/apps/ng-portfolio",
+        "outputPath": {
+          "base": "dist/apps/ng-portfolio",
+          "browser": ""
+        },
         "index": "apps/ng-portfolio/src/index.html",
-        "main": "apps/ng-portfolio/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/ng-portfolio/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
@@ -23,7 +25,9 @@
           "apps/ng-portfolio/src/styles/theme.scss",
           "apps/ng-portfolio/src/styles/styles.scss"
         ],
-        "scripts": []
+        "scripts": [],
+        "browser": "apps/ng-portfolio/src/main.ts",
+        "allowedCommonJsDependencies": ["imagekit-javascript"]
       },
       "configurations": {
         "production": {
@@ -48,9 +52,7 @@
           "outputHashing": "all"
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
-          "vendorChunk": true,
           "extractLicenses": false,
           "sourceMap": true,
           "namedChunks": true,
