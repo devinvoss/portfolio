@@ -14,7 +14,10 @@
       "@env": ["apps/ng-portfolio/src/environments/environment.ts"],
       "@portfolio/models": ["libs/models/src/index.ts"]
     },
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "es2022"]
   },
   "files": [],
   "include": [],
