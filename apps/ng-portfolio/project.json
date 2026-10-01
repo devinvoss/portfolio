@@ -102,35 +102,6 @@
         "jestConfig": "apps/ng-portfolio/jest.config.ts",
         "passWithNoTests": true
       }
-    },
-    "storybook": {
-      "executor": "@storybook/angular:start-storybook",
-      "options": {
-        "port": 4400,
-        "configDir": "apps/ng-portfolio/.storybook",
-        "browserTarget": "ng-portfolio:build",
-        "compodoc": false
-      },
-      "configurations": {
-        "ci": {
-          "quiet": true
-        }
-      }
-    },
-    "build-storybook": {
-      "executor": "@storybook/angular:build-storybook",
-      "outputs": ["{options.outputDir}"],
-      "options": {
-        "outputDir": "dist/storybook/ng-portfolio",
-        "configDir": "apps/ng-portfolio/.storybook",
-        "browserTarget": "ng-portfolio:build",
-        "compodoc": false
-      },
-      "configurations": {
-        "ci": {
-          "quiet": true
-        }
-      }
     }
   },
   "tags": []
