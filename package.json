@@ -2,7 +2,14 @@
   "name": "portfolio",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx serve ng-portfolio",
+    "start:api": "nx serve api",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "lint": "nx run-many -t lint",
+    "e2e": "nx e2e ng-portfolio-e2e"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "22.1.8",

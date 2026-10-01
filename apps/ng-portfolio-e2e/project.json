@@ -7,16 +7,8 @@
   "implicitDependencies": ["ng-portfolio"],
   "targets": {
     "e2e": {
-      "executor": "@nx/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/ng-portfolio-e2e/cypress.config.ts",
-        "devServerTarget": "ng-portfolio:serve:development",
-        "testingType": "e2e"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "ng-portfolio:serve:production"
-        }
+        "config-file": "./cypress.config.ts"
       }
     },
     "lint": {
