@@ -19,7 +19,7 @@ describe('MovieListItemComponent', () => {
 
     fixture = TestBed.createComponent(MovieListItemComponent);
     component = fixture.componentInstance;
-    component.movie = { title: 'Test Movie', imageUrl: 'test.jpg', rating: 3 } as Movie;
+    component.movie = { title: 'Test Movie', imageUrl: 'https://ik.imagekit.io/test/test.jpg', rating: 3 } as Movie;
     fixture.detectChanges();
   });
 
