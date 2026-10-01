@@ -38,7 +38,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 
 **Not verified:**
 
-- The API was never run against a database. The only populated env file points at the real production DB, and the user chose to skip a throwaway-DB test. Mongoose schemas were checked without a DB (virtuals, `toJSON`, query shape).
+- API add movie (ImageKit upload) at runtime. Everything else in the API was checked against a throwaway DB (see remaining work).
 - Docker images were not built (the Docker daemon wasn't running).
 
 ## Decisions made
@@ -66,7 +66,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 
 - [ ] **Revoke the old Nx Cloud access token** in the Nx Cloud dashboard. It's removed from `nx.json` but is still in git history.
 - [ ] Build the Docker images: `docker compose build`, then run them.
-- [ ] Run the API against a **throwaway** MongoDB and exercise login, search, get, add and update. Express 5 (Nest 11) and Mongoose 9 haven't been tested at runtime.
+- [x] Run the API against a **throwaway** MongoDB (`mongodb-memory-server`, seeded with one user and two movies; `environment.ts` pointed at it temporarily). Passed: login (200 and 401), get (200 and 404), search (title, person + genre, sort, no filter), update (401 without a token; saved and `updatedDate` bumped with one). Add wasn't tested end to end: it uploads to ImageKit before saving, and the test config had no ImageKit keys.
 - [ ] Push the branch and open a PR.
 
 ### Optional follow-ups
