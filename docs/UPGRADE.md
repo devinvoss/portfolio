@@ -79,7 +79,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 - [ ] Sass: replace `@import` with `@use` and the global functions (`map_merge`) with module ones. These go away in Dart Sass 3 (`npx sass-migrator module`).
 - [ ] Tailwind 4: needs the SCSS `@apply` usage reworked first.
 - [ ] Material M3 theme.
-- [ ] Pre-existing bug: the movie search stays in its loading state forever when the API call fails (`MovieState.searchMovies` has no error handling).
+- [x] Pre-existing bug: the movie search stayed in its loading state forever when the API call failed (on any search after the first). The component now handles the dispatch error, clears `loading`, and shows an error toast.
 - [ ] `npm audit`: 16 findings remain, all transitive.
   - Most are pinned exactly by `nx@23.2.1` (axios 1.18.1, brace-expansion 5.0.9, smol-toml 1.6.1). Wait for an Nx patch.
   - `uuid@8` comes through `imagekit` (moderate).

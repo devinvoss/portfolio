@@ -2,7 +2,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { ChangeDetectorRef, Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
-import { MovieService } from '@app/services';
+import { MovieService, ToastService } from '@app/services';
 import { map, Observable, tap } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 import { OnInit } from '@angular/core';
@@ -72,6 +72,7 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private store: Store,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef) {
     super();
   }
@@ -111,7 +112,15 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
 
     this.loading = true;
     this.cdr.detectChanges();
-    this.store.dispatch(new MovieActions.SearchMovies(this.searchCriteria));
+    this.store.dispatch(new MovieActions.SearchMovies(this.searchCriteria))
+      .pipe(this.takeUntilDestroyed)
+      .subscribe({
+        error: () => {
+          this.loading = false;
+          this.toastService.error('Movie search failed.');
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   navigateToMovie(movie: Movie) {
