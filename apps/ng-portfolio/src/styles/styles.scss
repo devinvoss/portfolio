@@ -1,13 +1,14 @@
+@use 'sass:meta';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import './material-overrides.scss';
-@import './global/containers.scss';
-@import './global/colors.scss';
-@import './global/buttons.scss';
-@import './global/headings.scss';
+@include meta.load-css('./material-overrides');
+@include meta.load-css('./global/containers');
+@include meta.load-css('./global/colors');
+@include meta.load-css('./global/buttons');
+@include meta.load-css('./global/headings');
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

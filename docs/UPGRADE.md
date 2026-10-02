@@ -76,7 +76,8 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 - [ ] Convert components to standalone (`nx g @angular/core:standalone`), then `bootstrapApplication`; re-enable `prefer-standalone`.
 - [ ] Constructor injection to `inject()` (`nx g @angular/core:inject`); re-enable `prefer-inject`.
 - [ ] Move components to OnPush, then consider zoneless; re-enable the OnPush lint rule.
-- [ ] Sass: replace `@import` with `@use` and the global functions (`map_merge`) with module ones. These go away in Dart Sass 3 (`npx sass-migrator module`).
+- [x] Sass: `@import` replaced with `@use` (and `meta.load-css` in `styles.scss`, to keep the partials after `@tailwind base`); `map-get`/`map_merge` replaced with `sass:map`. Global CSS output is byte-identical.
+- [ ] Possible pre-existing bug in `theme.scss`: the last `map.merge` sets the theme's `color` to the whole theme instead of `$theme-colors`, so the custom `#F5F5F5` background probably never applies. Kept as is; fixing it may change how the app looks.
 - [ ] Tailwind 4: needs the SCSS `@apply` usage reworked first.
 - [ ] Material M3 theme.
 - [x] Pre-existing bug: the movie search stayed in its loading state forever when the API call failed (on any search after the first). The component now handles the dispatch error, clears `loading`, and shows an error toast.
