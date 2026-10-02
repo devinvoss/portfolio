@@ -11,20 +11,18 @@ import { ButtonComponent } from '../shared/components';
 
 
 @NgModule({
-  declarations: [
-    DestroyableComponent,
-    HeaderComponent,
-    NavComponent,
-    NavItemComponent,
-    ToastComponent
-  ],
   imports: [
     CommonModule,
     RouterModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    ButtonComponent
+    ButtonComponent,
+    DestroyableComponent,
+    HeaderComponent,
+    NavComponent,
+    NavItemComponent,
+    ToastComponent
   ],
   exports: [
     DestroyableComponent,

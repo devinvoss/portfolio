@@ -4,13 +4,19 @@ import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
 import { MovieService, ToastService } from '@app/services';
 import { map, Observable, tap } from 'rxjs';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OnInit } from '@angular/core';
 import { DestroyableComponent } from '@app/core/components';
 import { Store } from '@ngxs/store';
 import { MOVIE_STATE_TOKEN } from '@app/store/state/movie.state';
 import * as MovieActions from '@app/store/actions/movie.actions';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { MatFormField, MatLabel, MatInput } from '@angular/material/input';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
+import { MovieListItemComponent } from '../../shared/components/movie-list-item/movie-list-item.component';
+import { AsyncPipe } from '@angular/common';
 
 export const defaultCriteria: MovieSearchCriteria = {
   page: 0,
@@ -39,7 +45,7 @@ export const defaultCriteria: MovieSearchCriteria = {
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, ButtonComponent, SkeletonLoaderComponent, MovieListItemComponent, MatPaginator, AsyncPipe]
 })
 export class SearchComponent extends DestroyableComponent implements OnInit {
 

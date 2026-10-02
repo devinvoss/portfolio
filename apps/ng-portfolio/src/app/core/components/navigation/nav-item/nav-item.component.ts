@@ -1,12 +1,15 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { INavigation, NavigationType } from '@app/models';
+import { NgClass } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'dvoss-nav-item',
   templateUrl: './nav-item.component.html',
   styleUrls: ['./nav-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [NgClass, MatIcon, RouterLink]
 })
 export class NavItemComponent {
 

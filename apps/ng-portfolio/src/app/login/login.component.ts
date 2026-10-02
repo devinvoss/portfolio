@@ -1,15 +1,17 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { UserService } from '@app/services';
+import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
+import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
   selector: 'dvoss-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, ButtonComponent]
 })
 export class LoginComponent extends DestroyableComponent {
 

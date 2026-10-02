@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService } from '@app/services';
@@ -7,8 +7,14 @@ import { EditorMode } from '@app/shared/common/enums';
 import { Movie } from '@portfolio/models';
 
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipGrid, MatChipRow, MatChipRemove, MatChipInput } from '@angular/material/chips';
 import { fadeInAnimation } from '@app/shared/animations';
+import { MatFormField, MatLabel, MatInput } from '@angular/material/input';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'portfolio-editor',
@@ -18,7 +24,7 @@ import { fadeInAnimation } from '@app/shared/animations';
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatChipInput, CdkTextareaAutosize, ButtonComponent, AsyncPipe]
 })
 export class EditorComponent extends DestroyableComponent implements OnInit {
 

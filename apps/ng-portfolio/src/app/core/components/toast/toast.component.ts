@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Toast } from '@app/models';
 import { ToastService } from '@app/services';
 import { DestroyableComponent } from '../destroyable/destroyable.component';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'dvoss-toast',
@@ -20,7 +21,7 @@ import { DestroyableComponent } from '../destroyable/destroyable.component';
     ])
   ],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [MatIcon]
 })
 export class ToastComponent extends DestroyableComponent implements OnInit {
   items: Toast[] = [];

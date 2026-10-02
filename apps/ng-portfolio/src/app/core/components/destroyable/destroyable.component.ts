@@ -3,8 +3,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class DestroyableComponent implements OnDestroy {
 

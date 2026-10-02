@@ -8,8 +8,7 @@ import { fadeInAnimation } from '@app/shared/animations';
   animations: [
     fadeInAnimation()
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class HomeComponent {
 

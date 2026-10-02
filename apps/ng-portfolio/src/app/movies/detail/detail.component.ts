@@ -4,6 +4,12 @@ import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService, UserService } from '@app/services';
 import { fadeInAnimation } from '@app/shared/animations';
 import { Movie } from '@portfolio/models';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatChipSet, MatChip } from '@angular/material/chips';
+import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
+import { AsyncPipe } from '@angular/common';
+import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
 
 @Component({
   selector: 'portfolio-detail',
@@ -13,7 +19,7 @@ import { Movie } from '@portfolio/models';
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [ButtonComponent, MatIcon, MatChipSet, MatChip, SkeletonLoaderComponent, AsyncPipe, MinutesPipe]
 })
 export class DetailComponent extends DestroyableComponent implements OnInit {
 

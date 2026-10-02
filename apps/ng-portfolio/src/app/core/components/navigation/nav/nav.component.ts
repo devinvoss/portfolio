@@ -5,13 +5,15 @@ import { filter, map, mergeMap, Observable } from 'rxjs';
 import { DestroyableComponent } from '../../destroyable/destroyable.component';
 import { INavigation } from '@app/models';
 import { UserService } from '@app/services';
+import { NavItemComponent } from '../nav-item/nav-item.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'dvoss-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [NavItemComponent, AsyncPipe]
 })
 export class NavComponent extends DestroyableComponent {
 
