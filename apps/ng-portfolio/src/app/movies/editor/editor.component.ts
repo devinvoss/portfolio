@@ -8,7 +8,6 @@ import { Movie } from '@portfolio/models';
 
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipGrid, MatChipRow, MatChipRemove, MatChipInput } from '@angular/material/chips';
-import { fadeInAnimation } from '@app/shared/animations';
 import { MatFormField, MatLabel, MatInput } from '@angular/material/input';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
@@ -18,9 +17,6 @@ import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'portfolio-editor',
-  animations: [
-    fadeInAnimation()
-  ],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

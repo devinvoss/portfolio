@@ -1,5 +1,5 @@
 @if (movie(); as movie) {
-  <div @fadeIn class="relative text-white h-[1280px]">
+  <div animate.enter="fade-in" class="relative text-white h-[1280px]">
     <img class="movie-image" [src]="movie.imageUrl">
     <div class="poster-overlay"></div>
     <div class="text-container">

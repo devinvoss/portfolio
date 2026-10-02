@@ -9,6 +9,7 @@
 @include meta.load-css('./global/colors');
 @include meta.load-css('./global/buttons');
 @include meta.load-css('./global/headings');
+@include meta.load-css('./global/animations');
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

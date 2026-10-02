@@ -44,7 +44,7 @@
     @if (!loading()) {
       <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5">
         @for (movie of movies; track movie.id) {
-          <div @trigger class="col-span-4 sm:col-span-2 2xl:col-span-1">
+          <div animate.enter="slide-up-in" class="col-span-4 sm:col-span-2 2xl:col-span-1">
             <dvoss-movie-list-item [movie]="movie" (movieSelected)="navigateToMovie($event)"></dvoss-movie-list-item>
           </div>
         }

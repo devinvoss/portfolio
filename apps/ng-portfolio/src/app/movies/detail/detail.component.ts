@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService, UserService } from '@app/services';
-import { fadeInAnimation } from '@app/shared/animations';
 import { Movie } from '@portfolio/models';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { MatIcon } from '@angular/material/icon';
@@ -13,9 +12,6 @@ import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
 
 @Component({
   selector: 'portfolio-detail',
-  animations: [
-    fadeInAnimation()
-  ],
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

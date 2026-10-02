@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NavItemComponent } from './nav-item.component';
 import { INavigation, NavigationType } from '@app/models';
 
@@ -12,7 +11,7 @@ describe('NavItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavItemComponent, NoopAnimationsModule],
+      imports: [NavItemComponent],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 

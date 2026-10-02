@@ -1,4 +1,3 @@
-import { trigger, transition, style, animate } from '@angular/animations';
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
@@ -34,14 +33,6 @@ export const defaultCriteria: MovieSearchCriteria = {
 
 @Component({
   selector: 'portfolio-search',
-  animations: [
-    trigger('trigger', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(100%)' }),
-        animate('.3s', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

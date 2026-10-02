@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxsModule } from '@ngxs/store';
 import { ToastService } from '@app/services';
 import { MovieState } from '@app/store/state/movie.state';
@@ -16,7 +15,7 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoviesModule, NoopAnimationsModule, NgxsModule.forRoot([MovieState])],
+      imports: [MoviesModule, NgxsModule.forRoot([MovieState])],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 

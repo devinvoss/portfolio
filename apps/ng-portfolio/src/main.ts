@@ -1,6 +1,5 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -17,7 +16,6 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideAnimations(),
     provideStore(
       [MovieState],
       { developmentMode: !environment.production },

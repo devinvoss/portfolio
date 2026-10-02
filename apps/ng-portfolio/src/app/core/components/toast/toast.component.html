@@ -1,6 +1,6 @@
 <div class="toast-container">
   @for (item of items(); track item.id) {
-    <div @trigger class="flex">
+    <div animate.enter="toast-enter" animate.leave="toast-leave" class="flex">
       <div class="toast {{item.class}}" role="alert">
         <mat-icon class="mr-2 -mt-1 align-middle">{{ item.icon }}</mat-icon>
         @if (item.title) {

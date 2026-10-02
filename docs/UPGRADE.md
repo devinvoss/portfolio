@@ -74,7 +74,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 - [ ] NestJS 12, once `@nx/nest` supports it.
 - [x] Fix the 39 pre-existing lint errors. Selector prefix now allows both `portfolio` and `dvoss` (the code uses both); NGXS actions are module exports imported as `* as MovieActions`.
 - [x] Standalone components and `bootstrapApplication` (`main.ts` uses `provideRouter`, `provideStore` + `withNgxsStoragePlugin`, `provideAnimations`). `prefer-standalone` is back on. The lazy `login` and `movies` routes still load NgModules.
-- [ ] Move off `@angular/animations` (`provideAnimations` and the `trigger()` animations are deprecated since Angular 20.2, removal planned for v23) to `animate.enter` / `animate.leave`.
+- [x] Moved off `@angular/animations`: the fade-in, search slide-up and toast enter/leave are CSS keyframes in `styles/global/animations.scss`, applied with `animate.enter` / `animate.leave`. `provideAnimations()`, `NoopAnimationsModule` and the `@angular/animations` dependency are gone.
 - [x] Constructor injection moved to `inject()`; `prefer-inject` is back on.
 - [x] All components are OnPush; component state that changes in subscriptions or timers is now signals; the nav tree is rebuilt immutably on navigation (tracked by name). The OnPush lint rule is back on. Checked by hand in the browser against a throwaway DB: search, paging count, detail, login (both outcomes), nav highlighting and submenu, edit with an added actor, save toast and its auto-dismiss.
 - [x] Zoneless change detection: `provideZonelessChangeDetection()`, NGXS `withNgxsNoopExecutionStrategy()`, zone.js removed (polyfills, Jest setup, dependency). Checked in a real browser with a temporary Cypress run against a throwaway API/DB.

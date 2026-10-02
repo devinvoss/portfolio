@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Toast } from '@app/models';
 import { ToastService } from '@app/services';
@@ -9,17 +8,6 @@ import { MatIcon } from '@angular/material/icon';
   selector: 'dvoss-toast',
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.scss'],
-  animations: [
-    trigger('trigger', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateX(-100%)' }),
-        animate('.1s', style({ opacity: 1, transform: 'translateX(0)' }))
-      ]),
-      transition(':leave', [
-        animate('.1s', style({ opacity: 0 }))
-      ])
-    ])
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIcon]
 })
