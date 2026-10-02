@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '@app/services';
 import { MatToolbar } from '@angular/material/toolbar';
@@ -14,12 +14,12 @@ import { AsyncPipe } from '@angular/common';
   imports: [MatToolbar, ButtonComponent, MatIcon, AsyncPipe]
 })
 export class HeaderComponent {
+  private router = inject(Router);
+  private userService = inject(UserService);
 
   @Output() toggleSideNav: EventEmitter<void> = new EventEmitter<void>();
 
   user$ = this.userService.user$;
-
-  constructor(private router: Router, private userService: UserService) { }
 
   toggleNav() {
     this.toggleSideNav.emit();

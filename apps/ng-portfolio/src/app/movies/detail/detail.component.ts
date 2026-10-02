@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService, UserService } from '@app/services';
@@ -22,19 +22,15 @@ import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
   imports: [ButtonComponent, MatIcon, MatChipSet, MatChip, SkeletonLoaderComponent, AsyncPipe, MinutesPipe]
 })
 export class DetailComponent extends DestroyableComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private movieService = inject(MovieService);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+  private userService = inject(UserService);
+
 
   movie!: Movie;
   user$ = this.userService.user$;
-
-  constructor(
-    private route: ActivatedRoute,
-    private movieService: MovieService,
-    private router: Router,
-    private toastService: ToastService,
-    private userService: UserService
-  ) {
-    super();
-  }
 
   ngOnInit(): void {
     this.route.params.pipe(this.takeUntilDestroyed).subscribe(params => {

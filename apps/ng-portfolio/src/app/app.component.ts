@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { DestroyableComponent, HeaderComponent, NavComponent, ToastComponent } from './core/components';
@@ -13,6 +13,10 @@ import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/mat
   imports: [HeaderComponent, NavComponent, ToastComponent, MatSidenavContainer, MatSidenav, MatSidenavContent, RouterOutlet]
 })
 export class AppComponent extends DestroyableComponent implements OnInit {
+  private windowService = inject(WindowService);
+  private router = inject(Router);
+  private userService = inject(UserService);
+
 
   readonly sideNavKey: string = 'dvoss-side-nav';
 
@@ -23,10 +27,6 @@ export class AppComponent extends DestroyableComponent implements OnInit {
     this.takeUntilDestroyed,
     filter((e): e is NavigationEnd => e instanceof NavigationEnd)
   );
-
-  constructor(private windowService: WindowService, private router: Router, private userService: UserService) {
-    super();
-  }
 
   ngOnInit(): void {
     this.windowService.isPhoneOrTablet$.pipe(

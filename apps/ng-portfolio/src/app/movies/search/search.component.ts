@@ -1,5 +1,5 @@
 import { trigger, transition, style, animate } from '@angular/animations';
-import { ChangeDetectorRef, Component, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
 import { MovieService, ToastService } from '@app/services';
@@ -48,6 +48,13 @@ export const defaultCriteria: MovieSearchCriteria = {
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, ButtonComponent, SkeletonLoaderComponent, MovieListItemComponent, MatPaginator, AsyncPipe]
 })
 export class SearchComponent extends DestroyableComponent implements OnInit {
+  private movieService = inject(MovieService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
+  private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
+
 
   searchCriteria: MovieSearchCriteria = { ...defaultCriteria };
 
@@ -73,15 +80,6 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
     genre: [(<string[]>[])],
     rating: [(<number[]>[])]
   })
-
-  constructor(private movieService: MovieService,
-    private router: Router,
-    private fb: FormBuilder,
-    private store: Store,
-    private toastService: ToastService,
-    private cdr: ChangeDetectorRef) {
-    super();
-  }
 
   ngOnInit(): void {
     const previousCriteria = this.store.selectSnapshot(MOVIE_STATE_TOKEN).lastSearchCriteria;

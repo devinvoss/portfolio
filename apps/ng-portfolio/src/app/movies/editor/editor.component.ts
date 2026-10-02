@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
@@ -27,6 +27,11 @@ import { AsyncPipe } from '@angular/common';
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatChipInput, CdkTextareaAutosize, ButtonComponent, AsyncPipe]
 })
 export class EditorComponent extends DestroyableComponent implements OnInit {
+  private movieService = inject(MovieService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
 
   mode: EditorMode = EditorMode.ADD;
   movieId = '';
@@ -55,15 +60,6 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
   isSaving = false;
 
   imageUrl$ = this.movieForm.controls.imageUrl?.valueChanges.pipe(this.takeUntilDestroyed)
-
-  constructor(
-    private movieService: MovieService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private fb: FormBuilder,
-    private toastService: ToastService) {
-    super();
-  }
 
   ngOnInit(): void {
     this.route.params.pipe(this.takeUntilDestroyed).subscribe(params => {

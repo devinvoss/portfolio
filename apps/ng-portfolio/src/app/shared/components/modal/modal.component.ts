@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Overlay, OverlayRef} from '@angular/cdk/overlay';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -15,13 +15,13 @@ import { MatIconModule } from '@angular/material/icon';
   ]
 })
 export class ModalComponent implements AfterViewInit, OnDestroy {
+  private overlay = inject(Overlay);
+  private vcr = inject(ViewContainerRef);
 
   @ViewChild(TemplateRef) dialogTemplate!: TemplateRef<unknown>;
   @Input() canDismiss = true;
   overlayRef!: OverlayRef;
   portal!: TemplatePortal;
-
-  constructor(private overlay: Overlay, private vcr: ViewContainerRef) { }
 
   ngAfterViewInit(): void {
     this.portal = new TemplatePortal(this.dialogTemplate, this.vcr);

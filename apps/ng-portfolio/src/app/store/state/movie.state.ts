@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MovieService } from '@app/services';
 import { StateToken, Action, State, StateContext } from '@ngxs/store';
 import { tap } from 'rxjs';
@@ -17,8 +17,7 @@ const defaultState = <MovieStateModel>{
 })
 @Injectable()
 export class MovieState {
-
-  constructor(private movieService: MovieService) {}
+  private movieService = inject(MovieService);
 
   @Action(MovieActions.SearchMovies)
   searchMovies(ctx: StateContext<MovieStateModel>, action: MovieActions.SearchMovies) {

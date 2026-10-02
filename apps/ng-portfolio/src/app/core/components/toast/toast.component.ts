@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Toast } from '@app/models';
 import { ToastService } from '@app/services';
 import { DestroyableComponent } from '../destroyable/destroyable.component';
@@ -24,11 +24,9 @@ import { MatIcon } from '@angular/material/icon';
   imports: [MatIcon]
 })
 export class ToastComponent extends DestroyableComponent implements OnInit {
-  items: Toast[] = [];
+  private toastService = inject(ToastService);
 
-  constructor(private toastService: ToastService) {
-    super();
-  }
+  items: Toast[] = [];
 
   ngOnInit(): void {
     this.toastService.addMessage$.pipe(this.takeUntilDestroyed).subscribe(toast => {

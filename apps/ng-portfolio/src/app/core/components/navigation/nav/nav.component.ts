@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { filter, map, mergeMap, Observable } from 'rxjs';
 
@@ -16,11 +16,14 @@ import { AsyncPipe } from '@angular/common';
   imports: [NavItemComponent, AsyncPipe]
 })
 export class NavComponent extends DestroyableComponent {
+  private userService = inject(UserService);
+  private router = inject(Router);
+
 
   userRoutes$: Observable<INavigation[]> = this.userService.getUserRoutes().pipe(this.takeUntilDestroyed);
   navRoutes$: Observable<INavigation[]>;
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor() {
     super();
 
     this.navRoutes$ = this.router.events.pipe(

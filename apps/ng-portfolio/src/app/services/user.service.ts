@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, map } from 'rxjs';
 import { Observable } from 'rxjs';
@@ -14,6 +14,9 @@ import { Constants } from '@app/shared/common/constants';
   providedIn: 'root'
 })
 export class UserService {
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private cookieService = inject(CookieService);
 
   readonly unauthenticatedRoutes = <INavigation[]>[
     {
@@ -74,11 +77,6 @@ export class UserService {
   }
 
   user$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
-
-  constructor(private router: Router,
-    private http: HttpClient,
-    private cookieService: CookieService
-  ) { }
 
   getUserRoutes(): Observable<INavigation[]> {
     return this.user$.pipe(
