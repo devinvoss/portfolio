@@ -10,7 +10,7 @@ import { AsyncPipe } from '@angular/common';
   selector: 'dvoss-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatToolbar, ButtonComponent, MatIcon, AsyncPipe]
 })
 export class HeaderComponent {

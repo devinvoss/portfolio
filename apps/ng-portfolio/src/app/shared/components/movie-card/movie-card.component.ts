@@ -5,7 +5,7 @@ import { Movie } from '@portfolio/models';
   selector: 'dvoss-movie-card',
   standalone: true,
   templateUrl: './movie-card.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./movie-card.component.scss']
 })
 export class MovieCardComponent {

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
@@ -10,7 +10,7 @@ import { ButtonComponent } from '../shared/components/button/button.component';
   selector: 'dvoss-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, ButtonComponent]
 })
 export class LoginComponent extends DestroyableComponent {
@@ -22,26 +22,26 @@ export class LoginComponent extends DestroyableComponent {
     username: ['', [Validators.required]],
     password: ['', [Validators.required]]
   })
-  submitting = false;
-  errorMessage = '';
+  submitting = signal(false);
+  errorMessage = signal('');
 
   login() {
-    this.errorMessage = '';
-    if (!this.submitting) {
+    this.errorMessage.set('');
+    if (!this.submitting()) {
       this.userService.login(this.loginForm.get('username')?.value, this.loginForm.get('password')?.value).pipe(
       ).subscribe({
         next: () => {
           this.router.navigate(['/dashboard']);
-          this.submitting = false;
+          this.submitting.set(false);
         },
         error: () => {
-          this.errorMessage = 'Invalid Username or Password combination.';
-          this.submitting = false;
+          this.errorMessage.set('Invalid Username or Password combination.');
+          this.submitting.set(false);
         }
       })
     }
 
-    this.submitting = true;
+    this.submitting.set(true);
     
   }
 

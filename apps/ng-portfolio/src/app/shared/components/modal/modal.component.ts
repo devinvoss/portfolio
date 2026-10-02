@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'dvoss-modal',
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatIconModule,
     DragDropModule

@@ -48,14 +48,14 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 - **No Nx Cloud.** Local task runner only.
 - **Behavior kept the same across Angular default changes:**
   - zone.js change detection (`provideZoneChangeDetection()` in `main.ts`)
-  - `ChangeDetectionStrategy.Eager` written out on every component (Angular 22 defaults to OnPush)
+  - (Was: `ChangeDetectionStrategy.Eager` on every component. Since moved to OnPush, see remaining work.)
   - `provideHttpClient(withXhr(), withInterceptorsFromDi())` (Angular 22 defaults to fetch)
   - Material theme stays on the M2 APIs (`mat.m2-*`)
 - **TypeScript 6:**
   - API uses `"strict": false` (TS 6 turns strict on by default)
   - `baseUrl` removed; `paths` are relative to the tsconfig that declares them
   - `moduleResolution`: `bundler` (base and frontend), `node16` (CommonJS API and spec configs)
-- **Lint rules turned off on purpose** (`apps/ng-portfolio/eslint.config.mjs`), until the code is migrated: `prefer-on-push-component-change-detection`.
+- **Lint rules:** all the Angular rules that were turned off during the upgrade are back on.
 - **Tailwind stays on 3.4.** v4 doesn't support Sass, and the styles use `@apply` 34 times across 12 SCSS files.
 - **`@babel/core@^7` declared at the root** so Jest's Babel 7 plugins don't pick up Angular 22's hoisted Babel 8.
 - **Frontend build output stays flat** (`outputPath.browser: ""`), so the Dockerfile and nginx config work unchanged with the esbuild builder.
@@ -76,7 +76,8 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 - [x] Standalone components and `bootstrapApplication` (`main.ts` uses `provideRouter`, `provideStore` + `withNgxsStoragePlugin`, `provideAnimations`). `prefer-standalone` is back on. The lazy `login` and `movies` routes still load NgModules.
 - [ ] Move off `@angular/animations` (`provideAnimations` and the `trigger()` animations are deprecated since Angular 20.2, removal planned for v23) to `animate.enter` / `animate.leave`.
 - [x] Constructor injection moved to `inject()`; `prefer-inject` is back on.
-- [ ] Move components to OnPush, then consider zoneless; re-enable the OnPush lint rule.
+- [x] All components are OnPush; component state that changes in subscriptions or timers is now signals; the nav tree is rebuilt immutably on navigation (tracked by name). The OnPush lint rule is back on. Checked by hand in the browser against a throwaway DB: search, paging count, detail, login (both outcomes), nav highlighting and submenu, edit with an added actor, save toast and its auto-dismiss.
+- [ ] Zoneless change detection (everything is OnPush now, so this is the next step; drop `provideZoneChangeDetection()` and `zone.js`).
 - [x] Sass: `@import` replaced with `@use` (and `meta.load-css` in `styles.scss`, to keep the partials after `@tailwind base`); `map-get`/`map_merge` replaced with `sass:map`. Global CSS output is byte-identical.
 - [ ] Possible pre-existing bug in `theme.scss`: the last `map.merge` sets the theme's `color` to the whole theme instead of `$theme-colors`, so the custom `#F5F5F5` background probably never applies. Kept as is; fixing it may change how the app looks.
 - [ ] Tailwind 4: needs the SCSS `@apply` usage reworked first.
@@ -110,6 +111,7 @@ Useful environment settings when running Nx from scripts: `NX_DAEMON=false` (the
 - **`nx serve api` uses the empty `environment.ts`.** There's no `development` configuration that swaps in `environment.dev.ts`, and this predates the upgrade. Use `--configuration=production` only for a quick boot check; the dev file points at the prod DB too.
 - **`npm run e2e` exits 1 when a dev server is already on port 4200.** It reuses that server (the tests still run and pass), but Nx reports its own serve task as failed.
 - **Standalone migration side effects.** The prune step removed `CoreModule` from `AppModule` while `AppComponent` still needed its components, and the bootstrap step dropped `provideZoneChangeDetection()`. Both fixed by hand.
+- **Pre-existing side nav quirks** (same before and after OnPush): the first hamburger click after a page load sometimes does nothing, and the closed drawer stays `visibility: visible`, leaving a narrow white strip on the left.
 - **Dev server cleanup on Windows.** Stopping a background `nx serve` doesn't kill its node/esbuild children. Kill them by command line before the next `npm install`.
 
 ## Commit history (oldest first)

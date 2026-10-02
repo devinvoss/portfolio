@@ -1,5 +1,5 @@
 import { trigger, transition, style, animate } from '@angular/animations';
-import { ChangeDetectorRef, Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
 import { MovieService, ToastService } from '@app/services';
@@ -44,7 +44,7 @@ export const defaultCriteria: MovieSearchCriteria = {
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, ButtonComponent, SkeletonLoaderComponent, MovieListItemComponent, MatPaginator, AsyncPipe]
 })
 export class SearchComponent extends DestroyableComponent implements OnInit {
@@ -53,25 +53,23 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
   private fb = inject(FormBuilder);
   private store = inject(Store);
   private toastService = inject(ToastService);
-  private cdr = inject(ChangeDetectorRef);
 
-  searchCriteria: MovieSearchCriteria = { ...defaultCriteria };
+  searchCriteria = signal<MovieSearchCriteria>({ ...defaultCriteria });
 
   $movies: Observable<Movie[]> = this.store.select(MOVIE_STATE_TOKEN).pipe(
     this.takeUntilDestroyed,
     tap((data) => {
-      this.loading = false;
+      this.loading.set(false);
       if (data.lastSearchCriteria) {
-        this.searchCriteria = { ...data.lastSearchCriteria };
+        this.searchCriteria.set({ ...data.lastSearchCriteria });
       }
-      this.cdr.detectChanges();
     }),
     map(x => x.searchResults)
   );
 
   ratingOptions = this.movieService.getRatingOptions();
   genres = this.movieService.getGenres();
-  loading = false;
+  loading = signal(false);
 
   movieSearchForm = this.fb.group({
     title: [''],
@@ -83,7 +81,7 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
   ngOnInit(): void {
     const previousCriteria = this.store.selectSnapshot(MOVIE_STATE_TOKEN).lastSearchCriteria;
     if (previousCriteria) {
-      this.searchCriteria = { ...previousCriteria };
+      this.searchCriteria.set({ ...previousCriteria });
       this.movieSearchForm.reset({
         title: previousCriteria.searchFields?.title || '',
         person: previousCriteria.searchFields?.person || '',
@@ -95,33 +93,31 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
   }
 
   search() {
-    if (this.loading) {
+    if (this.loading()) {
       return;
     }
 
     if (this.criteriaChanged()) {
-      this.searchCriteria.page = 0;
+      this.searchCriteria.update(criteria => ({ ...criteria, page: 0 }));
     }
 
-    this.searchCriteria = {
-      ...this.searchCriteria,
+    this.searchCriteria.update(criteria => ({
+      ...criteria,
       searchFields: {
         title: this.movieSearchForm.get('title')?.value || '',
         person: this.movieSearchForm.get('person')?.value || '',
         genre: this.movieSearchForm.get('genre')?.value || [],
         rating: this.movieSearchForm.get('rating')?.value || []
       }
-    };
+    }));
 
-    this.loading = true;
-    this.cdr.detectChanges();
-    this.store.dispatch(new MovieActions.SearchMovies(this.searchCriteria))
+    this.loading.set(true);
+    this.store.dispatch(new MovieActions.SearchMovies(this.searchCriteria()))
       .pipe(this.takeUntilDestroyed)
       .subscribe({
         error: () => {
-          this.loading = false;
+          this.loading.set(false);
           this.toastService.error('Movie search failed.');
-          this.cdr.detectChanges();
         }
       });
   }
@@ -131,11 +127,11 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
   }
 
   handlePage(event: PageEvent) {
-    this.searchCriteria = {
-      ...this.searchCriteria,
+    this.searchCriteria.update(criteria => ({
+      ...criteria,
       page: event.pageIndex,
       pageSize: event.pageSize
-    }
+    }));
     this.search();
   }
 

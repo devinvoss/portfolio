@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Toast } from '@app/models';
 import { ToastService } from '@app/services';
 import { DestroyableComponent } from '../destroyable/destroyable.component';
@@ -20,18 +20,18 @@ import { MatIcon } from '@angular/material/icon';
       ])
     ])
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIcon]
 })
 export class ToastComponent extends DestroyableComponent implements OnInit {
   private toastService = inject(ToastService);
 
-  items: Toast[] = [];
+  items = signal<Toast[]>([]);
 
   ngOnInit(): void {
     this.toastService.addMessage$.pipe(this.takeUntilDestroyed).subscribe(toast => {
       if (!toast) return;
-      this.items = [...this.items, toast];
+      this.items.update(items => [...items, toast]);
       if (toast.duration !== 0) {
         setTimeout(() => this.removeItem(toast.id), toast.duration);
       }
@@ -43,17 +43,12 @@ export class ToastComponent extends DestroyableComponent implements OnInit {
     });
 
     this.toastService.clearMessages$.pipe(this.takeUntilDestroyed).subscribe(() => {
-      this.items = [];
+      this.items.set([]);
     })
   }
 
   /** Removes the toast by Id. */
   removeItem(toastId: number) {
-    const index = this.items.findIndex(x => x.id === toastId);
-    if (index < 0) return;
-    this.items = [
-      ...this.items.slice(0, index),
-      ...this.items.slice(index+1)
-    ];
+    this.items.update(items => items.filter(x => x.id !== toastId));
   }
 }

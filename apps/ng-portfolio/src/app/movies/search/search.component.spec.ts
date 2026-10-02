@@ -32,13 +32,13 @@ describe('SearchComponent', () => {
 
   it('should stop loading and show an error when the search fails', () => {
     const toastError = jest.spyOn(TestBed.inject(ToastService), 'error');
-    httpTesting.expectOne('api/movie/search').flush({ criteria: component.searchCriteria, results: [] });
+    httpTesting.expectOne('api/movie/search').flush({ criteria: component.searchCriteria(), results: [] });
 
     component.search();
-    expect(component.loading).toBe(true);
+    expect(component.loading()).toBe(true);
     httpTesting.expectOne('api/movie/search').flush('boom', { status: 500, statusText: 'Server Error' });
 
-    expect(component.loading).toBe(false);
+    expect(component.loading()).toBe(false);
     expect(toastError).toHaveBeenCalledWith('Movie search failed.');
   });
 });

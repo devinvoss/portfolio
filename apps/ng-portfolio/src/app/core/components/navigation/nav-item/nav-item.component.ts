@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
   selector: 'dvoss-nav-item',
   templateUrl: './nav-item.component.html',
   styleUrls: ['./nav-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, MatIcon, RouterLink]
 })
 export class NavItemComponent {

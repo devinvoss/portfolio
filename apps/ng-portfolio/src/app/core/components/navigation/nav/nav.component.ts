@@ -12,7 +12,7 @@ import { AsyncPipe } from '@angular/common';
   selector: 'dvoss-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NavItemComponent, AsyncPipe]
 })
 export class NavComponent extends DestroyableComponent {
@@ -35,15 +35,15 @@ export class NavComponent extends DestroyableComponent {
   }
 
   setCurrentRouteTree(routes: INavigation[], url: string): INavigation[] {
-    routes.forEach(route => {
-      route.isActive = (route.route && url.toLocaleLowerCase().indexOf(route.route.toLowerCase()) > -1) ? true : false;
-      if (route.items && route.items.length > 0) {
-        const childRoutes: INavigation[] = this.setCurrentRouteTree(route.items, url);
-        route.isOpen = (childRoutes.filter(x => x.isActive || x.isOpen).length > 0) || route.isActive ? true : false;
-        route.items = [...childRoutes];
+    return routes.map(route => {
+      const isActive = !!route.route && url.toLocaleLowerCase().indexOf(route.route.toLowerCase()) > -1;
+      if (!route.items || route.items.length === 0) {
+        return { ...route, isActive };
       }
-    })
-    return routes;
+      const items = this.setCurrentRouteTree(route.items, url);
+      const isOpen = isActive || items.some(x => x.isActive || x.isOpen);
+      return { ...route, isActive, isOpen, items };
+    });
   }
 
 }

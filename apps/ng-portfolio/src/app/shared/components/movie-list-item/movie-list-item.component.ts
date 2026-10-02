@@ -6,7 +6,7 @@ import { ImagekitioAngularModule } from 'imagekitio-angular';
   selector: 'dvoss-movie-list-item',
   imports: [ImagekitioAngularModule],
   templateUrl: './movie-list-item.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./movie-list-item.component.scss']
 })
 export class MovieListItemComponent {

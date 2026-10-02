@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule  } from '@angular/material/progress-spinner';
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatProgressSpinnerModule]
 })
 export class ButtonComponent {

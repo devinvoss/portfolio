@@ -1,7 +1,7 @@
 <div @fadeIn class="center-container">
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
     <div class="relative w-full max-w-xl p-4 mx-auto mt-2 lg:ml-auto lg:mr-0 bg-dvLightGray-50">
-      <h1 class="mb-4">{{ mode }} Movie</h1>
+      <h1 class="mb-4">{{ mode() }} Movie</h1>
       <form [formGroup]="movieForm" (ngSubmit)="save()">
         <div class="grid grid-cols-2 gap-x-1">
           <mat-form-field class="w-full">
@@ -64,7 +64,7 @@
         <mat-form-field class="w-full">
           <mat-label>Actors</mat-label>
           <mat-chip-grid #actorList aria-label="Actor input">
-            @for (actor of selectedActors; track i; let i = $index) {
+            @for (actor of selectedActors(); track i; let i = $index) {
               <mat-chip-row
                 [removable]="true"
                 (removed)="removeActor(i)">
@@ -96,7 +96,7 @@
           <mat-label>Poster URL</mat-label>
           <input name="imageUrl" matInput type="text" formControlName="imageUrl">
         </mat-form-field>
-        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving" type="submit" (click)="save()">Save</dvoss-button>
+        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving()" type="submit" (click)="save()">Save</dvoss-button>
       </form>
     </div>
     @if (imageUrl$ | async; as imageUrl) {

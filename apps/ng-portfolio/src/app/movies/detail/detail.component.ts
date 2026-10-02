@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService, UserService } from '@app/services';
@@ -18,7 +18,7 @@ import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
   ],
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonComponent, MatIcon, MatChipSet, MatChip, SkeletonLoaderComponent, AsyncPipe, MinutesPipe]
 })
 export class DetailComponent extends DestroyableComponent implements OnInit {
@@ -28,7 +28,7 @@ export class DetailComponent extends DestroyableComponent implements OnInit {
   private toastService = inject(ToastService);
   private userService = inject(UserService);
 
-  movie!: Movie;
+  movie = signal<Movie | undefined>(undefined);
   user$ = this.userService.user$;
 
   ngOnInit(): void {
@@ -36,7 +36,7 @@ export class DetailComponent extends DestroyableComponent implements OnInit {
       const id = params['id'];
       if (id) {
         this.movieService.getMovie(id).subscribe({
-          next: (movie) => this.movie = movie,
+          next: (movie) => this.movie.set(movie),
           error: () => {
             this.toastService.error('Movie not found.');
             this.router.navigate(['/movie']);
@@ -50,6 +50,6 @@ export class DetailComponent extends DestroyableComponent implements OnInit {
   }
 
   editMovie() {
-    this.router.navigate([`/movie/edit/${this.movie.id}`]);
+    this.router.navigate([`/movie/edit/${this.movie()?.id}`]);
   }
 }

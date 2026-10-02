@@ -29,10 +29,10 @@
           }
         </mat-select>
       </mat-form-field>
-      <dvoss-button [class]="'dv-button w-44 h-12 mt-1 rounded-md'" class="w-44" [loading]="loading" type="submit">Search</dvoss-button>
+      <dvoss-button [class]="'dv-button w-44 h-12 mt-1 rounded-md'" class="w-44" [loading]="loading()" type="submit">Search</dvoss-button>
     </div>
   </form>
-  @if (loading) {
+  @if (loading()) {
     <div class="grid grid-cols-4 gap-3 m-1">
       <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
       <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
@@ -41,7 +41,7 @@
     </div>
   }
   @if ($movies | async; as movies) {
-    @if (!loading) {
+    @if (!loading()) {
       <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5">
         @for (movie of movies; track movie.id) {
           <div @trigger class="col-span-4 sm:col-span-2 2xl:col-span-1">
@@ -52,11 +52,11 @@
     }
     <mat-paginator #paginator
       (page)="handlePage($event)"
-      [length]="searchCriteria.totalCount"
-      [pageSize]="searchCriteria.pageSize"
+      [length]="searchCriteria().totalCount"
+      [pageSize]="searchCriteria().pageSize"
       [showFirstLastButtons]="true"
       [pageSizeOptions]="[20, 40]"
-      [pageIndex]="searchCriteria.page"
+      [pageIndex]="searchCriteria().page"
       aria-label="Select page">
     </mat-paginator>
   }

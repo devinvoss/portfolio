@@ -7,7 +7,7 @@
       </button>
       @if (navItem.isOpen) {
         <div>
-          @for (item of navItem.items; track item) {
+          @for (item of navItem.items; track item.name) {
             <dvoss-nav-item [navItem]="item" [level]="nextLevel"></dvoss-nav-item>
           }
         </div>
