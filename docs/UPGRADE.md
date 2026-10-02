@@ -55,7 +55,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
   - API uses `"strict": false` (TS 6 turns strict on by default)
   - `baseUrl` removed; `paths` are relative to the tsconfig that declares them
   - `moduleResolution`: `bundler` (base and frontend), `node16` (CommonJS API and spec configs)
-- **Lint rules turned off on purpose** (`apps/ng-portfolio/eslint.config.mjs`), until the code is migrated: `prefer-standalone`, `prefer-inject`, `prefer-on-push-component-change-detection`.
+- **Lint rules turned off on purpose** (`apps/ng-portfolio/eslint.config.mjs`), until the code is migrated: `prefer-inject`, `prefer-on-push-component-change-detection`.
 - **Tailwind stays on 3.4.** v4 doesn't support Sass, and the styles use `@apply` 34 times across 12 SCSS files.
 - **`@babel/core@^7` declared at the root** so Jest's Babel 7 plugins don't pick up Angular 22's hoisted Babel 8.
 - **Frontend build output stays flat** (`outputPath.browser: ""`), so the Dockerfile and nginx config work unchanged with the esbuild builder.
@@ -73,7 +73,8 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 
 - [ ] NestJS 12, once `@nx/nest` supports it.
 - [x] Fix the 39 pre-existing lint errors. Selector prefix now allows both `portfolio` and `dvoss` (the code uses both); NGXS actions are module exports imported as `* as MovieActions`.
-- [ ] Convert components to standalone (`nx g @angular/core:standalone`), then `bootstrapApplication`; re-enable `prefer-standalone`.
+- [x] Standalone components and `bootstrapApplication` (`main.ts` uses `provideRouter`, `provideStore` + `withNgxsStoragePlugin`, `provideAnimations`). `prefer-standalone` is back on. The lazy `login` and `movies` routes still load NgModules.
+- [ ] Move off `@angular/animations` (`provideAnimations` and the `trigger()` animations are deprecated since Angular 20.2, removal planned for v23) to `animate.enter` / `animate.leave`.
 - [ ] Constructor injection to `inject()` (`nx g @angular/core:inject`); re-enable `prefer-inject`.
 - [ ] Move components to OnPush, then consider zoneless; re-enable the OnPush lint rule.
 - [x] Sass: `@import` replaced with `@use` (and `meta.load-css` in `styles.scss`, to keep the partials after `@tailwind base`); `map-get`/`map_merge` replaced with `sass:map`. Global CSS output is byte-identical.
@@ -107,6 +108,8 @@ Useful environment settings when running Nx from scripts: `NX_DAEMON=false` (the
 - **Leftover `@nrwl/js:node` executor.** The migrations missed the API's `serve` target, so `nx serve api` failed. Renamed to `@nx/js:node`.
 - **`import * as cors` broke at runtime.** The API's `module: node16` implies `esModuleInterop`, so the namespace import wasn't callable (`TypeError: s is not a function` after Nest started). Changed to a default import. Namespace imports that only read properties (`mongoose.Schema`) are fine.
 - **`nx serve api` uses the empty `environment.ts`.** There's no `development` configuration that swaps in `environment.dev.ts`, and this predates the upgrade. Use `--configuration=production` only for a quick boot check; the dev file points at the prod DB too.
+- **`npm run e2e` exits 1 when a dev server is already on port 4200.** It reuses that server (the tests still run and pass), but Nx reports its own serve task as failed.
+- **Standalone migration side effects.** The prune step removed `CoreModule` from `AppModule` while `AppComponent` still needed its components, and the bootstrap step dropped `provideZoneChangeDetection()`. Both fixed by hand.
 - **Dev server cleanup on Windows.** Stopping a background `nx serve` doesn't kill its node/esbuild children. Kill them by command line before the next `npm install`.
 
 ## Commit history (oldest first)

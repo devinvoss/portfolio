@@ -1,15 +1,16 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, withLatestFrom } from 'rxjs';
-import { DestroyableComponent } from './core/components';
+import { DestroyableComponent, HeaderComponent, NavComponent, ToastComponent } from './core/components';
 import { UserService, WindowService } from './services';
+import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
 
 @Component({
   selector: 'portfolio-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+  imports: [HeaderComponent, NavComponent, ToastComponent, MatSidenavContainer, MatSidenav, MatSidenavContent, RouterOutlet]
 })
 export class AppComponent extends DestroyableComponent implements OnInit {
 

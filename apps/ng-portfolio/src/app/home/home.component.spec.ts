@@ -3,7 +3,6 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { HomeModule } from './home.module';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
@@ -12,7 +11,7 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomeModule, NoopAnimationsModule],
+      imports: [HomeComponent, NoopAnimationsModule],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 

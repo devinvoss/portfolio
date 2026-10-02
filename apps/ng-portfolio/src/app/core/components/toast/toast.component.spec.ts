@@ -3,7 +3,6 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { CoreModule } from '../../core.module';
 import { ToastComponent } from './toast.component';
 
 describe('ToastComponent', () => {
@@ -12,7 +11,7 @@ describe('ToastComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CoreModule, NoopAnimationsModule],
+      imports: [ToastComponent, NoopAnimationsModule],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 

@@ -3,7 +3,6 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { CoreModule } from '../../../core.module';
 import { NavItemComponent } from './nav-item.component';
 import { INavigation, NavigationType } from '@app/models';
 
@@ -13,7 +12,7 @@ describe('NavItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CoreModule, NoopAnimationsModule],
+      imports: [NavItemComponent, NoopAnimationsModule],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
