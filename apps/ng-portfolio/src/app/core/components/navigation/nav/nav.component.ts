@@ -19,7 +19,6 @@ export class NavComponent extends DestroyableComponent {
   private userService = inject(UserService);
   private router = inject(Router);
 
-
   userRoutes$: Observable<INavigation[]> = this.userService.getUserRoutes().pipe(this.takeUntilDestroyed);
   navRoutes$: Observable<INavigation[]>;
 

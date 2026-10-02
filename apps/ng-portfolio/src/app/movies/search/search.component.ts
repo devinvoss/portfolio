@@ -55,7 +55,6 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
   private toastService = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
-
   searchCriteria: MovieSearchCriteria = { ...defaultCriteria };
 
   $movies: Observable<Movie[]> = this.store.select(MOVIE_STATE_TOKEN).pipe(

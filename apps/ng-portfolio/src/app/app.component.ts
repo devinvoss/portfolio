@@ -17,7 +17,6 @@ export class AppComponent extends DestroyableComponent implements OnInit {
   private router = inject(Router);
   private userService = inject(UserService);
 
-
   readonly sideNavKey: string = 'dvoss-side-nav';
 
   sideNavMode: 'side' | 'over' = 'side';

@@ -28,7 +28,6 @@ export class DetailComponent extends DestroyableComponent implements OnInit {
   private toastService = inject(ToastService);
   private userService = inject(UserService);
 
-
   movie!: Movie;
   user$ = this.userService.user$;
 
