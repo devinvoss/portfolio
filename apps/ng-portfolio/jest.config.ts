@@ -1,4 +1,3 @@
-/* eslint-disable */
 module.exports = {
   displayName: 'ng-portfolio',
   preset: '../../jest.preset.js',

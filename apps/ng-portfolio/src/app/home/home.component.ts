@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { fadeInAnimation } from '@app/shared/animations';
 
 @Component({
@@ -11,13 +11,6 @@ import { fadeInAnimation } from '@app/shared/animations';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class HomeComponent implements OnInit {
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-
-  }
+export class HomeComponent {
 
 }

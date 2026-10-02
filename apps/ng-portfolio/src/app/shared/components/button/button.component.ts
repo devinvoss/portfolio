@@ -12,11 +12,10 @@ import { MatProgressSpinnerModule  } from '@angular/material/progress-spinner';
 })
 export class ButtonComponent {
 
-  @Input() loading: boolean = false;
-  @Input() type: string = 'button';
-  @Input() class: string = 'dv-button';
-  @Input() disabled: boolean = false;
+  @Input() loading = false;
+  @Input() type = 'button';
+  @Input() class = 'dv-button';
+  @Input() disabled = false;
 
-  constructor() { }
 
 }

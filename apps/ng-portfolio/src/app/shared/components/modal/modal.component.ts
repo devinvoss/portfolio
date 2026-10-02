@@ -16,8 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ModalComponent implements AfterViewInit, OnDestroy {
 
-  @ViewChild(TemplateRef) dialogTemplate!: TemplateRef<any>;
-  @Input() canDismiss: boolean = true;
+  @ViewChild(TemplateRef) dialogTemplate!: TemplateRef<unknown>;
+  @Input() canDismiss = true;
   overlayRef!: OverlayRef;
   portal!: TemplatePortal;
 

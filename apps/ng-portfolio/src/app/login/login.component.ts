@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
-import { ToastService, UserService } from '@app/services';
+import { UserService } from '@app/services';
 
 @Component({
   selector: 'dvoss-login',
@@ -17,7 +17,7 @@ export class LoginComponent extends DestroyableComponent {
     username: ['', [Validators.required]],
     password: ['', [Validators.required]]
   })
-  submitting: boolean = false;
+  submitting = false;
   errorMessage = '';
 
   constructor(

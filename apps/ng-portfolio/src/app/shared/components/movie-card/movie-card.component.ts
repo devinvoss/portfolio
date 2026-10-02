@@ -13,6 +13,5 @@ export class MovieCardComponent {
   @Input() movie!: Movie;
   @Output() movieSelected: EventEmitter<Movie> = new EventEmitter<Movie>();
 
-  constructor() { }
 
 }

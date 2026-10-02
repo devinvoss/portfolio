@@ -9,7 +9,6 @@ import { Movie } from '@portfolio/models';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { fadeInAnimation } from '@app/shared/animations';
-import { map } from 'rxjs';
 
 @Component({
   selector: 'portfolio-editor',
@@ -47,7 +46,7 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
   selectedActors: string[] = [];
-  isSaving: boolean = false;
+  isSaving = false;
 
   imageUrl$ = this.movieForm.controls.imageUrl?.valueChanges.pipe(this.takeUntilDestroyed)
 

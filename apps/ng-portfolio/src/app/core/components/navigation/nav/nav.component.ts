@@ -34,7 +34,7 @@ export class NavComponent extends DestroyableComponent {
     routes.forEach(route => {
       route.isActive = (route.route && url.toLocaleLowerCase().indexOf(route.route.toLowerCase()) > -1) ? true : false;
       if (route.items && route.items.length > 0) {
-        let childRoutes: INavigation[] = this.setCurrentRouteTree(route.items, url);
+        const childRoutes: INavigation[] = this.setCurrentRouteTree(route.items, url);
         route.isOpen = (childRoutes.filter(x => x.isActive || x.isOpen).length > 0) || route.isActive ? true : false;
         route.items = [...childRoutes];
       }

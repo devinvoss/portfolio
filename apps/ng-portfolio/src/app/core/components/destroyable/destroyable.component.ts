@@ -8,12 +8,11 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 })
 export class DestroyableComponent implements OnDestroy {
 
-  private $isAlive = new Subject<any>();
+  private $isAlive = new Subject<void>();
 
-  constructor() { }
 
   ngOnDestroy(): void {
-    this.$isAlive.next(null);
+    this.$isAlive.next();
     this.$isAlive.complete();
   }
 

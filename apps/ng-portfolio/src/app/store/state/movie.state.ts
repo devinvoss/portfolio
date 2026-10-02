@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MovieService } from '@app/services';
 import { StateToken, Action, State, StateContext } from '@ngxs/store';
 import { tap } from 'rxjs';
-import { MovieActions } from '../actions/movie.actions';
+import * as MovieActions from '../actions/movie.actions';
 import { MovieStateModel } from '../models/movie-state.model';
 
 export const MOVIE_STATE_TOKEN = new StateToken<MovieStateModel>('movieState');

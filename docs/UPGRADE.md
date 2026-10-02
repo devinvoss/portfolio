@@ -33,7 +33,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 - `npm test`: 29/29 unit tests pass (23 frontend, 6 API)
 - `npm run build`: both apps build
 - `npm run e2e`: 2/2 Cypress smoke tests pass (API and ImageKit are stubbed)
-- `npm run lint`: **39 errors**, all pre-existing (the same 39 as before the upgrade). See remaining work.
+- `npm run lint`: clean (the 39 pre-existing errors were fixed afterwards)
 - Frontend checked by hand in the browser after the Angular 17, 19 and 22 upgrades (home, movies with posters, search, side nav, login).
 
 **Not verified:**
@@ -72,7 +72,7 @@ From a clean `npm ci` on Node 24.21.0 / npm 11:
 ### Optional follow-ups
 
 - [ ] NestJS 12, once `@nx/nest` supports it.
-- [ ] Fix the 39 pre-existing lint errors (`no-inferrable-types`, selector prefix `dvoss-` vs `portfolio-`, empty constructors, `no-explicit-any`, ...).
+- [x] Fix the 39 pre-existing lint errors. Selector prefix now allows both `portfolio` and `dvoss` (the code uses both); NGXS actions are module exports imported as `* as MovieActions`.
 - [ ] Convert components to standalone (`nx g @angular/core:standalone`), then `bootstrapApplication`; re-enable `prefer-standalone`.
 - [ ] Constructor injection to `inject()` (`nx g @angular/core:inject`); re-enable `prefer-inject`.
 - [ ] Move components to OnPush, then consider zoneless; re-enable the OnPush lint rule.

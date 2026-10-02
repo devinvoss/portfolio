@@ -9,7 +9,7 @@ import { OnInit } from '@angular/core';
 import { DestroyableComponent } from '@app/core/components';
 import { Store } from '@ngxs/store';
 import { MOVIE_STATE_TOKEN } from '@app/store/state/movie.state';
-import { MovieActions } from '@app/store/actions/movie.actions';
+import * as MovieActions from '@app/store/actions/movie.actions';
 import { PageEvent } from '@angular/material/paginator';
 
 export const defaultCriteria: MovieSearchCriteria = {
@@ -149,7 +149,7 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
     return false;
   }
 
-  arraysHaveSameValues(a: any[], b: any[]): boolean {
+  arraysHaveSameValues(a: unknown[], b: unknown[]): boolean {
     if (a.length !== b.length) {
       return false;
     }

@@ -12,6 +12,5 @@ export class SkeletonLoaderComponent {
   /** Options: 'card' | 'text' | 'paragraph' | 'profile'. Defaults to 'card'. */
   @Input() type: 'card' | 'text' | 'paragraph' | 'profile' = 'card';
 
-  constructor() { }
 
 }

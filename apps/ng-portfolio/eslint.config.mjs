@@ -15,7 +15,7 @@ export default [
         'error',
         {
           type: 'attribute',
-          prefix: 'portfolio',
+          prefix: ['portfolio', 'dvoss'],
           style: 'camelCase',
         },
       ],
@@ -23,7 +23,7 @@ export default [
         'error',
         {
           type: 'element',
-          prefix: 'portfolio',
+          prefix: ['portfolio', 'dvoss'],
           style: 'kebab-case',
         },
       ],

@@ -21,11 +21,10 @@ export class NavItemComponent {
     return this._level;
   }
 
-  private _level: number = 0;
+  private _level = 0;
   nextLevel = 0;
   navType = NavigationType;
 
-  constructor() { }
 
   toggleNav() {
     this.navItem.isOpen = !this.navItem.isOpen;

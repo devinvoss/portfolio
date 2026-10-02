@@ -11,7 +11,7 @@ import { UserService } from '@app/services';
 })
 export class HeaderComponent {
 
-  @Output() toggleSideNav: EventEmitter<any> = new EventEmitter<any>();
+  @Output() toggleSideNav: EventEmitter<void> = new EventEmitter<void>();
 
   user$ = this.userService.user$;
 
