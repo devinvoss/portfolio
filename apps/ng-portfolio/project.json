@@ -16,7 +16,6 @@
           "browser": ""
         },
         "index": "apps/ng-portfolio/src/index.html",
-        "polyfills": ["zone.js"],
         "tsConfig": "apps/ng-portfolio/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [

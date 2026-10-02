@@ -1,10 +1,10 @@
-import { provideZoneChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { provideStore } from '@ngxs/store';
+import { provideStore, withNgxsNoopExecutionStrategy } from '@ngxs/store';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { environment } from '@env';
 
@@ -15,13 +15,14 @@ import { MovieState } from './app/store/state/movie.state';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimations(),
     provideStore(
       [MovieState],
       { developmentMode: !environment.production },
-      withNgxsStoragePlugin({ keys: '*' })
+      withNgxsStoragePlugin({ keys: '*' }),
+      withNgxsNoopExecutionStrategy()
     ),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
     httpInterceptorProviders,

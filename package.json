@@ -42,8 +42,7 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.0.0",
-    "tslib": "^2.3.0",
-    "zone.js": "0.16.3"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/architect": "0.2202.1",
