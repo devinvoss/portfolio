@@ -1,10 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { INavigation, NavigationType } from '@app/models';
+import { NgClass } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'dvoss-nav-item',
   templateUrl: './nav-item.component.html',
-  styleUrls: ['./nav-item.component.scss']
+  styleUrls: ['./nav-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgClass, MatIcon, RouterLink]
 })
 export class NavItemComponent {
 
@@ -19,11 +24,10 @@ export class NavItemComponent {
     return this._level;
   }
 
-  private _level: number = 0;
+  private _level = 0;
   nextLevel = 0;
   navType = NavigationType;
 
-  constructor() { }
 
   toggleNav() {
     this.navItem.isOpen = !this.navItem.isOpen;

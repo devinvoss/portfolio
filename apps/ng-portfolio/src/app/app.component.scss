@@ -1,4 +1,4 @@
-@import '../styles/global/colors.scss';
+@use '../styles/global/colors' as *;
 
 .main-container {
   @apply bg-white absolute left-0 right-0;

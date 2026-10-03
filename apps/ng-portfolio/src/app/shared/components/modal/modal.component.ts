@@ -1,36 +1,34 @@
-import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Overlay, OverlayRef} from '@angular/cdk/overlay';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'dvoss-modal',
-  standalone: true,
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatIconModule,
     DragDropModule
   ]
 })
 export class ModalComponent implements AfterViewInit, OnDestroy {
+  private overlay = inject(Overlay);
+  private vcr = inject(ViewContainerRef);
 
-  @ViewChild(TemplateRef) dialogTemplate!: TemplateRef<any>;
-  @Input() canDismiss: boolean = true;
+  @ViewChild(TemplateRef) dialogTemplate!: TemplateRef<unknown>;
+  @Input() canDismiss = true;
   overlayRef!: OverlayRef;
   portal!: TemplatePortal;
-
-  constructor(private overlay: Overlay, private vcr: ViewContainerRef) { }
 
   ngAfterViewInit(): void {
     this.portal = new TemplatePortal(this.dialogTemplate, this.vcr);
   }
 
   ngOnDestroy(): void {
-    if (!this.overlay) return;
+    if (!this.overlayRef) return;
     this.overlayRef.dispose();
   }
 

@@ -1,17 +1,17 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DestroyableComponent implements OnDestroy {
 
-  private $isAlive = new Subject<any>();
+  private $isAlive = new Subject<void>();
 
-  constructor() { }
 
   ngOnDestroy(): void {
-    this.$isAlive.next(null);
+    this.$isAlive.next();
     this.$isAlive.complete();
   }
 

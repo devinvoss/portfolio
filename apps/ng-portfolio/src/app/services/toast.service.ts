@@ -6,23 +6,22 @@ import { IToast, Toast } from '../models/toast.model';
   providedIn: 'root'
 })
 export class ToastService {
-  private id: number = 0;
+  private id = 0;
 
   /** Pushes a Toast to be added. */
   addMessage$: ReplaySubject<Toast> = new ReplaySubject<Toast>();
   /** Pushes a Toast Id to be removed. */
   removeMessage$: ReplaySubject<number> = new ReplaySubject<number>();
   /** Request for all messages to be cleared. */
-  clearMessages$: ReplaySubject<any> = new ReplaySubject<any>();
+  clearMessages$: ReplaySubject<void> = new ReplaySubject<void>();
 
-  constructor() { }
 
   /** Creates a toast message.
    * @param message Message to be displayed.
    * @param title Title of the message.
    * @param duration Numeric value in milliseconds determining how long the message will be visible.
    */
-  success(message: string, title: string = '', duration: number = 10000): Toast {
+  success(message: string, title = '', duration = 10000): Toast {
     const toast: IToast = {
       title,
       message,
@@ -38,7 +37,7 @@ export class ToastService {
    * @param title Title of the message.
    * @param duration Numeric value in milliseconds determining how long the message will be visible.
    */
-   warning(message: string, title: string = '', duration: number = 10000): Toast {
+   warning(message: string, title = '', duration = 10000): Toast {
     const toast: IToast = {
       title,
       message,
@@ -54,7 +53,7 @@ export class ToastService {
    * @param title Title of the message.
    * @param duration Numeric value in milliseconds determining how long the message will be visible.
    */
-  error(message: string, title: string = '', duration: number = 10000): Toast {
+  error(message: string, title = '', duration = 10000): Toast {
     const toast: IToast = {
       title,
       message,
@@ -70,7 +69,7 @@ export class ToastService {
    * @param title Title of the message.
    * @param duration Numeric value in milliseconds determining how long the message will be visible.
    */
-   info(message: string, title: string = '', duration: number = 10000): Toast {
+   info(message: string, title = '', duration = 10000): Toast {
     const toast: IToast = {
       title,
       message,
@@ -88,7 +87,7 @@ export class ToastService {
 
   /** Clear all messages. */
   clear() {
-    this.clearMessages$.next(null);
+    this.clearMessages$.next();
   }
 
   /** Create a message. */

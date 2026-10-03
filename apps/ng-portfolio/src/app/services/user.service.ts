@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, map } from 'rxjs';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 import { INavigation, LoginResponse, NavigationType, User } from '../models';
 import { CookieService } from './cookie.service';
@@ -14,6 +14,9 @@ import { Constants } from '@app/shared/common/constants';
   providedIn: 'root'
 })
 export class UserService {
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private cookieService = inject(CookieService);
 
   readonly unauthenticatedRoutes = <INavigation[]>[
     {
@@ -75,11 +78,6 @@ export class UserService {
 
   user$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
-  constructor(private router: Router,
-    private http: HttpClient,
-    private cookieService: CookieService
-  ) { }
-
   getUserRoutes(): Observable<INavigation[]> {
     return this.user$.pipe(
       map(user => {
@@ -91,7 +89,7 @@ export class UserService {
   loadUserInfo() {
     const token = this.cookieService.getCookie(Constants.ACCESS_TOKEN);
     if (token) {
-      this.userInfo = <User>jwt_decode(token);
+      this.userInfo = jwtDecode<User>(token);
     }
   }
 
@@ -99,7 +97,7 @@ export class UserService {
     return this.http.post<LoginResponse>('api/auth/login', { username, password }).pipe(
       map((res: LoginResponse) => {
         this.cookieService.setCookie(Constants.ACCESS_TOKEN, res.access_token, 1);
-        this.userInfo = <User>jwt_decode(res.access_token);
+        this.userInfo = jwtDecode<User>(res.access_token);
         return this.userInfo;
       })
     );

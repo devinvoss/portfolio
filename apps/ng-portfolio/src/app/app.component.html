@@ -1,6 +1,6 @@
 <dvoss-header (toggleSideNav)="toggleSideNav()"></dvoss-header>
 <mat-sidenav-container [hasBackdrop]="false" class="main-container">
-  <mat-sidenav #sideNav [mode]="sideNavMode" class="side-nav" [opened]="sideNavIsOpen">
+  <mat-sidenav #sideNav [mode]="sideNavMode()" class="side-nav" [opened]="sideNavIsOpen()">
     <dvoss-nav></dvoss-nav>
   </mat-sidenav>
   <mat-sidenav-content>

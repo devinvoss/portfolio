@@ -8,7 +8,7 @@ describe('SkeletonLoaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SkeletonLoaderComponent ]
+      imports: [ SkeletonLoaderComponent ]
     })
     .compileComponents();
 

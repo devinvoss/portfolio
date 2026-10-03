@@ -39,7 +39,18 @@ testem.log
 Thumbs.db
 
 .angular
+
+# Nx cache
+.nx/cache
+.nx/workspace-data
 apps/api/src/environments/environment.prod.ts
 apps/api/src/environments/environment.dev.ts
 apps/ng-portfolio/src/environments/environment.dev.ts
 apps/ng-portfolio/src/environments/environment.prod.ts
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+.claude/worktrees
+.nx/polygraph
+.nx/self-healing
+.nx/migrate-runs

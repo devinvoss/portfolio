@@ -4,7 +4,7 @@ WORKDIR /app/builder
 COPY . .
 RUN npx nx build ng-portfolio --configuration=production
 
-FROM nginx:1.23.3-alpine
+FROM nginx:1.30.5-alpine
 
 WORKDIR /usr/share/nginx/html
 

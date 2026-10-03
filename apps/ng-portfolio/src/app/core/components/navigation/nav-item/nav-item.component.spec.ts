@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { provideHttpClient, withXhr } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { NavItemComponent } from './nav-item.component';
+import { INavigation, NavigationType } from '@app/models';
 
 describe('NavItemComponent', () => {
   let component: NavItemComponent;
@@ -8,14 +11,13 @@ describe('NavItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NavItemComponent ]
-    })
-    .compileComponents();
-  });
+      imports: [NavItemComponent],
+      providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(NavItemComponent);
     component = fixture.componentInstance;
+    component.navItem = { name: 'Home', route: 'home', type: NavigationType.Internal } as INavigation;
     fixture.detectChanges();
   });
 

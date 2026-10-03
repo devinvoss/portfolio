@@ -1,9 +1,11 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
+@use 'sass:map';
 @use '@angular/material' as mat;
 // Plus imports for other components in your app.
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 $md-primary-light: (
   50 : #e8ece9,
@@ -72,13 +74,13 @@ $md-accent-light: (
 );
 
 
-$ng-portfolio-primary: mat.define-palette($md-primary-light);
-$ng-portfolio-accent: mat.define-palette($md-accent-light);
-$ng-portfolio-warn: mat.define-palette(mat.$red-palette);
+$ng-portfolio-primary: mat.m2-define-palette($md-primary-light);
+$ng-portfolio-accent: mat.m2-define-palette($md-accent-light);
+$ng-portfolio-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$ng-portfolio-theme: mat.define-light-theme((
+$ng-portfolio-theme: mat.m2-define-light-theme((
   color: (
     primary: $ng-portfolio-primary,
     accent: $ng-portfolio-accent,
@@ -86,7 +88,7 @@ $ng-portfolio-theme: mat.define-light-theme((
   )
 ));
 
-$ng-portfolio-theme-dark: mat.define-dark-theme((
+$ng-portfolio-theme-dark: mat.m2-define-dark-theme((
   color: (
     primary: $ng-portfolio-primary,
     accent: $ng-portfolio-accent,
@@ -95,11 +97,11 @@ $ng-portfolio-theme-dark: mat.define-dark-theme((
 ));
 
 $custom-background-color: #F5F5F5;
-$theme-colors: map-get($ng-portfolio-theme, color);
-$background: map-get($theme-colors, background);
-$background: map_merge($background, (background: $custom-background-color));
-$theme-colors: map_merge($theme-colors, (background: $background));
-$ng-portfolio-theme: map_merge($ng-portfolio-theme, (color: $ng-portfolio-theme));
+$theme-colors: map.get($ng-portfolio-theme, color);
+$background: map.get($theme-colors, background);
+$background: map.merge($background, (background: $custom-background-color));
+$theme-colors: map.merge($theme-colors, (background: $background));
+$ng-portfolio-theme: map.merge($ng-portfolio-theme, (color: $ng-portfolio-theme));
 
 
 // Include theme styles for core and each component used in your app.

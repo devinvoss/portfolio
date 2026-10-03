@@ -23,7 +23,6 @@ import { ImagekitioAngularModule } from 'imagekitio-angular';
 import { environment } from '../../environments/environment';
 
 @NgModule({
-  declarations: [DetailComponent, SearchComponent, EditorComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -42,7 +41,8 @@ import { environment } from '../../environments/environment';
     ImagekitioAngularModule.forRoot({
       publicKey: environment.ik_publicKey,
       urlEndpoint: environment.ik_urlEndpoint
-    })
+    }),
+    DetailComponent, SearchComponent, EditorComponent
   ],
 })
 export class MoviesModule {}

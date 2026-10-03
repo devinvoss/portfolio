@@ -10,9 +10,6 @@ import { LoginRoutingModule } from './login-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    LoginComponent
-  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -20,7 +17,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     LoginRoutingModule,
     MatInputModule,
     MatFormFieldModule,
-    ButtonComponent
+    ButtonComponent,
+    LoginComponent
   ],
   exports: [
     LoginComponent

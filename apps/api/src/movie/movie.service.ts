@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Movie, MovieSearch, MovieSearchFields, MovieSortFields } from '@portfolio/models';
-import { FilterQuery, Model } from 'mongoose';
+import { Model, QueryFilter } from 'mongoose';
 import ImageKit = require('imagekit');
 import { environment } from '../environments/environment';
 
@@ -55,7 +55,7 @@ export class MovieService {
   }
 
   private buildSearchFilter(fields: MovieSearchFields) {
-    let filter: FilterQuery<Movie> = {};
+    let filter: QueryFilter<Movie> = {};
     if (!fields) {
       return filter;
     }

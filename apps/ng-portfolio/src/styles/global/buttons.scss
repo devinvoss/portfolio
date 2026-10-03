@@ -1,4 +1,4 @@
-@import './colors.scss';
+@use './colors' as *;
 
 .dv-button {
   @apply text-white py-1 px-4 dark:bg-dvDarkGray-50 dark:text-white relative;

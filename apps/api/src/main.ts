@@ -5,7 +5,7 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import * as cors from 'cors';
+import cors from 'cors';
 
 import { AppModule } from './app/app.module';
 

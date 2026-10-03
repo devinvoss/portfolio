@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService } from '@app/services';
@@ -7,21 +7,29 @@ import { EditorMode } from '@app/shared/common/enums';
 import { Movie } from '@portfolio/models';
 
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { fadeInAnimation } from '@app/shared/animations';
-import { map } from 'rxjs';
+import { MatChipInputEvent, MatChipGrid, MatChipRow, MatChipRemove, MatChipInput } from '@angular/material/chips';
+import { MatFormField, MatLabel, MatInput } from '@angular/material/input';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'portfolio-editor',
-  animations: [
-    fadeInAnimation()
-  ],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatChipInput, CdkTextareaAutosize, ButtonComponent, AsyncPipe]
 })
 export class EditorComponent extends DestroyableComponent implements OnInit {
+  private movieService = inject(MovieService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
 
-  mode: EditorMode = EditorMode.ADD;
+  mode = signal(EditorMode.ADD);
   movieId = '';
 
   movieForm = this.fb.group({
@@ -44,38 +52,28 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
   yearRange = this.movieService.getCurrentMovieYears();
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  selectedActors: string[] = [];
-  isSaving: boolean = false;
+  selectedActors = signal<string[]>([]);
+  isSaving = signal(false);
 
   imageUrl$ = this.movieForm.controls.imageUrl?.valueChanges.pipe(this.takeUntilDestroyed)
-
-  constructor(
-    private movieService: MovieService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private fb: FormBuilder,
-    private toastService: ToastService) {
-    super();
-  }
 
   ngOnInit(): void {
     this.route.params.pipe(this.takeUntilDestroyed).subscribe(params => {
       const id = params['id'];
       if (id) {
-        this.mode = EditorMode.EDIT;
+        this.mode.set(EditorMode.EDIT);
         this.movieService.getMovie(id).pipe(this.takeUntilDestroyed).subscribe(movie => {
           this.movieId = movie.id;
           this.populateMovieForm(movie);
         });
       } else {
-        this.mode = EditorMode.ADD;
+        this.mode.set(EditorMode.ADD);
       }
     })
   }
 
   removeActor(index: number) {
-    this.selectedActors.splice(index, 1);
-    this.selectedActors = [...this.selectedActors];
+    this.selectedActors.update(actors => actors.filter((_, i) => i !== index));
   }
 
   addActor(event: MatChipInputEvent) {
@@ -83,46 +81,46 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
     const value = event.value.trim();
 
     if (value) {
-      this.selectedActors = [...this.selectedActors, value]
+      this.selectedActors.update(actors => [...actors, value]);
     }
 
     input.value = '';
   }
   
   save() {
-    if (this.isSaving) {
+    if (this.isSaving()) {
       return;
     }
     
-    this.isSaving = true;
+    this.isSaving.set(true);
 
-    if (this.mode === EditorMode.ADD) {
+    if (this.mode() === EditorMode.ADD) {
       this.movieService.addMovie(this.getMovieFromForm())
         .pipe(this.takeUntilDestroyed)
       .subscribe({
         next: (res) => {
-          this.isSaving = false;
+          this.isSaving.set(false);
           this.toastService.success(`${res.title} successfully added.`);
           this.router.navigateByUrl(`movie/detail/${res.id}`);
         },
         error: () => {
-          this.isSaving = false;
+          this.isSaving.set(false);
           this.toastService.error('Add Movie Failed');
         }
       })
     }
 
-    if (this.mode === EditorMode.EDIT) {
+    if (this.mode() === EditorMode.EDIT) {
       this.movieService.updateMovie(this.getMovieFromForm())
         .pipe(this.takeUntilDestroyed)
       .subscribe({
         next: (res) => {
-          this.isSaving = false;
+          this.isSaving.set(false);
           this.toastService.success(`${res.title} successfully updated.`);
           this.router.navigateByUrl(`movie/detail/${res.id}`);
         },
         error: () => {
-          this.isSaving = false;
+          this.isSaving.set(false);
           this.toastService.error('Update Movie Failed');
         }
       })
@@ -130,7 +128,7 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
   }
 
   private populateMovieForm(movie: Movie) {
-    this.selectedActors = movie.actors;
+    this.selectedActors.set(movie.actors);
     this.movieForm.patchValue({
       title: movie.title,
       year: movie.year,
@@ -153,7 +151,7 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
       year: form.year,
       rating: form.rating,
       genre: form.genre,
-      actors: this.selectedActors,
+      actors: this.selectedActors(),
       director: form.director,
       synopsis: form.synopsis,
       notes: form.notes,

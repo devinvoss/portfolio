@@ -1,3 +1,5 @@
 <div class="nav-container">
-  <dvoss-nav-item *ngFor="let item of navRoutes$ | async" class="w-full" [navItem]="item" [level]="0"></dvoss-nav-item>
+  @for (item of navRoutes$ | async; track item.name) {
+    <dvoss-nav-item class="w-full" [navItem]="item" [level]="0"></dvoss-nav-item>
+  }
 </div>

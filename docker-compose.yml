@@ -24,7 +24,7 @@ services:
     build:
       context: ./
       cache_from:
-        - nginx:1.23.3-alpine
+        - nginx:1.30.5-alpine
       dockerfile: ./apps/ng-portfolio/Dockerfile
     image: ng-portfolio
     ports:
