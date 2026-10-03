@@ -1,7 +1,6 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DestroyableComponent } from '@app/core/components';
 import { UserService } from '@app/services';
 import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
 import { ButtonComponent } from '../shared/components/button/button.component';
@@ -10,10 +9,9 @@ import { ButtonComponent } from '../shared/components/button/button.component';
   selector: 'dvoss-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, ButtonComponent]
 })
-export class LoginComponent extends DestroyableComponent {
+export class LoginComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private userService = inject(UserService);

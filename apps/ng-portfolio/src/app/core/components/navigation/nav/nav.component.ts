@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { filter, map, mergeMap, Observable } from 'rxjs';
 
-import { DestroyableComponent } from '../../destroyable/destroyable.component';
 import { INavigation } from '@app/models';
 import { UserService } from '@app/services';
 import { NavItemComponent } from '../nav-item/nav-item.component';
@@ -12,27 +12,20 @@ import { AsyncPipe } from '@angular/common';
   selector: 'dvoss-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NavItemComponent, AsyncPipe]
 })
-export class NavComponent extends DestroyableComponent {
+export class NavComponent {
   private userService = inject(UserService);
   private router = inject(Router);
 
-  userRoutes$: Observable<INavigation[]> = this.userService.getUserRoutes().pipe(this.takeUntilDestroyed);
-  navRoutes$: Observable<INavigation[]>;
-
-  constructor() {
-    super();
-
-    this.navRoutes$ = this.router.events.pipe(
-      this.takeUntilDestroyed,
-      filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd),
-      mergeMap((ne: NavigationEnd) => this.userRoutes$.pipe(
-        map(routes => this.setCurrentRouteTree(routes, ne.urlAfterRedirects))
-      ))
-    );
-  }
+  userRoutes$: Observable<INavigation[]> = this.userService.getUserRoutes().pipe(takeUntilDestroyed());
+  navRoutes$: Observable<INavigation[]> = this.router.events.pipe(
+    filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd),
+    mergeMap((ne: NavigationEnd) => this.userRoutes$.pipe(
+      map(routes => this.setCurrentRouteTree(routes, ne.urlAfterRedirects))
+    )),
+    takeUntilDestroyed()
+  );
 
   setCurrentRouteTree(routes: INavigation[], url: string): INavigation[] {
     return routes.map(route => {

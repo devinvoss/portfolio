@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Movie } from '@portfolio/models';
 import { ImagekitioAngularModule } from 'imagekitio-angular';
 
@@ -6,7 +6,6 @@ import { ImagekitioAngularModule } from 'imagekitio-angular';
   selector: 'dvoss-movie-list-item',
   imports: [ImagekitioAngularModule],
   templateUrl: './movie-list-item.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./movie-list-item.component.scss']
 })
 export class MovieListItemComponent {

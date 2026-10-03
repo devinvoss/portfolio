@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { INavigation, NavigationType } from '@app/models';
 import { NgClass } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
@@ -8,7 +8,6 @@ import { RouterLink } from '@angular/router';
   selector: 'dvoss-nav-item',
   templateUrl: './nav-item.component.html',
   styleUrls: ['./nav-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, MatIcon, RouterLink]
 })
 export class NavItemComponent {
