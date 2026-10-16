@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { MatProgressSpinnerModule  } from '@angular/material/progress-spinner';
 
 @Component({
@@ -7,7 +7,6 @@ import { MatProgressSpinnerModule  } from '@angular/material/progress-spinner';
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatProgressSpinnerModule]
 })
 export class ButtonComponent {

@@ -1,11 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { Movie, MovieSearchCriteria } from '@portfolio/models';
 import { MovieService, ToastService } from '@app/services';
 import { map, Observable, tap } from 'rxjs';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OnInit } from '@angular/core';
-import { DestroyableComponent } from '@app/core/components';
 import { Store } from '@ngxs/store';
 import { MOVIE_STATE_TOKEN } from '@app/store/state/movie.state';
 import * as MovieActions from '@app/store/actions/movie.actions';
@@ -35,27 +35,27 @@ export const defaultCriteria: MovieSearchCriteria = {
   selector: 'portfolio-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, ButtonComponent, SkeletonLoaderComponent, MovieListItemComponent, MatPaginator, AsyncPipe]
 })
-export class SearchComponent extends DestroyableComponent implements OnInit {
+export class SearchComponent implements OnInit {
   private movieService = inject(MovieService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private store = inject(Store);
   private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   searchCriteria = signal<MovieSearchCriteria>({ ...defaultCriteria });
 
   $movies: Observable<Movie[]> = this.store.select(MOVIE_STATE_TOKEN).pipe(
-    this.takeUntilDestroyed,
     tap((data) => {
       this.loading.set(false);
       if (data.lastSearchCriteria) {
         this.searchCriteria.set({ ...data.lastSearchCriteria });
       }
     }),
-    map(x => x.searchResults)
+    map(x => x.searchResults),
+    takeUntilDestroyed()
   );
 
   ratingOptions = this.movieService.getRatingOptions();
@@ -104,7 +104,7 @@ export class SearchComponent extends DestroyableComponent implements OnInit {
 
     this.loading.set(true);
     this.store.dispatch(new MovieActions.SearchMovies(this.searchCriteria()))
-      .pipe(this.takeUntilDestroyed)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         error: () => {
           this.loading.set(false);

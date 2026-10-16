@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, withLatestFrom } from 'rxjs';
-import { DestroyableComponent, HeaderComponent, NavComponent, ToastComponent } from './core/components';
+import { HeaderComponent, NavComponent, ToastComponent } from './core/components';
 import { UserService, WindowService } from './services';
 import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
 
@@ -9,13 +10,13 @@ import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/mat
   selector: 'portfolio-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [HeaderComponent, NavComponent, ToastComponent, MatSidenavContainer, MatSidenav, MatSidenavContent, RouterOutlet]
 })
-export class AppComponent extends DestroyableComponent implements OnInit {
+export class AppComponent implements OnInit {
   private windowService = inject(WindowService);
   private router = inject(Router);
   private userService = inject(UserService);
+  private destroyRef = inject(DestroyRef);
 
   readonly sideNavKey: string = 'dvoss-side-nav';
 
@@ -23,20 +24,21 @@ export class AppComponent extends DestroyableComponent implements OnInit {
   sideNavIsOpen = signal(true);
 
   navigationEnd$ = this.router.events.pipe(
-    this.takeUntilDestroyed,
-    filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+    filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+    takeUntilDestroyed()
   );
 
   ngOnInit(): void {
     this.windowService.isPhoneOrTablet$.pipe(
-      this.takeUntilDestroyed,
-      map(result => result ? 'over' : 'side')
+      map(result => result ? 'over' : 'side'),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(mode => this.sideNavMode.set(mode));
 
     // If a user navigates on mobile, close the side menu
     this.navigationEnd$.pipe(
       withLatestFrom(this.windowService.isPhone$),
-      map(([, isPhone]) => isPhone)
+      map(([, isPhone]) => isPhone),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(isPhone => {
       if (isPhone && this.sideNavIsOpen()) {
         this.toggleSideNav();

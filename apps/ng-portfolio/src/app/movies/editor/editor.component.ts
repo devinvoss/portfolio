@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService } from '@app/services';
 import { EditorMode } from '@app/shared/common/enums';
 import { Movie } from '@portfolio/models';
@@ -19,15 +19,15 @@ import { AsyncPipe } from '@angular/common';
   selector: 'portfolio-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatChipInput, CdkTextareaAutosize, ButtonComponent, AsyncPipe]
 })
-export class EditorComponent extends DestroyableComponent implements OnInit {
+export class EditorComponent implements OnInit {
   private movieService = inject(MovieService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   mode = signal(EditorMode.ADD);
   movieId = '';
@@ -55,14 +55,14 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
   selectedActors = signal<string[]>([]);
   isSaving = signal(false);
 
-  imageUrl$ = this.movieForm.controls.imageUrl?.valueChanges.pipe(this.takeUntilDestroyed)
+  imageUrl$ = this.movieForm.controls.imageUrl?.valueChanges.pipe(takeUntilDestroyed());
 
   ngOnInit(): void {
-    this.route.params.pipe(this.takeUntilDestroyed).subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const id = params['id'];
       if (id) {
         this.mode.set(EditorMode.EDIT);
-        this.movieService.getMovie(id).pipe(this.takeUntilDestroyed).subscribe(movie => {
+        this.movieService.getMovie(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(movie => {
           this.movieId = movie.id;
           this.populateMovieForm(movie);
         });
@@ -96,7 +96,7 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
 
     if (this.mode() === EditorMode.ADD) {
       this.movieService.addMovie(this.getMovieFromForm())
-        .pipe(this.takeUntilDestroyed)
+        .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
           this.isSaving.set(false);
@@ -112,7 +112,7 @@ export class EditorComponent extends DestroyableComponent implements OnInit {
 
     if (this.mode() === EditorMode.EDIT) {
       this.movieService.updateMovie(this.getMovieFromForm())
-        .pipe(this.takeUntilDestroyed)
+        .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
           this.isSaving.set(false);

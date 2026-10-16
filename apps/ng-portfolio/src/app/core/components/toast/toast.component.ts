@@ -1,23 +1,23 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Toast } from '@app/models';
 import { ToastService } from '@app/services';
-import { DestroyableComponent } from '../destroyable/destroyable.component';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'dvoss-toast',
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIcon]
 })
-export class ToastComponent extends DestroyableComponent implements OnInit {
+export class ToastComponent implements OnInit {
   private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   items = signal<Toast[]>([]);
 
   ngOnInit(): void {
-    this.toastService.addMessage$.pipe(this.takeUntilDestroyed).subscribe(toast => {
+    this.toastService.addMessage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(toast => {
       if (!toast) return;
       this.items.update(items => [...items, toast]);
       if (toast.duration !== 0) {
@@ -25,12 +25,12 @@ export class ToastComponent extends DestroyableComponent implements OnInit {
       }
     });
 
-    this.toastService.removeMessage$.pipe(this.takeUntilDestroyed).subscribe(id => {
+    this.toastService.removeMessage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(id => {
       if (!id) return;
       this.removeItem(id);
     });
 
-    this.toastService.clearMessages$.pipe(this.takeUntilDestroyed).subscribe(() => {
+    this.toastService.clearMessages$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.items.set([]);
     })
   }

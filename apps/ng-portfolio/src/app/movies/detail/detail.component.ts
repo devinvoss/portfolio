@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '@app/core/components';
 import { MovieService, ToastService, UserService } from '@app/services';
 import { Movie } from '@portfolio/models';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -14,24 +14,24 @@ import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
   selector: 'portfolio-detail',
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonComponent, MatIcon, MatChipSet, MatChip, SkeletonLoaderComponent, AsyncPipe, MinutesPipe]
 })
-export class DetailComponent extends DestroyableComponent implements OnInit {
+export class DetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
   private router = inject(Router);
   private toastService = inject(ToastService);
   private userService = inject(UserService);
+  private destroyRef = inject(DestroyRef);
 
   movie = signal<Movie | undefined>(undefined);
   user$ = this.userService.user$;
 
   ngOnInit(): void {
-    this.route.params.pipe(this.takeUntilDestroyed).subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const id = params['id'];
       if (id) {
-        this.movieService.getMovie(id).subscribe({
+        this.movieService.getMovie(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: (movie) => this.movie.set(movie),
           error: () => {
             this.toastService.error('Movie not found.');

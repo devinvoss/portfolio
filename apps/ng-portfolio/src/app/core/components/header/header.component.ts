@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '@app/services';
 import { MatToolbar } from '@angular/material/toolbar';
@@ -10,7 +10,6 @@ import { AsyncPipe } from '@angular/common';
   selector: 'dvoss-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatToolbar, ButtonComponent, MatIcon, AsyncPipe]
 })
 export class HeaderComponent {

@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'dvoss-skeleton-loader',
-  standalone: true,
   templateUrl: './skeleton-loader.component.html',
-  styleUrls: ['./skeleton-loader.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./skeleton-loader.component.scss']
 })
 export class SkeletonLoaderComponent {
 
