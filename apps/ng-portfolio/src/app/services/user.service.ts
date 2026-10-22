@@ -1,14 +1,12 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, DOCUMENT } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, catchError, map, of, shareReplay, tap } from 'rxjs';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import { jwtDecode } from 'jwt-decode';
+import { SessionResponse, SessionUser, SsoProvider } from '@portfolio/models';
 
-import { INavigation, LoginResponse, NavigationType, User } from '../models';
-import { CookieService } from './cookie.service';
-import { Constants } from '@app/shared/common/constants';
+import { INavigation, NavigationType } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +14,7 @@ import { Constants } from '@app/shared/common/constants';
 export class UserService {
   private router = inject(Router);
   private http = inject(HttpClient);
-  private cookieService = inject(CookieService);
+  private document = inject(DOCUMENT);
 
   readonly unauthenticatedRoutes = <INavigation[]>[
     {
@@ -31,7 +29,23 @@ export class UserService {
     }
   ];
 
-  readonly authenticatedRoutes = <INavigation[]>[
+  readonly memberRoutes = <INavigation[]>[
+    ...this.unauthenticatedRoutes,
+    {
+      route: 'account',
+      type: NavigationType.Internal,
+      name: 'Account'
+    },
+    {
+      name: 'Log Out',
+      type: NavigationType.Action,
+      action: () => {
+        this.logout();
+      }
+    }
+  ];
+
+  readonly adminRoutes = <INavigation[]>[
     {
       route: 'home',
       type: NavigationType.Internal,
@@ -62,51 +76,71 @@ export class UserService {
     }
   ]
 
-  readonly userKey: string = 'dv-user';
+  user$: BehaviorSubject<SessionUser | null> = new BehaviorSubject<SessionUser | null>(null);
+  isAdmin$ = this.user$.pipe(map(user => user?.role === 'admin'));
 
-  private _userInfo: User | null = null;
-  get userInfo(): User | null {
-    if (!this._userInfo) {
-      this.loadUserInfo();
-    }
-    return this._userInfo;
-  }
-  set userInfo(user: User | null) {
-    this._userInfo = user;
-    this.user$.next(this._userInfo);
-  }
+  // The session lives in an HttpOnly cookie the app can't read, so ask the API who is signed in.
+  private session$ = this.http.get<SessionResponse>('api/auth/me').pipe(
+    map(res => res.user),
+    catchError(() => of(null)),
+    tap(user => this.user$.next(user)),
+    shareReplay(1)
+  );
 
-  user$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  /** Emits the signed-in user once the session has been checked with the API. */
+  loadSession(): Observable<SessionUser | null> {
+    return this.session$.pipe(map(() => this.user$.value));
+  }
 
   getUserRoutes(): Observable<INavigation[]> {
     return this.user$.pipe(
       map(user => {
-        return user ? [...this.authenticatedRoutes] : [...this.unauthenticatedRoutes];
+        if (!user) {
+          return [...this.unauthenticatedRoutes];
+        }
+        return user.role === 'admin' ? [...this.adminRoutes] : [...this.memberRoutes];
       })
     );
   }
 
-  loadUserInfo() {
-    const token = this.cookieService.getCookie(Constants.ACCESS_TOKEN);
-    if (token) {
-      this.userInfo = jwtDecode<User>(token);
-    }
+  getProviders(): Observable<SsoProvider[]> {
+    return this.http.get<{ providers: SsoProvider[] }>('api/auth/providers').pipe(
+      map(res => res.providers),
+      catchError(() => of([]))
+    );
   }
 
-  login(username: string, password: string): Observable<User> {
-    return this.http.post<LoginResponse>('api/auth/login', { username, password }).pipe(
-      map((res: LoginResponse) => {
-        this.cookieService.setCookie(Constants.ACCESS_TOKEN, res.access_token, 1);
-        this.userInfo = jwtDecode<User>(res.access_token);
-        return this.userInfo;
-      })
+  /** Leaves the app for the provider's sign-in page; the API sends the browser back to returnTo afterwards. */
+  signIn(provider: SsoProvider, returnTo = '/') {
+    this.document.location.assign(`/api/auth/${provider}?returnTo=${encodeURIComponent(returnTo)}`);
+  }
+
+  adminLogin(username: string, password: string): Observable<SessionUser | null> {
+    return this.http.post<SessionResponse>('api/auth/admin/login', { username, password }).pipe(
+      map(res => res.user),
+      tap(user => this.user$.next(user))
+    );
+  }
+
+  updateDisplayName(displayName: string): Observable<SessionUser> {
+    return this.http.patch<SessionUser>('api/account/me', { displayName }).pipe(
+      tap(user => this.user$.next(user))
+    );
+  }
+
+  deleteAccount(): Observable<void> {
+    return this.http.delete<void>('api/account/me').pipe(
+      tap(() => this.user$.next(null))
     );
   }
 
   logout() {
-    this.cookieService.deleteCookie(Constants.ACCESS_TOKEN);
-    this.userInfo = null;
-    this.router.navigate(['login']);
+    this.http.post<void>('api/auth/logout', {}).subscribe({
+      complete: () => {
+        this.user$.next(null);
+        this.router.navigate(['home']);
+      }
+    });
   }
 
 }

@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DetailComponent } from './detail/detail.component';
 import { EditorComponent } from './editor/editor.component';
 import { SearchComponent } from './search/search.component';
+import { adminGuard } from '@app/core/guards';
 
 const routes: Routes = [
   {
@@ -11,10 +12,12 @@ const routes: Routes = [
   },
   {
     path: 'add',
+    canActivate: [adminGuard],
     component: EditorComponent
   },
   {
     path: 'edit/:id',
+    canActivate: [adminGuard],
     component: EditorComponent
   },
   {

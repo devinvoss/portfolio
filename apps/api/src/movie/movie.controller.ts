@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { Movie, MovieSearch } from '@portfolio/models';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Auth } from '../auth/auth.decorator';
+import { MovieDto, UpdateMovieDto } from './movie.dto';
 import { MovieService } from './movie.service';
 
 @Controller('movie')
@@ -13,15 +14,15 @@ export class MovieController {
     return this.movieService.findMovie(params.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth('admin')
   @Post()
-  async addMovie(@Body() movie: Movie): Promise<Movie> {
+  async addMovie(@Body() movie: MovieDto): Promise<Movie> {
     return this.movieService.insertMovie(movie);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth('admin')
   @Put()
-  async updateMovie(@Body() movie: Movie): Promise<Movie> {
+  async updateMovie(@Body() movie: UpdateMovieDto): Promise<Movie> {
     return this.movieService.updateMovie(movie);
   }
 

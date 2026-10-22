@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
     });
 
     this.loadSideNavFromLocalStorage();
-    this.userService.loadUserInfo();
+    this.userService.loadSession().subscribe();
   }
 
   toggleSideNav() {

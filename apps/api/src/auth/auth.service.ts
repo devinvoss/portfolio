@@ -1,32 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
-import { User } from '@portfolio/models';
+import { SessionUser } from '@portfolio/models';
+import { AccountsService, toMemberSession } from '../accounts/accounts.service';
+import { JwtPayload } from '../session/session.constants';
+import { toAdminSession, UsersService } from '../users/users.service';
+import { verifyPassword } from './password';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(private usersService: UsersService, private accountsService: AccountsService) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findUser(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user.toJSON();
-      return result;
+  async validateAdmin(username: string, password: string): Promise<SessionUser | null> {
+    const admin = await this.usersService.findAdmin(username);
+    if (admin && typeof password === 'string' && await verifyPassword(password, admin.password)) {
+      return toAdminSession(admin);
     }
     return null;
   }
 
-  async login(user: User) {
-    const payload = { username: user.username, sub: user.id, isAdmin: user.isAdmin };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-
-  async validateToken(user: User): Promise<User | null> {
-    const dbUser = await this.usersService.findUser(user.username);
-    if (dbUser && dbUser.password === user.password && dbUser.id === user.id) {
-      return dbUser;
+  async findSessionUser(payload: JwtPayload): Promise<SessionUser | null> {
+    if (payload.role === 'admin') {
+      const admin = await this.usersService.findAdminById(payload.sub);
+      return admin ? toAdminSession(admin) : null;
+    }
+    if (payload.role === 'member') {
+      const account = await this.accountsService.findActive(payload.sub);
+      return account ? toMemberSession(account) : null;
     }
     return null;
   }
