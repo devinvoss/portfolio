@@ -4,6 +4,7 @@ import { Movie, MovieSearch, MovieSearchFields, MovieSortFields } from '@portfol
 import { Model, QueryFilter } from 'mongoose';
 import ImageKit = require('imagekit');
 import { environment } from '../environments/environment';
+import { MovieDto, UpdateMovieDto } from './movie.dto';
 
 @Injectable()
 export class MovieService {
@@ -18,15 +19,15 @@ export class MovieService {
     return movie;
   }
 
-  async insertMovie(movie: Movie): Promise<Movie> {
+  async insertMovie(movie: MovieDto): Promise<Movie> {
     movie.imageUrl = await this.uploadImageToImageKit(movie.imageUrl, movie.title.toLocaleLowerCase());
     const newMovie = new this.movieModel({...movie});
     newMovie.createdDate = newMovie.updatedDate = new Date();
     return await newMovie.save();
   }
 
-  async updateMovie(movie: Movie): Promise<Movie> {
-    const updatedMovie = await this.findMovie(movie.id);
+  async updateMovie({ id, ...movie }: UpdateMovieDto): Promise<Movie> {
+    const updatedMovie = await this.findMovie(id);
     if (updatedMovie.imageUrl !== movie.imageUrl) {
       movie.imageUrl = await this.uploadImageToImageKit(movie.imageUrl, movie.title.toLocaleLowerCase());
     }

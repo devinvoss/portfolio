@@ -4,7 +4,7 @@ import { UserService } from '@app/services';
 import { MatToolbar } from '@angular/material/toolbar';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { MatIcon } from '@angular/material/icon';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, Location } from '@angular/common';
 
 @Component({
   selector: 'dvoss-header',
@@ -15,6 +15,7 @@ import { AsyncPipe } from '@angular/common';
 export class HeaderComponent {
   private router = inject(Router);
   private userService = inject(UserService);
+  private location = inject(Location);
 
   @Output() toggleSideNav: EventEmitter<void> = new EventEmitter<void>();
 
@@ -25,7 +26,7 @@ export class HeaderComponent {
   }
 
   login() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { queryParams: { returnTo: this.location.path() } });
   }
 
   logout() {

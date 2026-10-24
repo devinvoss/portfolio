@@ -1,19 +1,15 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CookieService } from '../../services';
 
+// The session cookie is HttpOnly and same-origin, so the browser attaches it; no Authorization header needed.
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
-  private cookieService = inject(CookieService);
-
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const bearer = 'Bearer ' + this.cookieService.getCookie('access_token');
     request = request.clone({
       setHeaders: {
         'Content-Type' : 'application/json; charset=utf-8',
-        'Accept'       : 'application/json',
-        'Authorization': bearer
+        'Accept'       : 'application/json'
       }
     })
     return next.handle(request);

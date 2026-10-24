@@ -5,7 +5,7 @@
     <div class="text-container">
       <span class="block text-2xl font-medium md:text-3xl">
         {{ movie.title }} ({{ movie.year }})
-        @if (user$ | async) {
+        @if (isAdmin$ | async) {
           <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="editMovie()">
             <mat-icon class="-mb-[6px]">movie_edit</mat-icon> Edit
           </dvoss-button>
