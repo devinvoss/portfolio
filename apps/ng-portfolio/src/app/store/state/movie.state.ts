@@ -8,7 +8,8 @@ import { MovieStateModel } from '../models/movie-state.model';
 export const MOVIE_STATE_TOKEN = new StateToken<MovieStateModel>('movieState');
 const defaultState = <MovieStateModel>{
   lastSearchCriteria: null,
-  searchResults: []
+  searchResults: [],
+  genreCounts: null
 }
 
 @State({
@@ -19,7 +20,8 @@ const defaultState = <MovieStateModel>{
 export class MovieState {
   private movieService = inject(MovieService);
 
-  @Action(MovieActions.SearchMovies)
+  // Searches fire as filters change, so drop any in-flight search when a newer one starts
+  @Action(MovieActions.SearchMovies, { cancelUncompleted: true })
   searchMovies(ctx: StateContext<MovieStateModel>, action: MovieActions.SearchMovies) {
     const { criteria } = action;
 
@@ -33,7 +35,8 @@ export class MovieState {
         ctx.setState({
           ...state,
           lastSearchCriteria: result.criteria,
-          searchResults: result.results
+          searchResults: result.results,
+          genreCounts: result.genreCounts ?? null
         });
       })
     );

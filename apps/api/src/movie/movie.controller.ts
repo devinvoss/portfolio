@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { Movie, MovieSearch } from '@portfolio/models';
+import { GenreCount, Movie, MovieSearch } from '@portfolio/models';
 import { Auth } from '../auth/auth.decorator';
 import { MovieDto, UpdateMovieDto } from './movie.dto';
 import { MovieService } from './movie.service';
@@ -8,6 +8,12 @@ import { MovieService } from './movie.service';
 export class MovieController {
 
   constructor(private movieService: MovieService) {}
+
+  // Declared before ':id' so "genres" isn't treated as a movie id
+  @Get('genres')
+  async getGenreCounts(): Promise<GenreCount[]> {
+    return this.movieService.getGenreCounts();
+  }
 
   @Get(':id')
   async getMovie(@Param() params): Promise<Movie> {
