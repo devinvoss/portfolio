@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { Movie, MovieSearch } from '@portfolio/models';
+import { GenreCount, Movie, MovieSearch } from '@portfolio/models';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MovieService } from './movie.service';
 
@@ -7,6 +7,12 @@ import { MovieService } from './movie.service';
 export class MovieController {
 
   constructor(private movieService: MovieService) {}
+
+  // Declared before ':id' so "genres" isn't treated as a movie id
+  @Get('genres')
+  async getGenreCounts(): Promise<GenreCount[]> {
+    return this.movieService.getGenreCounts();
+  }
 
   @Get(':id')
   async getMovie(@Param() params): Promise<Movie> {

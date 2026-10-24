@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Movie, MovieSearch, MovieSearchFields, MovieSortFields } from '@portfolio/models';
+import { GenreCount, Movie, MovieSearch,MovieSearchFields, MovieSortFields } from '@portfolio/models';
 import { Model, QueryFilter } from 'mongoose';
 import ImageKit = require('imagekit');
 import { environment } from '../environments/environment';
@@ -43,7 +43,10 @@ export class MovieService {
       .skip(search.criteria.page > 0 ? (search.criteria.page * search.criteria.pageSize) : 0)
       .limit(search.criteria.pageSize);
 
-    search.criteria.totalCount = await this.movieModel.countDocuments(filter).exec();
+    [search.criteria.totalCount, search.genreCounts] = await Promise.all([
+      this.movieModel.countDocuments(filter).exec(),
+      this.getGenreCounts(search.criteria.searchFields)
+    ]);
 
     if (search.criteria.totalCount === 0) {
       search.results = [];
@@ -52,6 +55,19 @@ export class MovieService {
 
     search.results = await query.exec();
     return search;
+  }
+
+  // Movies per genre, most popular first. The genre filter itself is ignored so the counts
+  // reflect the other filters without collapsing to just the selected genres.
+  async getGenreCounts(fields?: MovieSearchFields): Promise<GenreCount[]> {
+    const filter = fields ? this.buildSearchFilter({ ...fields, genre: [] }) : {};
+    return this.movieModel.aggregate<GenreCount>([
+      { $match: filter },
+      { $unwind: '$genre' },
+      { $group: { _id: '$genre', count: { $sum: 1 } } },
+      { $sort: { count: -1, _id: 1 } },
+      { $project: { _id: 0, genre: '$_id', count: 1 } }
+    ]).exec();
   }
 
   private buildSearchFilter(fields: MovieSearchFields) {

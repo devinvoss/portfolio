@@ -1,48 +1,90 @@
 <div class="center-container">
-  <form #titleSearch [formGroup]="movieSearchForm" (ngSubmit)="search()" class="p-2 mt-2">
-    <div class="flex flex-wrap justify-center gap-x-4">
-      <mat-form-field>
-        <mat-label>Title</mat-label>
-        <input matInput formControlName="title">
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Person</mat-label>
-        <input matInput formControlName="person">
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Genre</mat-label>
-        <mat-select matNativeControl formControlName="genre" multiple>
-          @for (genre of genres; track genre) {
-            <mat-option [value]="genre">
-              {{ genre }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field class="w-36">
-        <mat-label>Rating</mat-label>
-        <mat-select matNativeControl formControlName="rating" multiple>
+  <form [formGroup]="movieSearchForm" class="search-panel" role="search" (submit)="$event.preventDefault()">
+    <div class="search-row">
+      <label class="search-field">
+        <span class="search-field-label">Title</span>
+        <span class="search-input-wrapper">
+          <span class="material-icons search-input-icon" aria-hidden="true">movie</span>
+          <input class="search-input" type="search" formControlName="title" placeholder="Search by title" autocomplete="off">
+        </span>
+      </label>
+      <label class="search-field">
+        <span class="search-field-label">Person</span>
+        <span class="search-input-wrapper">
+          <span class="material-icons search-input-icon" aria-hidden="true">person</span>
+          <input class="search-input" type="search" formControlName="person" placeholder="Director, actor, writer..." autocomplete="off">
+        </span>
+      </label>
+
+      <fieldset class="search-group rating-group">
+        <legend class="search-field-label">Rating</legend>
+        <div class="chip-list">
           @for (rating of ratingOptions; track rating) {
-            <mat-option [value]="rating">
-              {{ rating }}
-            </mat-option>
+            <button type="button" class="chip"
+              [class.chip-selected]="movieSearchForm.controls.rating.value.includes(rating)"
+              [attr.aria-pressed]="movieSearchForm.controls.rating.value.includes(rating)"
+              [attr.aria-label]="rating + ' star' + (rating === 1 ? '' : 's')"
+              (click)="toggleOption(movieSearchForm.controls.rating, rating)">
+              {{ rating }}<span class="material-icons chip-star" aria-hidden="true">star</span>
+            </button>
           }
-        </mat-select>
-      </mat-form-field>
-      <dvoss-button [class]="'dv-button w-44 h-12 mt-1 rounded-md'" class="w-44" [loading]="loading()" type="submit">Search</dvoss-button>
+        </div>
+      </fieldset>
+    </div>
+
+    <fieldset class="search-group">
+      <legend class="search-field-label">Genre</legend>
+      <div class="chip-list">
+        @for (item of visibleGenres(); track item.genre) {
+          <button type="button" class="chip"
+            [class.chip-selected]="selectedGenres().includes(item.genre)"
+            [class.chip-empty]="item.count === 0"
+            [attr.aria-pressed]="selectedGenres().includes(item.genre)"
+            (click)="toggleOption(movieSearchForm.controls.genre, item.genre)">
+            {{ item.genre }}
+            @if (item.count !== undefined) {
+              <span class="chip-count">{{ item.count }}</span>
+            }
+          </button>
+        }
+        @if (hasMoreGenres()) {
+          <button type="button" class="show-more-button" [attr.aria-expanded]="showAllGenres()" (click)="showAllGenres.set(!showAllGenres())">
+            {{ showAllGenres() ? 'Show less' : 'Show more' }}
+            <span class="material-icons" aria-hidden="true">{{ showAllGenres() ? 'expand_less' : 'expand_more' }}</span>
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    <div class="search-status">
+      <span aria-live="polite">
+        @if (loading()) {
+          Searching...
+        } @else if (searchCriteria().totalCount !== undefined) {
+          {{ searchCriteria().totalCount }} {{ searchCriteria().totalCount === 1 ? 'movie' : 'movies' }}
+        }
+      </span>
+      @if (hasFilters()) {
+        <button type="button" class="clear-button" (click)="clearFilters()">
+          <span class="material-icons" aria-hidden="true">close</span>
+          Clear filters
+        </button>
+      }
     </div>
   </form>
-  @if (loading()) {
-    <div class="grid grid-cols-4 gap-3 m-1">
-      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-    </div>
-  }
+
   @if ($movies | async; as movies) {
-    @if (!loading()) {
-      <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5">
+    @if (loading() && !movies.length) {
+      <div class="grid grid-cols-4 gap-3 m-1">
+        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      </div>
+    } @else if (!movies.length) {
+      <p class="no-results">No movies match those filters.</p>
+    } @else {
+      <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5 results" [class.results-loading]="loading()">
         @for (movie of movies; track movie.id) {
           <div animate.enter="slide-up-in" class="col-span-4 sm:col-span-2 2xl:col-span-1">
             <dvoss-movie-list-item [movie]="movie" (movieSelected)="navigateToMovie($event)"></dvoss-movie-list-item>

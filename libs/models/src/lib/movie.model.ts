@@ -20,6 +20,8 @@ export interface Movie extends mongoose.Document {
 export interface MovieSearch {
   criteria: MovieSearchCriteria;
   results: Movie[];
+  // Movies per genre matching every filter except genre, so each count is what selecting that genre would add
+  genreCounts?: GenreCount[];
 }
 
 export interface MovieSearchCriteria {
@@ -43,4 +45,8 @@ export interface MovieSortFields {
   year?: number;
   runtimeMinutes?: number;
   createdDate?: number;
+}
+export interface GenreCount {
+  genre: string;
+  count: number;
 }

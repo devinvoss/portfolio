@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Movie, MovieSearch, MovieSearchCriteria } from '@portfolio/models';
+import { GenreCount, Movie, MovieSearch, MovieSearchCriteria } from '@portfolio/models';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,6 +16,10 @@ export class MovieService {
   searchMovies(criteria: MovieSearchCriteria): Observable<MovieSearch> {
     const movieSearch: MovieSearch = { criteria, results: [] };
     return this.http.post<MovieSearch>('api/movie/search', movieSearch);
+  }
+
+  getGenreCounts(): Observable<GenreCount[]> {
+    return this.http.get<GenreCount[]>('api/movie/genres');
   }
 
   addMovie(movie: Movie): Observable<Movie> {
