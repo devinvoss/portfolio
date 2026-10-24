@@ -3,6 +3,7 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NgxsModule } from '@ngxs/store';
+import { ImagekitioAngularModule } from 'imagekitio-angular';
 import { MovieService, ToastService } from '@app/services';
 import { MovieState } from '@app/store/state/movie.state';
 import { MoviesModule } from '../movies.module';
@@ -15,7 +16,12 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoviesModule, NgxsModule.forRoot([MovieState])],
+      imports: [
+        MoviesModule,
+        NgxsModule.forRoot([MovieState]),
+        // Results render movie list items, which need ImageKit configured
+        ImagekitioAngularModule.forRoot({ publicKey: 'test', urlEndpoint: 'https://ik.imagekit.io/test' })
+      ],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
@@ -132,6 +138,49 @@ describe('SearchComponent', () => {
     httpTesting.expectOne('api/movie/genres').flush('boom', { status: 500, statusText: 'Server Error' });
 
     expect(component.genreCounts().map(x => x.genre)).toEqual(TestBed.inject(MovieService).getGenres());
+  });
+
+  it('should append the next page when the end of the list scrolls into view, until every movie is loaded', () => {
+    const movie = (id: number) => ({ id: `${id}`, title: `Movie ${id}`, imageUrl: 'https://ik.imagekit.io/test/movie.jpg' });
+    const firstPage = Array.from({ length: 40 }, (_, i) => movie(i));
+    httpTesting.expectOne('api/movie/search').flush({
+      criteria: { ...component.searchCriteria(), totalCount: 41 },
+      results: firstPage
+    });
+    expect(component.hasMoreMovies()).toBe(true);
+
+    component.nearEndOfList.set(true);
+    TestBed.tick();
+    const req = httpTesting.expectOne('api/movie/search');
+    expect(req.request.body.criteria.page).toBe(1);
+    expect(component.loadingMore()).toBe(true);
+
+    req.flush({ criteria: { ...req.request.body.criteria, totalCount: 41 }, results: [movie(40)] });
+    TestBed.tick();
+    expect(component.movies().length).toBe(41);
+    expect(component.loadingMore()).toBe(false);
+    expect(component.hasMoreMovies()).toBe(false);
+    httpTesting.expectNone('api/movie/search');
+  });
+
+  it('should go back to the first page and replace the list when the filters change', () => {
+    jest.useFakeTimers();
+    try {
+      httpTesting.expectOne('api/movie/search').flush({
+        criteria: { ...component.searchCriteria(), page: 2, totalCount: 200 },
+        results: [{ id: '1', title: 'Alien', imageUrl: 'https://ik.imagekit.io/test/alien.jpg' }]
+      });
+
+      component.toggleOption(component.movieSearchForm.controls.genre, 'Horror');
+      jest.advanceTimersByTime(0);
+      const req = httpTesting.expectOne('api/movie/search');
+      expect(req.request.body.criteria.page).toBe(0);
+      req.flush({ criteria: req.request.body.criteria, results: [{ id: '2', title: 'Halloween', imageUrl: 'https://ik.imagekit.io/test/halloween.jpg' }] });
+
+      expect(component.movies().map(x => x.title)).toEqual(['Halloween']);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('should stop loading and show an error when the search fails', () => {

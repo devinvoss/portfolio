@@ -20,7 +20,8 @@ const defaultState = <MovieStateModel>{
 export class MovieState {
   private movieService = inject(MovieService);
 
-  // Searches fire as filters change, so drop any in-flight search when a newer one starts
+  // Searches fire as filters change, so drop any in-flight search when a newer one starts.
+  // Page 0 replaces the results; later pages are appended for infinite scroll.
   @Action(MovieActions.SearchMovies, { cancelUncompleted: true })
   searchMovies(ctx: StateContext<MovieStateModel>, action: MovieActions.SearchMovies) {
     const { criteria } = action;
@@ -35,7 +36,7 @@ export class MovieState {
         ctx.setState({
           ...state,
           lastSearchCriteria: result.criteria,
-          searchResults: result.results,
+          searchResults: criteria.page > 0 ? [...state.searchResults, ...result.results] : result.results,
           genreCounts: result.genreCounts ?? null
         });
       })

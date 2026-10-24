@@ -22,7 +22,9 @@ describe('ng-portfolio', () => {
     cy.location('pathname').should('eq', '/movie');
     cy.wait('@search');
     cy.get('dvoss-movie-list-item').should('have.length', 2).first().should('contain', 'Alien');
-    cy.get('mat-paginator').should('contain', '1 – 2 of 2');
+    cy.get('.search-status').should('contain', '2 movies');
+    // Everything fit on the first page, so there's nothing more to load
+    cy.get('.load-more-sentinel').should('not.exist');
   });
 
   it('shows the admin login form', () => {

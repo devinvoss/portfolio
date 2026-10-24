@@ -73,33 +73,32 @@
     </div>
   </form>
 
-  @if ($movies | async; as movies) {
-    @if (loading() && !movies.length) {
-      <div class="grid grid-cols-4 gap-3 m-1">
-        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-        <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
-      </div>
-    } @else if (!movies.length) {
-      <p class="no-results">No movies match those filters.</p>
-    } @else {
-      <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5 results" [class.results-loading]="loading()">
-        @for (movie of movies; track movie.id) {
-          <div animate.enter="slide-up-in" class="col-span-4 sm:col-span-2 2xl:col-span-1">
-            <dvoss-movie-list-item [movie]="movie" (movieSelected)="navigateToMovie($event)"></dvoss-movie-list-item>
-          </div>
+  @let movies = this.movies();
+  @if (loading() && !movies.length) {
+    <div class="grid grid-cols-4 gap-3 m-1">
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+      <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
+    </div>
+  } @else if (!movies.length) {
+    <p class="no-results">No movies match those filters.</p>
+  } @else {
+    <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5 results" [class.results-loading]="loading()">
+      @for (movie of movies; track movie.id) {
+        <div animate.enter="slide-up-in" class="col-span-4 sm:col-span-2 2xl:col-span-1">
+          <dvoss-movie-list-item [movie]="movie" (movieSelected)="navigateToMovie($event)"></dvoss-movie-list-item>
+        </div>
+      }
+      @if (loadingMore()) {
+        @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+          <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
         }
-      </div>
+      }
+    </div>
+    @if (hasMoreMovies()) {
+      <!-- Loads the next page as this scrolls into view -->
+      <div class="load-more-sentinel h-px" (dvossInViewport)="nearEndOfList.set($event)" aria-hidden="true"></div>
     }
-    <mat-paginator #paginator
-      (page)="handlePage($event)"
-      [length]="searchCriteria().totalCount"
-      [pageSize]="searchCriteria().pageSize"
-      [showFirstLastButtons]="true"
-      [pageSizeOptions]="[20, 40]"
-      [pageIndex]="searchCriteria().page"
-      aria-label="Select page">
-    </mat-paginator>
   }
 </div>

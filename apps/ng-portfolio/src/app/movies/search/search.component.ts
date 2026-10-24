@@ -1,22 +1,21 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { GenreCount, Movie, MovieSearchCriteria } from '@portfolio/models';
 import { MovieService, ToastService } from '@app/services';
-import { catchError, debounce, distinctUntilChanged, map, Observable, of, pairwise, skip, startWith, tap, timer } from 'rxjs';
+import { catchError, debounce, distinctUntilChanged, map, of, pairwise, skip, startWith, tap, timer } from 'rxjs';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { MOVIE_STATE_TOKEN } from '@app/store/state/movie.state';
 import * as MovieActions from '@app/store/actions/movie.actions';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { MovieListItemComponent } from '../../shared/components/movie-list-item/movie-list-item.component';
-import { AsyncPipe } from '@angular/common';
+import { InViewportDirective } from '../../shared/directives';
 
 export const defaultCriteria: MovieSearchCriteria = {
   page: 0,
-  pageSize: 20,
+  pageSize: 40,
   searchFields: {
     title: '',
     person: '',
@@ -41,7 +40,7 @@ type GenreOption = Omit<GenreCount, 'count'> & { count?: number };
   selector: 'portfolio-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  imports: [ReactiveFormsModule, SkeletonLoaderComponent, MovieListItemComponent, MatPaginator, AsyncPipe]
+  imports: [ReactiveFormsModule, SkeletonLoaderComponent, MovieListItemComponent, InViewportDirective]
 })
 export class SearchComponent implements OnInit {
   private movieService = inject(MovieService);
@@ -52,22 +51,28 @@ export class SearchComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   searchCriteria = signal<MovieSearchCriteria>({ ...defaultCriteria });
+  // A fresh search, which replaces the results
+  loading = signal(false);
+  // The next page of the current results, which is appended
+  loadingMore = signal(false);
+  // Whether the end of the list is close enough to start loading the next page
+  nearEndOfList = signal(false);
 
-  $movies: Observable<Movie[]> = this.store.select(MOVIE_STATE_TOKEN).pipe(
+  movies = toSignal(this.store.select(MOVIE_STATE_TOKEN).pipe(
     tap((data) => {
       this.loading.set(false);
+      this.loadingMore.set(false);
       if (data.lastSearchCriteria) {
         this.searchCriteria.set({ ...data.lastSearchCriteria });
       }
     }),
-    map(x => x.searchResults),
-    takeUntilDestroyed()
-  );
+    map(x => x.searchResults)
+  ), { initialValue: <Movie[]>[] });
+  hasMoreMovies = computed(() => this.movies().length < (this.searchCriteria().totalCount ?? 0));
 
   ratingOptions = this.movieService.getRatingOptions();
-  loading = signal(false);
 
-  movieSearchForm = this.fb.nonNullable.group({
+  movieSearchForm =this.fb.nonNullable.group({
     title: [''],
     person: [''],
     genre: [(<string[]>[])],
@@ -115,10 +120,20 @@ export class SearchComponent implements OnInit {
   });
   hasMoreGenres = computed(() => this.genreCounts().length > COLLAPSED_GENRE_COUNT);
 
+  constructor() {
+    // Keep loading pages while the end of the list is in view, so a tall screen still fills up
+    effect(() => {
+      if (this.nearEndOfList() && this.hasMoreMovies() && !this.loading() && !this.loadingMore()) {
+        untracked(() => this.loadMore());
+      }
+    });
+  }
+
   ngOnInit(): void {
     const previousCriteria = this.store.selectSnapshot(MOVIE_STATE_TOKEN).lastSearchCriteria;
     if (previousCriteria) {
-      this.searchCriteria.set({ ...previousCriteria });
+      // Reload from the first page rather than appending onto the list from last time
+      this.searchCriteria.set({ ...previousCriteria, page: 0 });
       this.movieSearchForm.reset({
         title: previousCriteria.searchFields?.title || '',
         person: previousCriteria.searchFields?.person || '',
@@ -200,12 +215,18 @@ export class SearchComponent implements OnInit {
     this.router.navigate([`/movie/detail/${movie.id}`]);
   }
 
-  handlePage(event: PageEvent) {
-    this.searchCriteria.update(criteria => ({
-      ...criteria,
-      page: event.pageIndex,
-      pageSize: event.pageSize
-    }));
-    this.search();
+  loadMore() {
+    this.loadingMore.set(true);
+    this.store.dispatch(new MovieActions.SearchMovies({
+      ...this.searchCriteria(),
+      page: this.searchCriteria().page + 1
+    }))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          this.loadingMore.set(false);
+          this.toastService.error('Loading more movies failed.');
+        }
+      });
   }
 }
