@@ -8,6 +8,7 @@
     </div>
     <div class="flex-1"></div>
     @if ((user$ | async); as user) {
+      <span class="hidden mr-3 text-base text-white sm:inline">{{ user.displayName }}</span>
       <dvoss-button [class]="'dv-button clear'" type="button" (click)="logout()">
         Log Out
       </dvoss-button>

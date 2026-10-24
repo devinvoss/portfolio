@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { memberGuard } from './core/guards';
 import { HomeComponent } from './home/home.component';
 
 export const routes: Routes = [
@@ -9,6 +10,15 @@ export const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./login/login.module').then(m => m.LoginModule)
+  },
+  {
+    path: 'admin/login',
+    loadComponent: () => import('./admin-login/admin-login.component').then(m => m.AdminLoginComponent)
+  },
+  {
+    path: 'account',
+    canActivate: [memberGuard],
+    loadComponent: () => import('./account/account.component').then(m => m.AccountComponent)
   },
   {
     path: 'movie',

@@ -25,7 +25,7 @@ export class DetailComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   movie = signal<Movie | undefined>(undefined);
-  user$ = this.userService.user$;
+  isAdmin$ = this.userService.isAdmin$;
 
   ngOnInit(): void {
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {

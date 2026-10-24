@@ -1,0 +1,27 @@
+<div class="center-container">
+  <div class="relative w-full max-w-xl p-4 mx-auto mt-6 border-2 bg-dvLightGray-50">
+    <div class="flex items-center mb-4">
+      @if (user()?.avatarUrl) {
+        <img class="w-12 h-12 mr-3 rounded-full" [src]="user()?.avatarUrl" alt="" referrerpolicy="no-referrer">
+      }
+      <h1>Your Account</h1>
+    </div>
+    <form [formGroup]="accountForm" (ngSubmit)="save()">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Display name</mat-label>
+        <input matInput formControlName="displayName" type="text" [maxlength]="maxLength" autocomplete="nickname">
+        <mat-hint>Shown next to your comments and recommendations.</mat-hint>
+        @if (accountForm.controls.displayName.invalid) {
+          <mat-error>Use 2 to {{ maxLength }} characters.</mat-error>
+        }
+      </mat-form-field>
+      <dvoss-button [class]="'dv-button w-full'" class="block w-full mt-4" [disabled]="accountForm.invalid || accountForm.pristine" [loading]="saving()" type="submit">Save</dvoss-button>
+    </form>
+
+    <h2 class="mt-8 mb-2">Delete account</h2>
+    <p class="mb-3">This removes your account. You can sign in again later to create a new one.</p>
+    <dvoss-button [class]="'dv-button w-full'" class="block w-full" [loading]="deleting()" type="button" (click)="deleteAccount()">
+      {{ confirmingDelete() ? 'Click again to delete your account' : 'Delete my account' }}
+    </dvoss-button>
+  </div>
+</div>
