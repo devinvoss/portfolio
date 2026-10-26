@@ -132,6 +132,16 @@ describe('CommentsService', () => {
       ], expect.anything());
     });
 
+    it('names the admin in notifications by public name, never the login username', async () => {
+      const parent = makeComment(sam);
+      commentModel.findById.mockReturnValue(query(parent));
+      mockCreate();
+
+      await service.create(movieId, { ...admin, displayName: 'admin-login' }, { body: 'Thanks', replyToCommentId: parent._id.toHexString() });
+
+      expect(notificationsService.notify).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ actorName: 'Site author' }));
+    });
+
     it('does not notify people about their own replies', async () => {
       const parent = makeComment(sam);
       commentModel.findById.mockReturnValue(query(parent));

@@ -10,3 +10,7 @@
   @apply mt-1 ml-6 pl-4 sm:ml-10;
   border-left: 2px solid $field-border;
 }
+
+:host {
+  display: block;
+}

@@ -122,14 +122,16 @@ export class CommentsService {
       createdDate: new Date()
     });
     const comment = created.toObject<Comment>();
+    const people = await this.loadPeople([comment]);
+    const result = this.toMovieComment(comment, people, user);
 
     if (parent) {
       await this.commentModel.updateOne({ _id: parent._id }, { $inc: { replyCount: 1 } }).exec();
-      await this.notifyReply(user, parent, mentioned, { actorName: user.displayName, movieId, movieTitle: movie.title, commentId: comment._id });
+      // The public name, as on the comment: the admin's session name can fall back to the login username.
+      const actorName = result.author?.displayName ?? user.displayName;
+      await this.notifyReply(user, parent, mentioned, { actorName, movieId, movieTitle: movie.title, commentId: comment._id });
     }
 
-    const people = await this.loadPeople([comment]);
-    const result = this.toMovieComment(comment, people, user);
     return parent ? result : { ...result, replies: [], replyCount: 0 };
   }
 

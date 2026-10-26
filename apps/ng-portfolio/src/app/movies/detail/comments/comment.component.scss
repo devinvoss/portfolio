@@ -40,3 +40,7 @@
   @apply flex flex-wrap items-center justify-between gap-2 p-2 mt-1 text-sm rounded-md;
   background-color: rgba($error, 0.08);
 }
+
+:host {
+  display: block;
+}

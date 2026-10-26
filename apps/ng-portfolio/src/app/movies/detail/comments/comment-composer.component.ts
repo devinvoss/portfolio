@@ -10,6 +10,7 @@ const COUNTER_THRESHOLD = COMMENT_MAX_LENGTH - 200;
 @Component({
   selector: 'portfolio-comment-composer',
   templateUrl: './comment-composer.component.html',
+  host: { class: 'block' },
   imports: [CdkTextareaAutosize, ButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

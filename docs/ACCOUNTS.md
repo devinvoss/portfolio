@@ -49,3 +49,18 @@ MONGODB_URI="<connection string>" node --disable-warning=MODULE_TYPELESS_PACKAGE
 ```
 
 It prompts for the new password (at least 12 characters) and also sets `isAdmin: 1`, which admin login now requires. Add `--create` to create the admin user in a fresh dev database.
+
+## Comments
+
+Anyone can read the comments on a movie page. Signed-in members and the admin can post, reply and like.
+
+- **Threads are one level deep.** Replying to a reply files it under the same top-level comment and starts it with an @mention of the person being answered.
+- **Authors** can edit their comments, which shows "(edited)", and delete them. A deleted top-level comment that still has replies stays as "[deleted]" so the thread makes sense. It goes away with its last reply.
+- **The admin** gets an "Author" badge and can delete any comment. The admin can't edit other people's comments. **Ban** on a member's comment bans the account, signs that person out, and removes all of their comments. To undo a ban, set the account's `status` back to `active` in the database (the removed comments don't come back).
+- The admin's comments show the admin user's `displayName`, or "Site author" when it's blank. The login username is never shown. Set a display name in the `users` collection to choose the name.
+- Comments are plain text, up to 2000 characters. Posting is limited to 5 comments a minute per IP.
+- When an account is deleted, its comments stay and show as "Deleted user".
+
+### Notifications
+
+People are notified when someone replies to their comment, or answers their reply with an @mention. They aren't notified about their own replies. The header bell polls `GET /api/notifications/unread-count` every minute and whenever the tab comes back into view. Opening the menu marks everything read. Clicking a notification opens the movie with that thread pinned at the top. Notifications are deleted after 90 days by a TTL index.
