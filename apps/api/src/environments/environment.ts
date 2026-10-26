@@ -11,5 +11,7 @@ export const environment = {
   githubClientSecret: '',
   ik_endpoint: '',
   ik_publicKey: '',
-  ik_privateKey: ''
+  ik_privateKey: '',
+  // TMDB v3 API key or v4 read access token; blank turns off the movie lookup in the editor.
+  tmdbApiKey: ''
 }
