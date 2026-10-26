@@ -20,6 +20,13 @@
       <mat-menu #userMenu="matMenu" xPosition="before">
         <!-- The name is hidden in the header on phones, so the menu says who's signed in -->
         <div class="px-4 py-2 text-sm text-gray-500 sm:hidden">{{ user.displayName }}</div>
+        <!-- The account page is for members; admins are managed separately -->
+        @if (user.role === 'member') {
+          <a mat-menu-item routerLink="/account">
+            <mat-icon>manage_accounts</mat-icon>
+            <span>Account</span>
+          </a>
+        }
         <button mat-menu-item type="button" (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Log Out</span>

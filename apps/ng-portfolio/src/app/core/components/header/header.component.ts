@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from '@app/services';
 import { MatToolbar } from '@angular/material/toolbar';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
@@ -11,7 +11,7 @@ import { AsyncPipe, Location } from '@angular/common';
   selector: 'dvoss-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  imports: [MatToolbar, ButtonComponent, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, AsyncPipe]
+  imports: [MatToolbar, ButtonComponent, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, RouterLink, AsyncPipe]
 })
 export class HeaderComponent {
   private router = inject(Router);

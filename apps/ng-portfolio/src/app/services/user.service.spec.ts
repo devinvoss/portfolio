@@ -51,7 +51,7 @@ describe('UserService', () => {
 
     expect(await names()).toEqual(['Home', 'Movies']);
     service.user$.next(member);
-    expect(await names()).toEqual(['Home', 'Movies', 'Account', 'Log Out']);
+    expect(await names()).toEqual(['Home', 'Movies', 'Log Out']);
     service.user$.next(admin);
     expect(await names()).toEqual(['Home', 'Movies', 'Log Out']);
   });
