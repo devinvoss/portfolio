@@ -1,112 +1,142 @@
 <div animate.enter="fade-in" class="center-container">
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
-    <div class="relative w-full max-w-xl p-4 mx-auto mt-2 lg:ml-auto lg:mr-0 bg-dvLightGray-50">
+    <div class="editor-panel">
+      @if (isLoadingTmdbMovie()) {
+        <mat-progress-bar mode="indeterminate" class="absolute top-0 left-0"></mat-progress-bar>
+      }
       <h1 class="mb-4">{{ mode() }} Movie</h1>
-      <form [formGroup]="movieForm" (ngSubmit)="save()">
-        <div class="grid grid-cols-2 gap-x-1">
-          <mat-form-field class="w-full">
-            <mat-label>Title</mat-label>
-            <input name="title" matInput type="text" formControlName="title">
-          </mat-form-field>
-          <mat-form-field class="w-full">
-            <mat-label>Director</mat-label>
-            <input name="director" matInput type="text" formControlName="director">
-          </mat-form-field>
-        </div>
-        <div class="grid grid-cols-2 gap-x-1">
-          <mat-form-field class="w-full">
-            <mat-label>Genre</mat-label>
-            <mat-select name="genre" multiple formControlName="genre">
-              @for (genre of genres; track genre) {
-                <mat-option [value]="genre">
-                  {{ genre }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="w-full">
-            <mat-label>Year</mat-label>
-            <mat-select name="year" formControlName="year">
-              @for (year of yearRange; track year) {
-                <mat-option [value]="year">
-                  {{ year }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="grid grid-cols-3 gap-x-1">
-          <mat-form-field class="w-full">
-            <mat-label>Runtime in Minutes</mat-label>
-            <input name="runtime" matInput type="number" formControlName="runtimeMinutes">
-          </mat-form-field>
-          <mat-form-field class="w-full">
-            <mat-label>MPAA Rating</mat-label>
-            <mat-select name="runtimeMinutes" formControlName="mpaaRating">
-              @for (rating of mpaaRatings; track rating) {
-                <mat-option [value]="rating">
-                  {{ rating }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="w-full">
-            <mat-label>Rating</mat-label>
-            <mat-select name="rating" formControlName="rating">
-              @for (rating of ratings; track rating) {
-                <mat-option [value]="rating">
-                  {{ rating }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <mat-form-field class="w-full">
-          <mat-label>Actors</mat-label>
-          <mat-chip-grid #actorList aria-label="Actor input">
-            @for (actor of selectedActors(); track i; let i = $index) {
-              <mat-chip-row
-                [removable]="true"
-                (removed)="removeActor(i)">
-                {{ actor }}
-                <button matChipRemove>
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </button>
-              </mat-chip-row>
+      <form [formGroup]="movieForm" class="flex flex-col gap-4" (ngSubmit)="save()">
+        <div class="title-row">
+          <label class="editor-field">
+            <span class="field-label">Title</span>
+            <span class="input-wrapper">
+              <span class="material-icons input-icon" aria-hidden="true">{{ movieForm.controls.title.disabled ? 'lock' : 'search' }}</span>
+              <input class="editor-input has-icon" type="text" formControlName="title" placeholder="Search TMDB by title"
+                autocomplete="off" [matAutocomplete]="tmdbSearch">
+            </span>
+          </label>
+          <mat-autocomplete #tmdbSearch="matAutocomplete">
+            @for (result of tmdbResults(); track result.tmdbId) {
+              <mat-option [value]="result.title" (onSelectionChange)="selectTmdbMovie($event, result)">
+                <div class="tmdb-option">
+                  @if (result.posterThumbnailUrl) {
+                    <img [src]="result.posterThumbnailUrl" alt="" class="tmdb-option-poster">
+                  } @else {
+                    <span class="tmdb-option-poster tmdb-option-poster-empty">
+                      <span class="material-icons" aria-hidden="true">movie</span>
+                    </span>
+                  }
+                  <span class="min-w-0">
+                    <span class="block truncate">
+                      {{ result.title }}
+                      @if (result.year) {
+                        <span class="ml-0.5 muted">({{ result.year }})</span>
+                      }
+                    </span>
+                    @if (result.director) {
+                      <span class="block text-sm truncate muted">{{ result.director }}</span>
+                    }
+                  </span>
+                </div>
+              </mat-option>
             }
-            <input
-              #actorInput
-              formControlName="actors"
-              [matChipInputFor]="actorList"
-              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-              (matChipInputTokenEnd)="addActor($event)">
-          </mat-chip-grid>
-        </mat-form-field>
-        <mat-form-field class="w-full">
-          <mat-label>Synopsis</mat-label>
-          <textarea name="synopsis" class="fix-textarea-arrows" matInput cdkTextareaAutosize
-          #synposisAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="synopsis"></textarea>
-        </mat-form-field>
-        <mat-form-field class="w-full">
-          <mat-label>Notes</mat-label>
-          <textarea name="notes" class="fix-textarea-arrows" matInput cdkTextareaAutosize
-          #notesAutoSize="cdkTextareaAutosize" cdkAutosizeMinRows="1" formControlName="notes"></textarea>
-        </mat-form-field>
-        <mat-form-field class="w-full">
-          <mat-label>Poster URL</mat-label>
-          <input name="imageUrl" matInput type="text" formControlName="imageUrl">
-        </mat-form-field>
-        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving()" type="submit" (click)="save()">Save</dvoss-button>
+          </mat-autocomplete>
+
+          <fieldset class="editor-field">
+            <legend class="field-label">Rating</legend>
+            <div class="star-rating" role="radiogroup" aria-label="Rating" (mouseleave)="hoveredRating.set(0)">
+              @for (star of stars; track star) {
+                <button type="button" role="radio" class="star"
+                  [attr.aria-checked]="rating() === star"
+                  [attr.aria-label]="star + ' star' + (star === 1 ? '' : 's')"
+                  (mouseenter)="hoveredRating.set(star)"
+                  (click)="setRating(star)">
+                  <span class="material-icons" aria-hidden="true">{{ star <= (hoveredRating() || rating()) ? 'star' : 'star_border' }}</span>
+                </button>
+              }
+            </div>
+          </fieldset>
+        </div>
+
+        @if (movieInfo(); as info) {
+          <section class="movie-info" aria-label="Movie details">
+            <dl class="info-facts">
+              <div>
+                <dt class="field-label">Directed By</dt>
+                <dd>{{ info.director || '—' }}</dd>
+              </div>
+              <div>
+                <dt class="field-label">Year</dt>
+                <dd>{{ info.year || '—' }}</dd>
+              </div>
+              <div>
+                <dt class="field-label">Rated</dt>
+                <dd>{{ info.mpaaRating || 'NR' }}</dd>
+              </div>
+              <div>
+                <dt class="field-label">Duration</dt>
+                <dd>{{ info.runtimeMinutes ? (info.runtimeMinutes | minutes) : '—' }}</dd>
+              </div>
+            </dl>
+            @if (info.genre.length) {
+              <ul class="genre-list" aria-label="Genres">
+                @for (genre of info.genre; track genre) {
+                  <li class="genre">{{ genre }}</li>
+                }
+              </ul>
+            }
+            @if (info.actors.length) {
+              <div>
+                <span class="block field-label">Starring</span>
+                <p class="mt-1">{{ info.actors.join(', ') }}</p>
+              </div>
+            }
+            @if (info.synopsis) {
+              <div>
+                <span class="block field-label">Synopsis</span>
+                <p class="mt-1">{{ info.synopsis }}</p>
+              </div>
+            }
+          </section>
+        } @else {
+          <div class="movie-info-empty">
+            <span class="material-icons" aria-hidden="true">travel_explore</span>
+            Search for a movie by title to fill in its details.
+          </div>
+        }
+
+        <label class="editor-field">
+          <span class="field-label">Notes</span>
+          <textarea class="editor-input editor-textarea" formControlName="notes" placeholder="My thoughts..."
+            cdkTextareaAutosize cdkAutosizeMinRows="3"></textarea>
+        </label>
+        <label class="editor-field">
+          <span class="field-label">Poster URL</span>
+          <span class="input-wrapper">
+            <span class="material-icons input-icon" aria-hidden="true">image</span>
+            <input class="editor-input has-icon" type="url" formControlName="imageUrl" placeholder="https://..." autocomplete="off">
+          </span>
+        </label>
+        <!-- On smaller screens the poster lives in the form instead of beside it -->
+        @if (imageUrl(); as imageUrl) {
+          <div class="flex flex-col gap-1 lg:hidden">
+            <span class="field-label">Poster</span>
+            <ng-container *ngTemplateOutlet="posterPicker; context: { $implicit: imageUrl }"></ng-container>
+          </div>
+        }
+        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving()" type="submit">Save</dvoss-button>
       </form>
     </div>
-    @if (imageUrl$ | async; as imageUrl) {
-      <img [src]="imageUrl" class="max-h-[800px] mx-auto px-4 lg:mt-20 lg:mr-auto lg:ml-0">
+    @if (imageUrl(); as imageUrl) {
+      <div class="hidden px-4 mx-auto mt-2 lg:block lg:mr-auto lg:ml-0">
+        <ng-container *ngTemplateOutlet="posterPicker; context: { $implicit: imageUrl }"></ng-container>
+      </div>
     } @else {
-      <div class="mx-4">
+      <div class="hidden mx-4 lg:block">
         <div class="flex items-center justify-center w-full h-full max-w-xl mx-auto mt-6 mb-20 text-center border-2 border-black border-dashed rounded-lg lg:mt-20 max-h-96 lg:mr-auto lg:ml-0 bg-dvLightGray-50">
           <div  class="flex items-center h-80">
             <div class="inline">
-              <mat-icon class="block large-icon">movie_filter</mat-icon>
+              <span class="block material-icons large-icon" aria-hidden="true">movie_filter</span>
               <span class="block font-semibold">Poster Preview</span>
             </div>
           </div>
@@ -115,3 +145,18 @@
     }
   </div>
 </div>
+
+<ng-template #posterPicker let-imageUrl>
+  @if (posters().length > 1) {
+    <div class="flex gap-2 mb-3" role="radiogroup" aria-label="Choose a poster">
+      @for (poster of posters(); track poster.fullUrl; let i = $index) {
+        <button type="button" role="radio" class="poster-choice" [class.selected]="poster.fullUrl === imageUrl"
+          [attr.aria-checked]="poster.fullUrl === imageUrl" [attr.aria-label]="'Poster ' + (i + 1)"
+          (click)="selectPoster(poster)">
+          <img [src]="poster.thumbnailUrl" alt="" class="object-cover w-full h-full">
+        </button>
+      }
+    </div>
+  }
+  <img [src]="imageUrl" alt="Selected poster" class="max-h-[800px] w-full lg:w-auto rounded-md lg:rounded-none">
+</ng-template>
