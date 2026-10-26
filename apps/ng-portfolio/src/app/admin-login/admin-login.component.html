@@ -1,20 +1,24 @@
 <div class="center-container">
-  <div class="relative w-full max-w-xl p-4 mx-auto mt-6 border-2 bg-dvLightGray-50">
+  <div class="relative w-full max-w-xl p-4 mx-auto mt-6 bg-white border-2">
     <h1 class="mb-4">Admin Login</h1>
-    <form #form [formGroup]="loginForm" (ngSubmit)="login()">
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label #nameLabel>Username</mat-label>
-        <input aria-describedby="nameLabel" name="username" matInput formControlName="username" type="text" autocomplete="username">
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label #passwordLabel>Password</mat-label>
-        <input aria-describedby="passwordLabel" name="password" matInput formControlName="password" type="password" autocomplete="current-password">
-      </mat-form-field>
-      <mat-error>
-        @if (errorMessage()) {
-          <div class="mb-3">{{ errorMessage() }}</div>
-        }
-      </mat-error>
+    <form #form [formGroup]="loginForm" class="flex flex-col gap-4" (ngSubmit)="login()">
+      <label class="dv-field">
+        <span class="dv-field-label">Username</span>
+        <span class="dv-input-wrapper">
+          <span class="material-icons dv-input-icon" aria-hidden="true">person</span>
+          <input class="dv-input has-icon" name="username" formControlName="username" type="text" autocomplete="username">
+        </span>
+      </label>
+      <label class="dv-field">
+        <span class="dv-field-label">Password</span>
+        <span class="dv-input-wrapper">
+          <span class="material-icons dv-input-icon" aria-hidden="true">lock</span>
+          <input class="dv-input has-icon" name="password" formControlName="password" type="password" autocomplete="current-password">
+        </span>
+      </label>
+      @if (errorMessage()) {
+        <div class="text-sm dv-field-error" role="alert">{{ errorMessage() }}</div>
+      }
       <dvoss-button [class]="'dv-button w-full'" class="w-full" [disabled]="!loginForm.valid" [loading]="submitting()" type="submit">Log In</dvoss-button>
     </form>
   </div>

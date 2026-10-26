@@ -1,0 +1,93 @@
+@use './colors' as *;
+
+// Plain HTML form fields, used in place of Material form fields.
+//
+//   <label class="dv-field">
+//     <span class="dv-field-label">Title</span>
+//     <span class="dv-input-wrapper">
+//       <span class="material-icons dv-input-icon" aria-hidden="true">movie</span>
+//       <input class="dv-input has-icon" type="text">
+//     </span>
+//     <span class="dv-field-hint">Optional hint</span>
+//   </label>
+
+.dv-field {
+  // Resets let a fieldset or dl work as a field too
+  @apply flex flex-col gap-1 m-0 p-0 border-0;
+}
+
+.dv-field-label {
+  @apply p-0 text-xs font-semibold uppercase tracking-wide;
+  color: $field-muted;
+}
+
+.dv-muted {
+  color: $field-muted;
+}
+
+.dv-input-wrapper {
+  @apply relative flex items-center;
+}
+
+.dv-input-icon {
+  @apply absolute left-3 text-xl pointer-events-none;
+  color: $field-muted;
+}
+
+.dv-input {
+  @apply w-full h-11 px-3 rounded-md text-base bg-white;
+  border: 1px solid $field-border;
+  color: $button;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  // Leaves room for a .dv-input-icon
+  &.has-icon {
+    @apply pl-10;
+  }
+
+  &::placeholder {
+    color: $field-border-hover;
+  }
+
+  &:hover {
+    border-color: $field-border-hover;
+  }
+
+  &:focus {
+    @apply outline-none;
+    border-color: $button-focus;
+    box-shadow: 0 0 0 3px rgba($button-focus, 0.2);
+  }
+
+  &:disabled {
+    @apply cursor-not-allowed;
+    border-color: $field-border;
+    background-color: $dv-light-gray;
+    color: $field-muted;
+  }
+
+  &.invalid {
+    border-color: $error;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($error, 0.2);
+    }
+  }
+}
+
+// For a .dv-input textarea with cdkTextareaAutosize. The CDK sets the height to fit just
+// the text, so the padding and border have to sit outside that height or a scrollbar
+// appears. Auto width lets a flex .dv-field stretch it without the padding overflowing.
+.dv-textarea {
+  @apply w-auto h-auto py-2.5 resize-none;
+  box-sizing: content-box;
+}
+
+.dv-field-hint {
+  @apply text-xs;
+  color: $field-muted;
+}
+
+.dv-field-error {
+  color: $error;
+}

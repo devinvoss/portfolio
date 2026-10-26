@@ -6,7 +6,6 @@ import { NgxsModule } from '@ngxs/store';
 import { ImagekitioAngularModule } from 'imagekitio-angular';
 import { MovieService, ToastService } from '@app/services';
 import { MovieState } from '@app/store/state/movie.state';
-import { MoviesModule } from '../movies.module';
 import { COLLAPSED_GENRE_COUNT, SearchComponent, TEXT_SEARCH_DEBOUNCE_MS } from './search.component';
 
 describe('SearchComponent', () => {
@@ -17,7 +16,7 @@ describe('SearchComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        MoviesModule,
+        SearchComponent,
         NgxsModule.forRoot([MovieState]),
         // Results render movie list items, which need ImageKit configured
         ImagekitioAngularModule.forRoot({ publicKey: 'test', urlEndpoint: 'https://ik.imagekit.io/test' })

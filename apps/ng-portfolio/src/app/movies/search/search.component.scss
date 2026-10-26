@@ -1,8 +1,5 @@
 @use '../../../styles/global/colors' as *;
 
-$border: #d4d4d4;
-$muted: #6b6b6b;
-
 .search-panel {
   @apply flex flex-col gap-3 w-full mt-2 p-4 rounded-lg bg-white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -26,45 +23,6 @@ $muted: #6b6b6b;
   }
 }
 
-.search-field {
-  @apply flex flex-col gap-1;
-}
-
-.search-field-label {
-  @apply text-xs font-semibold uppercase tracking-wide;
-  color: $muted;
-}
-
-.search-input-wrapper {
-  @apply relative flex items-center;
-}
-
-.search-input-icon {
-  @apply absolute left-3 text-xl pointer-events-none;
-  color: $muted;
-}
-
-.search-input {
-  @apply w-full h-11 pl-10 pr-3 rounded-md text-base bg-white;
-  border: 1px solid $border;
-  color: $button;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-
-  &::placeholder {
-    color: #a3a3a3;
-  }
-
-  &:hover {
-    border-color: #a3a3a3;
-  }
-
-  &:focus {
-    @apply outline-none;
-    border-color: $button-focus;
-    box-shadow: 0 0 0 3px rgba($button-focus, 0.2);
-  }
-}
-
 .search-group {
   @apply flex flex-col gap-2 m-0 p-0 border-0;
 }
@@ -75,7 +33,7 @@ $muted: #6b6b6b;
 
 .chip {
   @apply inline-flex items-center gap-0.5 h-8 px-3 rounded-full text-sm font-medium bg-white cursor-pointer select-none;
-  border: 1px solid $border;
+  border: 1px solid $field-border;
   color: $button;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 
@@ -108,7 +66,7 @@ $muted: #6b6b6b;
 
 .chip-count {
   @apply ml-1.5 text-xs font-normal;
-  color: $muted;
+  color: $field-muted;
 
   .chip-selected & {
     color: rgba(255, 255, 255, 0.7);
@@ -140,7 +98,7 @@ $muted: #6b6b6b;
 
 .search-status {
   @apply flex items-center justify-between min-h-8 text-sm;
-  color: $muted;
+  color: $field-muted;
 }
 
 .clear-button {
@@ -172,5 +130,5 @@ $muted: #6b6b6b;
 
 .no-results {
   @apply my-10 text-center;
-  color: $muted;
+  color: $field-muted;
 }

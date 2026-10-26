@@ -9,7 +9,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then(m => m.LoginModule)
+    loadComponent: () => import('./login/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'admin/login',
@@ -22,7 +22,7 @@ export const routes: Routes = [
   },
   {
     path: 'movie',
-    loadChildren: () => import('./movies/movies.module').then(m => m.MoviesModule)
+    loadChildren: () => import('./movies/movies.routes').then(m => m.MOVIE_ROUTES)
   },
   {
     path: '**',

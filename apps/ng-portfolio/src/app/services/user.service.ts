@@ -32,11 +32,6 @@ export class UserService {
   readonly memberRoutes = <INavigation[]>[
     ...this.unauthenticatedRoutes,
     {
-      route: 'account',
-      type: NavigationType.Internal,
-      name: 'Account'
-    },
-    {
       name: 'Log Out',
       type: NavigationType.Action,
       action: () => {

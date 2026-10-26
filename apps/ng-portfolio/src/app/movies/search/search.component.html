@@ -1,23 +1,23 @@
 <div class="center-container">
   <form [formGroup]="movieSearchForm" class="search-panel" role="search" (submit)="$event.preventDefault()">
     <div class="search-row">
-      <label class="search-field">
-        <span class="search-field-label">Title</span>
-        <span class="search-input-wrapper">
-          <span class="material-icons search-input-icon" aria-hidden="true">movie</span>
-          <input class="search-input" type="search" formControlName="title" placeholder="Search by title" autocomplete="off">
+      <label class="dv-field">
+        <span class="dv-field-label">Title</span>
+        <span class="dv-input-wrapper">
+          <span class="material-icons dv-input-icon" aria-hidden="true">movie</span>
+          <input class="dv-input has-icon" type="search" formControlName="title" placeholder="Search by title" autocomplete="off">
         </span>
       </label>
-      <label class="search-field">
-        <span class="search-field-label">Person</span>
-        <span class="search-input-wrapper">
-          <span class="material-icons search-input-icon" aria-hidden="true">person</span>
-          <input class="search-input" type="search" formControlName="person" placeholder="Director, actor, writer..." autocomplete="off">
+      <label class="dv-field">
+        <span class="dv-field-label">Person</span>
+        <span class="dv-input-wrapper">
+          <span class="material-icons dv-input-icon" aria-hidden="true">person</span>
+          <input class="dv-input has-icon" type="search" formControlName="person" placeholder="Director, actor, writer..." autocomplete="off">
         </span>
       </label>
 
       <fieldset class="search-group rating-group">
-        <legend class="search-field-label">Rating</legend>
+        <legend class="dv-field-label">Rating</legend>
         <div class="chip-list">
           @for (rating of ratingOptions; track rating) {
             <button type="button" class="chip"
@@ -33,7 +33,7 @@
     </div>
 
     <fieldset class="search-group">
-      <legend class="search-field-label">Genre</legend>
+      <legend class="dv-field-label">Genre</legend>
       <div class="chip-list">
         @for (item of visibleGenres(); track item.genre) {
           <button type="button" class="chip"

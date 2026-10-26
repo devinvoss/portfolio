@@ -2,7 +2,6 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideStore, withNgxsNoopExecutionStrategy } from '@ngxs/store';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { environment } from '@env';
@@ -23,13 +22,6 @@ bootstrapApplication(AppComponent, {
       withNgxsNoopExecutionStrategy()
     ),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
-    httpInterceptorProviders,
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        floatLabel: 'always',
-        appearance: 'outline'
-      }
-    }
+    httpInterceptorProviders
   ]
 }).catch((err) => console.error(err));

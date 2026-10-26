@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '@app/services';
-import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
 import { ButtonComponent } from '../shared/components/button/button.component';
 
 // Password login for the site admin only; it isn't linked from the app.
@@ -11,7 +10,7 @@ import { ButtonComponent } from '../shared/components/button/button.component';
   selector: 'dvoss-admin-login',
   templateUrl: './admin-login.component.html',
   styleUrls: ['./admin-login.component.scss'],
-  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, ButtonComponent]
+  imports: [FormsModule, ReactiveFormsModule, ButtonComponent]
 })
 export class AdminLoginComponent {
   private fb = inject(FormBuilder);

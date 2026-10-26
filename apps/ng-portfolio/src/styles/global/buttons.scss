@@ -1,7 +1,7 @@
 @use './colors' as *;
 
 .dv-button {
-  @apply text-white py-1 px-4 dark:bg-dvDarkGray-50 dark:text-white relative;
+  @apply text-white py-3 px-4 dark:bg-dvDarkGray-50 dark:text-white relative;
   min-width: 72px;
   background-color: $button;
 
@@ -9,6 +9,10 @@
   &:focus:not(:disabled) {
     @apply text-white dark:bg-gray-500 outline-none;
     background-color: $button-focus;
+  }
+
+  &.delete {
+    background-color: $button-delete;
   }
 
   &.clear {
