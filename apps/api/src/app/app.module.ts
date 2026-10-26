@@ -3,8 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AccountsModule } from '../accounts/accounts.module';
 import { AuthModule } from '../auth/auth.module';
+import { CommentsModule } from '../comments/comments.module';
 import { environment } from '../environments/environment';
 import { MovieModule } from '../movie/movie.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { TmdbModule } from '../tmdb/tmdb.module';
 import { UsersModule } from '../users/users.module';
 
@@ -18,7 +20,9 @@ import { AppController } from './app.controller';
     TmdbModule,
     UsersModule,
     AccountsModule,
-    AuthModule
+    AuthModule,
+    CommentsModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [],

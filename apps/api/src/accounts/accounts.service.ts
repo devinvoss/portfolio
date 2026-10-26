@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { SessionUser, SsoProvider } from '@portfolio/models';
-import { isValidObjectId, Model } from 'mongoose';
+import { isValidObjectId, Model, Types } from 'mongoose';
 import { Account, DISPLAY_NAME_MAX_LENGTH } from './account.schema';
 
 export interface ProviderProfile {
@@ -73,6 +73,19 @@ export class AccountsService {
     account.displayName = displayName;
     account.updatedDate = new Date();
     return account.save();
+  }
+
+  /** Looks up accounts in any status, for showing comment authors. */
+  findByIds(ids: Types.ObjectId[]): Promise<Account[]> {
+    return ids.length ? this.accountModel.find({ _id: { $in: ids } }).exec() : Promise.resolve([]);
+  }
+
+  /** The JWT strategy only accepts active accounts, so banning also signs the account out. */
+  async ban(id: Types.ObjectId): Promise<void> {
+    const result = await this.accountModel.updateOne({ _id: id }, { $set: { status: 'banned', updatedDate: new Date() } }).exec();
+    if (!result.matchedCount) {
+      throw new NotFoundException('Account not found.');
+    }
   }
 
   async delete(id: string): Promise<void> {
