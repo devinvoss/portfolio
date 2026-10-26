@@ -37,6 +37,13 @@ export class CommentsController {
     return this.commentsService.listReplies(id, user, query.after);
   }
 
+  @SkipThrottle()
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get('comments/:id/thread')
+  thread(@Param('id', ParseObjectIdPipe) id: Types.ObjectId, @CurrentUser() user: SessionUser | null): Promise<MovieComment> {
+    return this.commentsService.thread(id, user);
+  }
+
   @Auth()
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('movie/:movieId/comments')

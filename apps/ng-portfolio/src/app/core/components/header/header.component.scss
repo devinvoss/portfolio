@@ -43,3 +43,11 @@
   background-color: #a5d6a7;
   height: 3px;
 }
+
+.unread-badge {
+  @apply absolute flex items-center justify-center h-4 px-1 text-[10px] font-bold leading-none text-white rounded-full;
+  min-width: 16px;
+  top: -4px;
+  right: -6px;
+  background-color: $dv-orange;
+}

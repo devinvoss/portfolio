@@ -76,6 +76,23 @@ export class CommentsService {
     };
   }
 
+  /** The whole thread a comment belongs to, for opening a notification. */
+  async thread(id: Types.ObjectId, viewer: Viewer): Promise<MovieComment> {
+    const comment = await this.commentModel.findById(id).lean<Comment>().exec();
+    const top = comment?.parentId ? await this.commentModel.findById(comment.parentId).lean<Comment>().exec() : comment;
+    if (!top) {
+      throw new NotFoundException('Comment not found.');
+    }
+
+    const replies = await this.commentModel.find({ parentId: top._id }).sort({ _id: 1 }).limit(REPLY_PAGE_SIZE).lean<Comment[]>().exec();
+    const people = await this.loadPeople([top, ...replies]);
+    return {
+      ...this.toMovieComment(top, people, viewer),
+      replies: replies.map(reply => this.toMovieComment(reply, people, viewer)),
+      replyCount: top.replyCount
+    };
+  }
+
   async create(movieId: Types.ObjectId, user: SessionUser, dto: CreateCommentDto): Promise<MovieComment> {
     const movie = await this.movieService.findMovie(movieId.toHexString());
 

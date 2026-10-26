@@ -1,3 +1,5 @@
+@use './global/colors' as *;
+
 // Prevent the toolbar from resizing (smaller) at mobile resolution
 @media (max-width: 599px) {
   .mat-toolbar-row, .mat-toolbar-single-row {
@@ -27,4 +29,17 @@
 // Remove weird borders on Material Components
 .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch {
   border-right-style: hidden;
+}
+// The header's notification menu; menus render in an overlay, outside the header's styles
+.notification-menu.mat-mdc-menu-panel {
+  @apply w-80;
+  max-width: calc(100vw - 32px);
+}
+
+.notification-item.mat-mdc-menu-item {
+  @apply h-auto py-2 leading-snug;
+
+  &.unread {
+    background-color: rgba($dv-green, 0.25);
+  }
 }

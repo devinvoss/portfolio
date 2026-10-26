@@ -52,3 +52,35 @@
     @apply outline-none bg-slate-200;
   }
 }
+// Small text buttons, like the actions under a comment
+.dv-text-button {
+  @apply inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md bg-transparent cursor-pointer;
+  color: $field-muted;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  .mat-icon {
+    @apply w-[18px] h-[18px] text-[18px];
+  }
+
+  &:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: $button;
+  }
+
+  &:focus-visible {
+    @apply outline-none;
+    box-shadow: 0 0 0 2px $button-focus;
+  }
+
+  &:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  &.liked {
+    color: $info;
+  }
+
+  &.danger {
+    color: $button-delete;
+  }
+}

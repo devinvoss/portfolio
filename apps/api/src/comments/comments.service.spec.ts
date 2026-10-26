@@ -281,6 +281,20 @@ describe('CommentsService', () => {
     });
   });
 
+  describe('thread', () => {
+    it('returns the top-level comment with its replies when given a reply', async () => {
+      const parent = makeComment(sam, { replyCount: 1 });
+      const reply = makeComment(alex, { parentId: parent._id });
+      commentModel.findById.mockImplementation(commentId => query(commentId.equals(reply._id) ? reply : parent));
+      commentModel.find.mockReturnValue(query([reply]));
+
+      const thread = await service.thread(reply._id, null);
+
+      expect(thread.id).toBe(parent._id.toHexString());
+      expect(thread.replies?.map(r => r.id)).toEqual([reply._id.toHexString()]);
+    });
+  });
+
   describe('banAuthor', () => {
     it('bans the author and removes their comments, replies first', async () => {
       const comment = makeComment(sam);

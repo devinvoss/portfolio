@@ -1,0 +1,12 @@
+@use '../../../../styles/global/colors' as *;
+
+.comments {
+  @apply w-full max-w-3xl p-4 mx-auto my-6 bg-white rounded-md;
+  border: 1px solid $field-border;
+}
+
+// Replies sit under their comment, lined up with its text rather than its avatar.
+.replies {
+  @apply mt-1 ml-6 pl-4 sm:ml-10;
+  border-left: 2px solid $field-border;
+}

@@ -55,6 +55,9 @@
       </div>
     </div>
   </div>
+  <div class="px-4">
+    <portfolio-comments [movieId]="movie.id" [focusCommentId]="focusCommentId()" />
+  </div>
 } @else {
   <div class="center-container">
     <dvoss-skeleton-loader class="w-full"></dvoss-skeleton-loader>

@@ -1,0 +1,42 @@
+@use '../../../../styles/global/colors' as *;
+
+.comment {
+  @apply flex gap-3 p-2 rounded-md;
+  transition: background-color 600ms ease;
+
+  // A comment opened from a notification
+  &.highlighted {
+    background-color: rgba($dv-green, 0.35);
+  }
+}
+
+.avatar {
+  @apply w-9 h-9 rounded-full shrink-0 object-cover;
+}
+
+.avatar-initial {
+  @apply flex items-center justify-center font-semibold text-white;
+  background-color: $field-muted;
+}
+
+.author-badge {
+  @apply px-1.5 text-xs font-semibold uppercase tracking-wide rounded text-white;
+  background-color: $dv-orange;
+}
+
+.comment-body {
+  @apply mt-1;
+  // Comments are plain text: keep the line breaks people typed and wrap long words.
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.mention {
+  @apply font-medium;
+  color: $info;
+}
+
+.confirm-row {
+  @apply flex flex-wrap items-center justify-between gap-2 p-2 mt-1 text-sm rounded-md;
+  background-color: rgba($error, 0.08);
+}
