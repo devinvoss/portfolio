@@ -4,13 +4,14 @@ import { UserService } from '@app/services';
 import { MatToolbar } from '@angular/material/toolbar';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { AsyncPipe, Location } from '@angular/common';
 
 @Component({
   selector: 'dvoss-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  imports: [MatToolbar, ButtonComponent, MatIcon, AsyncPipe]
+  imports: [MatToolbar, ButtonComponent, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, AsyncPipe]
 })
 export class HeaderComponent {
   private router = inject(Router);

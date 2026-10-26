@@ -18,6 +18,26 @@
   background-color: $nav-background-color;
 }
 
+.user-button {
+  @apply flex items-center h-11 gap-2 px-2 rounded-md text-white bg-transparent cursor-pointer;
+  transition: background-color 150ms ease;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &:focus-visible {
+    @apply outline-none;
+    box-shadow: 0 0 0 2px $dv-green;
+  }
+}
+
+.user-icon {
+  @apply w-8 h-8;
+  font-size: 32px;
+}
+
 .toolbar-border {
   @apply w-full;
   background-color: #a5d6a7;

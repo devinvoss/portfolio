@@ -1,0 +1,13 @@
+// Spans the whole button so the text centers on it while the icon pins to the left.
+// align-top drops the baseline gap the button's inline wrapper would otherwise leave below.
+.provider-label {
+  @apply relative inline-flex items-center justify-center w-full align-top text-base leading-6;
+}
+
+.provider-icon {
+  @apply absolute left-0 top-1/2 -translate-y-1/2;
+}
+
+.google-icon {
+  @apply flex items-center justify-center w-6 h-6 rounded-full bg-white;
+}
