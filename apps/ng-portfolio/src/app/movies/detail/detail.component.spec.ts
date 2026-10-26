@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { MoviesModule } from '../movies.module';
 import { DetailComponent } from './detail.component';
 
 describe('DetailComponent', () => {
@@ -11,7 +10,7 @@ describe('DetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoviesModule],
+      imports: [DetailComponent],
       providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([{ path: '**', children: [] }])],
     }).compileComponents();
 
