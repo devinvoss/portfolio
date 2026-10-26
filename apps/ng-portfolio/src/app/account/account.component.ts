@@ -3,7 +3,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastService, UserService } from '@app/services';
-import { MatFormField, MatLabel, MatInput, MatError, MatHint } from '@angular/material/input';
 import { ButtonComponent } from '../shared/components/button/button.component';
 
 const DISPLAY_NAME_MAX_LENGTH = 40;
@@ -12,7 +11,7 @@ const DISPLAY_NAME_MAX_LENGTH = 40;
   selector: 'dvoss-account',
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss'],
-  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatHint, ButtonComponent]
+  imports: [ReactiveFormsModule, ButtonComponent]
 })
 export class AccountComponent {
   private fb = inject(FormBuilder);

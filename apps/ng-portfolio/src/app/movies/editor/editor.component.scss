@@ -1,9 +1,5 @@
 @use '../../../styles/global/colors' as *;
 
-// Same look as the movie list's search panel
-$border: #d4d4d4;
-$muted: #6b6b6b;
-
 .editor-panel {
   @apply relative w-full max-w-xl p-4 mx-auto mt-2 overflow-hidden rounded-lg bg-white lg:ml-auto lg:mr-0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -13,68 +9,6 @@ $muted: #6b6b6b;
 .title-row {
   @apply grid gap-3;
   grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.editor-field {
-  @apply flex flex-col gap-1 m-0 p-0 border-0;
-}
-
-.field-label {
-  @apply p-0 text-xs font-semibold uppercase tracking-wide;
-  color: $muted;
-}
-
-.muted {
-  color: $muted;
-}
-
-.input-wrapper {
-  @apply relative flex items-center;
-}
-
-.input-icon {
-  @apply absolute left-3 text-xl pointer-events-none;
-  color: $muted;
-}
-
-.editor-input {
-  @apply w-full h-11 px-3 rounded-md text-base bg-white;
-  border: 1px solid $border;
-  color: $button;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-
-  &.has-icon {
-    @apply pl-10;
-  }
-
-  &::placeholder {
-    color: #a3a3a3;
-  }
-
-  &:hover {
-    border-color: #a3a3a3;
-  }
-
-  &:focus {
-    @apply outline-none;
-    border-color: $button-focus;
-    box-shadow: 0 0 0 3px rgba($button-focus, 0.2);
-  }
-
-  &:disabled {
-    @apply cursor-not-allowed;
-    border-color: $border;
-    background-color: $dv-light-gray;
-    color: $muted;
-  }
-}
-
-// cdkTextareaAutosize sets the height to fit just the text, so the padding and border
-// have to sit outside that height or a scrollbar appears. Auto width lets the flex
-// parent stretch it to full width without the padding overflowing.
-.editor-textarea {
-  @apply w-auto h-auto py-2.5 resize-none;
-  box-sizing: content-box;
 }
 
 .star-rating {
@@ -121,8 +55,8 @@ $muted: #6b6b6b;
 
 .movie-info-empty {
   @apply flex items-center gap-2 p-4 rounded-md text-sm;
-  border: 1px dashed $border;
-  color: $muted;
+  border: 1px dashed $field-border;
+  color: $field-muted;
 }
 
 .tmdb-option {
@@ -136,7 +70,7 @@ $muted: #6b6b6b;
 .tmdb-option-poster-empty {
   @apply flex items-center justify-center;
   background-color: $dv-light-gray;
-  color: $muted;
+  color: $field-muted;
 }
 
 .large-icon {

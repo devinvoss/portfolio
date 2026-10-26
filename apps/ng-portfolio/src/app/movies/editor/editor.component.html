@@ -7,11 +7,11 @@
       <h1 class="mb-4">{{ mode() }} Movie</h1>
       <form [formGroup]="movieForm" class="flex flex-col gap-4" (ngSubmit)="save()">
         <div class="title-row">
-          <label class="editor-field">
-            <span class="field-label">Title</span>
-            <span class="input-wrapper">
-              <span class="material-icons input-icon" aria-hidden="true">{{ movieForm.controls.title.disabled ? 'lock' : 'search' }}</span>
-              <input class="editor-input has-icon" type="text" formControlName="title" placeholder="Search TMDB by title"
+          <label class="dv-field">
+            <span class="dv-field-label">Title</span>
+            <span class="dv-input-wrapper">
+              <span class="material-icons dv-input-icon" aria-hidden="true">{{ movieForm.controls.title.disabled ? 'lock' : 'search' }}</span>
+              <input class="dv-input has-icon" type="text" formControlName="title" placeholder="Search TMDB by title"
                 autocomplete="off" [matAutocomplete]="tmdbSearch">
             </span>
           </label>
@@ -30,11 +30,11 @@
                     <span class="block truncate">
                       {{ result.title }}
                       @if (result.year) {
-                        <span class="ml-0.5 muted">({{ result.year }})</span>
+                        <span class="ml-0.5 dv-muted">({{ result.year }})</span>
                       }
                     </span>
                     @if (result.director) {
-                      <span class="block text-sm truncate muted">{{ result.director }}</span>
+                      <span class="block text-sm truncate dv-muted">{{ result.director }}</span>
                     }
                   </span>
                 </div>
@@ -42,8 +42,8 @@
             }
           </mat-autocomplete>
 
-          <fieldset class="editor-field">
-            <legend class="field-label">Rating</legend>
+          <fieldset class="dv-field">
+            <legend class="dv-field-label">Rating</legend>
             <div class="star-rating" role="radiogroup" aria-label="Rating" (mouseleave)="hoveredRating.set(0)">
               @for (star of stars; track star) {
                 <button type="button" role="radio" class="star"
@@ -62,19 +62,19 @@
           <section class="movie-info" aria-label="Movie details">
             <dl class="info-facts">
               <div>
-                <dt class="field-label">Directed By</dt>
+                <dt class="dv-field-label">Directed By</dt>
                 <dd>{{ info.director || '—' }}</dd>
               </div>
               <div>
-                <dt class="field-label">Year</dt>
+                <dt class="dv-field-label">Year</dt>
                 <dd>{{ info.year || '—' }}</dd>
               </div>
               <div>
-                <dt class="field-label">Rated</dt>
+                <dt class="dv-field-label">Rated</dt>
                 <dd>{{ info.mpaaRating || 'NR' }}</dd>
               </div>
               <div>
-                <dt class="field-label">Duration</dt>
+                <dt class="dv-field-label">Duration</dt>
                 <dd>{{ info.runtimeMinutes ? (info.runtimeMinutes | minutes) : '—' }}</dd>
               </div>
             </dl>
@@ -87,13 +87,13 @@
             }
             @if (info.actors.length) {
               <div>
-                <span class="block field-label">Starring</span>
+                <span class="block dv-field-label">Starring</span>
                 <p class="mt-1">{{ info.actors.join(', ') }}</p>
               </div>
             }
             @if (info.synopsis) {
               <div>
-                <span class="block field-label">Synopsis</span>
+                <span class="block dv-field-label">Synopsis</span>
                 <p class="mt-1">{{ info.synopsis }}</p>
               </div>
             }
@@ -105,22 +105,22 @@
           </div>
         }
 
-        <label class="editor-field">
-          <span class="field-label">Notes</span>
-          <textarea class="editor-input editor-textarea" formControlName="notes" placeholder="My thoughts..."
+        <label class="dv-field">
+          <span class="dv-field-label">Notes</span>
+          <textarea class="dv-input dv-textarea" formControlName="notes" placeholder="My thoughts..."
             cdkTextareaAutosize cdkAutosizeMinRows="3"></textarea>
         </label>
-        <label class="editor-field">
-          <span class="field-label">Poster URL</span>
-          <span class="input-wrapper">
-            <span class="material-icons input-icon" aria-hidden="true">image</span>
-            <input class="editor-input has-icon" type="url" formControlName="imageUrl" placeholder="https://..." autocomplete="off">
+        <label class="dv-field">
+          <span class="dv-field-label">Poster URL</span>
+          <span class="dv-input-wrapper">
+            <span class="material-icons dv-input-icon" aria-hidden="true">image</span>
+            <input class="dv-input has-icon" type="url" formControlName="imageUrl" placeholder="https://..." autocomplete="off">
           </span>
         </label>
         <!-- On smaller screens the poster lives in the form instead of beside it -->
         @if (imageUrl(); as imageUrl) {
           <div class="flex flex-col gap-1 lg:hidden">
-            <span class="field-label">Poster</span>
+            <span class="dv-field-label">Poster</span>
             <ng-container *ngTemplateOutlet="posterPicker; context: { $implicit: imageUrl }"></ng-container>
           </div>
         }
