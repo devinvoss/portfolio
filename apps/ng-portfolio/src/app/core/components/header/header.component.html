@@ -8,10 +8,23 @@
     </div>
     <div class="flex-1"></div>
     @if ((user$ | async); as user) {
-      <span class="hidden mr-3 text-base text-white sm:inline">{{ user.displayName }}</span>
-      <dvoss-button [class]="'dv-button clear'" type="button" (click)="logout()">
-        Log Out
-      </dvoss-button>
+      <button type="button" class="user-button" [matMenuTriggerFor]="userMenu" [attr.aria-label]="'Account menu for ' + user.displayName">
+        @if (user.avatarUrl) {
+          <!-- no-referrer, as on the account page, since Google's avatar host can refuse requests with a referrer -->
+          <img class="object-cover w-8 h-8 rounded-full" [src]="user.avatarUrl" alt="" referrerpolicy="no-referrer">
+        } @else {
+          <!-- Stands in for the picture so the button isn't empty on phones, where the name is hidden -->
+          <mat-icon class="user-icon" aria-hidden="true">account_circle</mat-icon>
+        }
+        <span class="hidden text-base sm:inline">{{ user.displayName }}</span>      </button>
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <!-- The name is hidden in the header on phones, so the menu says who's signed in -->
+        <div class="px-4 py-2 text-sm text-gray-500 sm:hidden">{{ user.displayName }}</div>
+        <button mat-menu-item type="button" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Log Out</span>
+        </button>
+      </mat-menu>
     } @else {
       <dvoss-button [class]="'dv-button clear'" type="button" (click)="login()">
         Log In
