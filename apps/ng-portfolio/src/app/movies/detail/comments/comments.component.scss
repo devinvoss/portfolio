@@ -1,8 +1,8 @@
 @use '../../../../styles/global/colors' as *;
 
 .comments {
-  @apply w-full max-w-3xl p-4 mx-auto my-6 bg-white rounded-md;
-  border: 1px solid $field-border;
+  // Full width under My Thoughts, like the Synopsis and My Thoughts panels
+  @apply w-full p-4 text-black bg-white;
 }
 
 // Replies sit under their comment, lined up with its text rather than its avatar.

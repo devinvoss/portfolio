@@ -1,13 +1,15 @@
+// The poster and its overlay fill the page however tall the text and comments make it.
 .movie-image {
-  @apply left-0 object-cover w-full h-[1280px] overflow-hidden absolute;
+  @apply absolute inset-0 object-cover w-full h-full overflow-hidden;
 }
 
 .poster-overlay {
-  @apply absolute top-0 left-0 h-[1280px] w-full bg-black opacity-70;
+  @apply absolute inset-0 bg-black opacity-70;
 }
 
+// In the page flow (not absolute) so the page grows with the comments.
 .text-container {
-  @apply absolute top-0 left-0 h-[1280px] w-full p-4;
+  @apply relative w-full p-4;
 }
 
 .rating-container {
