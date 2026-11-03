@@ -1,0 +1,7 @@
+<!-- Clicking the dark area around the poster closes it too -->
+<div class="viewer" (click)="close()">
+  <img class="poster" [src]="data.imageUrl" [alt]="data.title + ' poster'" (click)="$event.stopPropagation()">
+  <button type="button" class="close-button" aria-label="Close poster" cdkFocusInitial (click)="close()">
+    <mat-icon aria-hidden="true">close</mat-icon>
+  </button>
+</div>
