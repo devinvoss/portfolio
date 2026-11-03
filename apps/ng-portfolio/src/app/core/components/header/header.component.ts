@@ -58,6 +58,7 @@ export class HeaderComponent {
   }
 
   openNotification(notification: ReplyNotification) {
-    this.router.navigate(['/movie/detail', notification.movieId], { fragment: `comment-${notification.commentId}` });
+    const path = notification.subjectType === 'recommendation' ? '/recommendations' : '/movie/detail';
+    this.router.navigate([path, notification.movieId], { fragment: `comment-${notification.commentId}` });
   }
 }

@@ -90,3 +90,14 @@
     @apply border-dvGreen-100 opacity-100;
   }
 }
+
+// Says what saving will do when the chosen movie was already recommended
+.recommendation-note {
+  @apply flex items-start gap-2 p-3 rounded-md text-sm;
+  background-color: rgba($button, 0.08);
+  border: 1px solid rgba($button, 0.25);
+
+  .material-icons {
+    color: $button;
+  }
+}

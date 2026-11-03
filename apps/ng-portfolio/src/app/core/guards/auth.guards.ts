@@ -10,6 +10,14 @@ export const adminGuard: CanActivateFn = () => {
   );
 };
 
+/** Any signed-in user, admin or member. */
+export const signedInGuard: CanActivateFn = (_route, state) => {
+  const router = inject(Router);
+  return inject(UserService).loadSession().pipe(
+    map(user => user ? true : router.createUrlTree(['/login'], { queryParams: { returnTo: state.url } }))
+  );
+};
+
 export const memberGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);
   return inject(UserService).loadSession().pipe(

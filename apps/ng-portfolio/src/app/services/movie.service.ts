@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { GenreCount, Movie, MovieSearch, MovieSearchCriteria, TmdbMovieDetails, TmdbSearchResult } from '@portfolio/models';
+import { GENRES, GenreCount, mapTmdbGenres, Movie, MovieSearch, MovieSearchCriteria, TmdbMovieDetails, TmdbSearchResult } from '@portfolio/models';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -42,18 +42,9 @@ export class MovieService {
     return this.http.get<TmdbMovieDetails>(`api/tmdb/movie/${tmdbId}`);
   }
 
-  // Maps TMDB's genre names onto this site's genres, renaming the few that differ
+  // Maps TMDB's genre names onto this site's genres; shared with the API, which does the same for recommendations
   mapTmdbGenres(tmdbGenres: string[]): string[] {
-    const renamed: Record<string, string> = {
-      'Science Fiction': 'Sci-Fi',
-      'History': 'Historical',
-      'Music': 'Musical'
-    };
-    const genres = tmdbGenres.map(genre => renamed[genre] ?? genre);
-    if (genres.includes('Romance') && genres.includes('Comedy')) {
-      genres.push('Rom-Com');
-    }
-    return this.getGenres().filter(genre => genres.includes(genre));
+    return mapTmdbGenres(tmdbGenres);
   }
 
   getCurrentMovieYears(): number[] {
@@ -67,32 +58,7 @@ export class MovieService {
   }
 
   getGenres(): string[] {
-    return [
-      'Action',
-      'Adventure',
-      'Animation',
-      'Biopic',
-      'Comedy',
-      'Crime',
-      'Dark Comedy',
-      'Documentary',
-      'Drama',
-      'Family',
-      'Fantasy',
-      'Horror',
-      'Historical',
-      'Indie',
-      'Musical',
-      'Mystery',
-      'Period',
-      'Romance',
-      'Rom-Com',
-      'Sci-Fi',
-      'Thriller',
-      'TV Movie',
-      'War',
-      'Western'
-    ]
+    return [...GENRES];
   }
 
   getRatingOptions(): number[] {

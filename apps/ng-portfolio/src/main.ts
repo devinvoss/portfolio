@@ -10,13 +10,14 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { httpInterceptorProviders } from './app/core/interceptors';
 import { MovieState } from './app/store/state/movie.state';
+import { RecommendationState } from './app/store/state/recommendation.state';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideStore(
-      [MovieState],
+      [MovieState, RecommendationState],
       { developmentMode: !environment.production },
       withNgxsStoragePlugin({ keys: '*' }),
       withNgxsNoopExecutionStrategy()

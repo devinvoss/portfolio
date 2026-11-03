@@ -4,8 +4,11 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideRouter } from '@angular/router';
 import { NgxsModule } from '@ngxs/store';
 import { ImagekitioAngularModule } from 'imagekitio-angular';
-import { MovieService, ToastService } from '@app/services';
+import { MovieService, ToastService, UserService } from '@app/services';
 import { MovieState } from '@app/store/state/movie.state';
+import { RecommendationState } from '@app/store/state/recommendation.state';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { MovieListKind } from '../movie-list-kind';
 import { COLLAPSED_GENRE_COUNT, FILTERS_OPEN_STORAGE_KEY, SearchComponent, TEXT_SEARCH_DEBOUNCE_MS } from './search.component';
 
 describe('SearchComponent', () => {
@@ -17,7 +20,7 @@ describe('SearchComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         SearchComponent,
-        NgxsModule.forRoot([MovieState]),
+        NgxsModule.forRoot([MovieState, RecommendationState]),
         // Results render movie list items, which need ImageKit configured
         ImagekitioAngularModule.forRoot({ publicKey: 'test', urlEndpoint: 'https://ik.imagekit.io/test' })
       ],
@@ -32,6 +35,16 @@ describe('SearchComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should show the Add a movie button to the admin only', () => {
+    const page: HTMLElement = fixture.nativeElement;
+    expect(page.querySelector('h1')?.textContent).toContain("Devin's Watched");
+    expect(page.textContent).not.toContain('Add a movie');
+
+    TestBed.inject(UserService).user$.next({ id: '1', role: 'admin', displayName: 'Devin' });
+    fixture.detectChanges();
+    expect(page.querySelector('a[href="/movie/add"]')?.textContent).toContain('Add a movie');
   });
 
   it('should search after the debounce when a text field changes', () => {
@@ -231,6 +244,59 @@ describe('SearchComponent', () => {
       component.movieSearchForm.patchValue({ title: 'Alien', genre: ['Horror', 'Sci-Fi'], rating: [5] });
       fixture.detectChanges();
       expect(count()).toBe('4 active');
+    });
+  });
+
+  describe('listing recommendations', () => {
+    let recommended: SearchComponent;
+    let harness: RouterTestingHarness;
+
+    beforeEach(async () => {
+      // Drop the watched list's search from the outer setup
+      httpTesting.match(() => true);
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [
+          NgxsModule.forRoot([MovieState, RecommendationState]),
+          ImagekitioAngularModule.forRoot({ publicKey: 'test', urlEndpoint: 'https://ik.imagekit.io/test' })
+        ],
+        providers: [
+          provideHttpClient(withXhr()),
+          provideHttpClientTesting(),
+          provideRouter([{ path: 'recommendations', data: { kind: MovieListKind.Recommended }, component: SearchComponent }])
+        ],
+      }).compileComponents();
+      httpTesting = TestBed.inject(HttpTestingController);
+      harness = await RouterTestingHarness.create();
+      recommended = await harness.navigateByUrl('/recommendations', SearchComponent);
+    });
+
+    it('should search recommendations and their genres instead of watched movies', () => {
+      httpTesting.expectOne('api/recommendation/genres').flush([{ genre: 'Horror', count: 2 }]);
+      httpTesting.expectOne('api/recommendation/search').flush({
+        criteria: { ...recommended.searchCriteria(), totalCount: 1 },
+        results: [{ id: 'r1', title: 'Heat', imageUrl: 'https://image.tmdb.org/t/p/original/a.jpg', commentCount: 3 }]
+      });
+      httpTesting.expectNone('api/movie/search');
+      harness.detectChanges();
+
+      const page: HTMLElement = harness.routeNativeElement as HTMLElement;
+      expect(page.textContent).toContain('Recommend a movie');
+      expect(page.textContent).toContain('3 comments');
+      // No ratings on recommendations, so no rating filter
+      expect(page.querySelector('legend')?.textContent).not.toContain('Rating');
+      expect(page.querySelector('.movie-list-item-image')?.getAttribute('src')).toBe('https://image.tmdb.org/t/p/w780/a.jpg');
+    });
+
+    it('should sort by most discussed from the first page', () => {
+      httpTesting.expectOne('api/recommendation/genres').flush([]);
+      httpTesting.expectOne('api/recommendation/search').flush({ criteria: recommended.searchCriteria(), results: [] });
+
+      recommended.sortBy(recommended.sortOptions[1]);
+
+      const req = httpTesting.expectOne('api/recommendation/search');
+      expect(req.request.body.criteria.sortFields).toEqual({ commentCount: -1 });
+      expect(req.request.body.criteria.page).toBe(0);
     });
   });
 });

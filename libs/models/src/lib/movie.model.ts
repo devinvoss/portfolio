@@ -2,6 +2,8 @@ import * as mongoose from 'mongoose';
 
 export interface Movie extends mongoose.Document {
   id: string;
+  /** Missing on movies added before TMDB ids were saved. */
+  tmdbId?: number;
   title: string;
   year: number;
   genre: string[];
@@ -45,6 +47,8 @@ export interface MovieSortFields {
   year?: number;
   runtimeMinutes?: number;
   createdDate?: number;
+  /** Recommendations only. */
+  commentCount?: number;
 }
 export interface GenreCount {
   genre: string;

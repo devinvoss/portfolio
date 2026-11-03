@@ -53,10 +53,14 @@ export interface LikeResult {
   likedByMe: boolean;
 }
 
+/** What a comment is on. Comments keep the subject's id in movieId either way, since ids never collide. */
+export type CommentSubjectType = 'movie' | 'recommendation';
+
 export interface ReplyNotification {
   id: string;
   type: 'reply' | 'mention';
   actorName: string;
+  subjectType: CommentSubjectType;
   movieId: string;
   movieTitle: string;
   commentId: string;

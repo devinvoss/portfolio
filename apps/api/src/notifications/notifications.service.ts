@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ReplyNotification, Role, SessionUser } from '@portfolio/models';
+import { CommentSubjectType, ReplyNotification, Role, SessionUser } from '@portfolio/models';
 import { isValidObjectId, Model, Types } from 'mongoose';
 import { Notification } from './notification.schema';
 
@@ -14,6 +14,7 @@ export interface NotificationRecipient {
 
 export interface NotificationEvent {
   actorName: string;
+  subjectType: CommentSubjectType;
   movieId: Types.ObjectId;
   movieTitle: string;
   commentId: Types.ObjectId;
@@ -24,6 +25,7 @@ export function toReplyNotification(doc: Notification): ReplyNotification {
     id: doc._id.toHexString(),
     type: doc.type,
     actorName: doc.actorName,
+    subjectType: doc.subjectType ?? 'movie',
     movieId: doc.movieId.toHexString(),
     movieTitle: doc.movieTitle,
     commentId: doc.commentId.toHexString(),
@@ -72,6 +74,14 @@ export class NotificationsService {
     if (commentIds.length) {
       await this.notificationModel.deleteMany({ commentId: { $in: commentIds } }).exec();
     }
+  }
+
+  /** Points a recommendation's notifications at the movie it became, so their links keep working. */
+  async moveToMovie(recommendationId: Types.ObjectId, movieId: Types.ObjectId, movieTitle: string): Promise<void> {
+    await this.notificationModel.updateMany(
+      { movieId: recommendationId },
+      { $set: { movieId, movieTitle, subjectType: 'movie' } }
+    ).exec();
   }
 
   private recipientFilter(user: SessionUser) {

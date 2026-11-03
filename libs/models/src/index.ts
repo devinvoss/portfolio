@@ -3,3 +3,5 @@ export * from './lib/session.model';
 export * from './lib/user.model';
 export * from './lib/tmdb.model';
 export * from './lib/comment.model';
+export * from './lib/genres.model';
+export * from './lib/recommendation.model';

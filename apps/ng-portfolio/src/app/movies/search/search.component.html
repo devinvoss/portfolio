@@ -1,4 +1,27 @@
 <div class="center-container">
+  <div class="flex flex-wrap items-center justify-between gap-3 px-1 mt-4">
+    @if (isRecommended) {
+      <div>
+        <h1 class="text-2xl font-medium">Recommendations</h1>
+        <p class="text-sm dv-muted">Movies visitors think I should watch. Add your own, or chime in on one already here.</p>
+      </div>
+      <a routerLink="/recommendations/add" class="inline-flex items-center gap-1 px-3 py-2 dv-button">
+        <span class="material-icons !text-[18px]" aria-hidden="true">add</span>
+        Recommend a movie
+      </a>
+    } @else {
+      <div>
+        <h1 class="text-2xl font-medium">Devin's Watched</h1>
+        <p class="text-sm dv-muted">Every movie I've watched since 2020, with my rating and thoughts. Open one to leave a hot take.</p>
+      </div>
+      @if (isAdmin()) {
+        <a routerLink="/movie/add" class="inline-flex items-center gap-1 px-3 py-2 dv-button">
+          <span class="material-icons !text-[18px]" aria-hidden="true">add</span>
+          Add a movie
+        </a>
+      }
+    }
+  </div>
   <form [formGroup]="movieSearchForm" class="flex flex-col w-full gap-2 p-4 mt-2 bg-white rounded-lg search-panel" role="search" (submit)="$event.preventDefault()">
     <button type="button" class="flex items-center w-full gap-2 px-3 py-2 font-medium text-left text-white rounded-md cursor-pointer filters-toggle" aria-controls="movieFilters" [attr.aria-expanded]="filtersOpen()" (click)="toggleFilters()">
       <span class="material-icons" aria-hidden="true">tune</span>
@@ -30,6 +53,7 @@
             </span>
           </label>
     
+          @if (!isRecommended) {
           <fieldset class="flex flex-col gap-2 sm:col-span-2 lg:col-span-1">
             <legend class="dv-field-label">Rating</legend>
             <!-- min-h-11 matches the text inputs so the chips line up with them -->
@@ -45,6 +69,7 @@
               }
             </div>
           </fieldset>
+          }
         </div>
     
         <!-- pb-1 leaves room under the last chips for their focus ring, which the collapsing area would clip -->
@@ -82,6 +107,15 @@
           {{ searchCriteria().totalCount }} {{ searchCriteria().totalCount === 1 ? 'movie' : 'movies' }}
         }
       </span>
+      @if (isRecommended) {
+        <div class="flex items-center gap-1 ml-auto mr-2" role="group" aria-label="Sort by">
+          @for (option of sortOptions; track option.label) {
+            <button type="button" class="chip" [class.chip-selected]="isSortedBy(option)" [attr.aria-pressed]="isSortedBy(option)" (click)="sortBy(option)">
+              {{ option.label }}
+            </button>
+          }
+        </div>
+      }
       @if (hasFilters()) {
         <button type="button" class="inline-flex items-center h-8 gap-1 px-2 text-sm font-medium rounded-md cursor-pointer plain-button" (click)="clearFilters()">
           <span class="material-icons" aria-hidden="true">close</span>
@@ -100,7 +134,13 @@
       <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
     </div>
   } @else if (!movies.length) {
-    <p class="my-10 text-center dv-muted">No movies match those filters.</p>
+    <p class="my-10 text-center dv-muted">
+      @if (isRecommended && !hasFilters()) {
+        Nobody has recommended a movie yet. <a routerLink="/recommendations/add" class="underline">Be the first.</a>
+      } @else {
+        No movies match those filters.
+      }
+    </p>
   } @else {
     <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5 results" [class.results-loading]="loading()">
       @for (movie of movies; track movie.id) {
@@ -116,7 +156,7 @@
     </div>
     @if (hasMoreMovies()) {
       <!-- Loads the next page as this scrolls into view -->
-      <div class="load-more-sentinel h-px" (dvossInViewport)="nearEndOfList.set($event)" aria-hidden="true"></div>
+      <div class="h-px load-more-sentinel" (dvossInViewport)="nearEndOfList.set($event)" aria-hidden="true"></div>
     }
   }
 </div>

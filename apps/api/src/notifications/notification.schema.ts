@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 import { Role } from '@portfolio/models';
 
 export const NOTIFICATION_TYPES = ['reply', 'mention'] as const;
+export const SUBJECT_TYPES = ['movie', 'recommendation'] as const;
 
 // Old notifications are dropped by a TTL index, so the collection doesn't grow forever.
 const NOTIFICATION_TTL_SECONDS = 90 * 24 * 60 * 60;
@@ -14,6 +15,8 @@ export interface Notification {
   recipientRole: Role;
   type: typeof NOTIFICATION_TYPES[number];
   actorName: string;
+  // Missing on notifications from before recommendations, which were all on movies.
+  subjectType?: typeof SUBJECT_TYPES[number];
   movieId: mongoose.Types.ObjectId;
   movieTitle: string;
   commentId: mongoose.Types.ObjectId;
@@ -26,6 +29,7 @@ export const NotificationSchema = new mongoose.Schema({
   recipientRole: { type: String, enum: ['admin', 'member'], required: true },
   type: { type: String, enum: NOTIFICATION_TYPES, required: true },
   actorName: { type: String, required: true },
+  subjectType: { type: String, enum: SUBJECT_TYPES, default: 'movie' },
   movieId: { type: mongoose.Schema.Types.ObjectId, required: true },
   movieTitle: { type: String, default: '' },
   commentId: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -35,4 +39,5 @@ export const NotificationSchema = new mongoose.Schema({
 
 NotificationSchema.index({ recipientId: 1, recipientRole: 1, _id: -1 });
 NotificationSchema.index({ commentId: 1 });
+NotificationSchema.index({ movieId: 1 });
 NotificationSchema.index({ createdDate: 1 }, { expireAfterSeconds: NOTIFICATION_TTL_SECONDS });

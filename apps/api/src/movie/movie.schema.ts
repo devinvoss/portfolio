@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 
 export const MovieSchema = new mongoose.Schema({
+  tmdbId: Number,
   title: String,
   year: Number,
   genre: [
@@ -26,6 +27,8 @@ export const MovieSchema = new mongoose.Schema({
     virtuals: true
   }
 });
+
+MovieSchema.index({ tmdbId: 1 });
 
 MovieSchema.virtual('id').get(function() {
   return this._id.toHexString();

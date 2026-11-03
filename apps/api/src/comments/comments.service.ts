@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentAuthor, CommentPage, LikeResult, MovieComment, ReplyPage, Role, SessionUser } from '@portfolio/models';
+import { CommentAuthor, CommentPage, CommentSubjectType, LikeResult, MovieComment, ReplyPage, Role, SessionUser } from '@portfolio/models';
 import { Model, QueryFilter, Types } from 'mongoose';
 import { AccountsService } from '../accounts/accounts.service';
 import { MovieService } from '../movie/movie.service';
@@ -20,7 +20,19 @@ const DELETED_USER_NAME = 'Deleted user';
 type Viewer = SessionUser | null;
 type People = Map<string, CommentAuthor>;
 
-const personKey = (role: Role, id: Types.ObjectId | string) => `${role}:${id.toString()}`;
+/** What a comment is posted on: a watched movie or a recommendation. */
+export interface CommentSubject {
+  id: Types.ObjectId;
+  type: CommentSubjectType;
+  title: string;
+}
+
+export interface PersonRef {
+  id: Types.ObjectId;
+  role: Role;
+}
+
+export const personKey = (role: Role, id: Types.ObjectId | string) => `${role}:${id.toString()}`;
 const isAuthor = (comment: Comment, user: SessionUser) => comment.authorRole === user.role && comment.authorId.equals(user.id);
 
 @Injectable()
@@ -95,6 +107,12 @@ export class CommentsService {
 
   async create(movieId: Types.ObjectId, user: SessionUser, dto: CreateCommentDto): Promise<MovieComment> {
     const movie = await this.movieService.findMovie(movieId.toHexString());
+    return this.createOn({ id: movieId, type: 'movie', title: movie.title }, user, dto);
+  }
+
+  /** Posts a comment on a subject the caller has already checked exists. */
+  async createOn(subject: CommentSubject, user: SessionUser, dto: CreateCommentDto): Promise<MovieComment> {
+    const movieId = subject.id;
 
     // Replying to a reply files the new reply under the same top-level comment and mentions the reply's author.
     let parent: Comment | null = null;
@@ -129,7 +147,7 @@ export class CommentsService {
       await this.commentModel.updateOne({ _id: parent._id }, { $inc: { replyCount: 1 } }).exec();
       // The public name, as on the comment: the admin's session name can fall back to the login username.
       const actorName = result.author?.displayName ?? user.displayName;
-      await this.notifyReply(user, parent, mentioned, { actorName, movieId, movieTitle: movie.title, commentId: comment._id });
+      await this.notifyReply(user, parent, mentioned, { actorName, subjectType: subject.type, movieId, movieTitle: subject.title, commentId: comment._id });
     }
 
     return parent ? result : { ...result, replies: [], replyCount: 0 };
@@ -199,6 +217,67 @@ export class CommentsService {
     return { removedComments: theirs.length };
   }
 
+  /** For aggregations that join comments in. */
+  get collectionName(): string {
+    return this.commentModel.collection.name;
+  }
+
+  /** Visible comments and replies per subject, for the ids given. */
+  async countVisible(subjectIds: Types.ObjectId[]): Promise<Map<string, number>> {
+    if (!subjectIds.length) {
+      return new Map();
+    }
+    const counts = await this.commentModel.aggregate<{ _id: Types.ObjectId; count: number }>([
+      { $match: { movieId: { $in: subjectIds }, deleted: false } },
+      { $group: { _id: '$movieId', count: { $sum: 1 } } }
+    ]).exec();
+    return new Map(counts.map(c => [c._id.toHexString(), c.count]));
+  }
+
+  /** Whether anyone but the given person has commented on a subject, including comments since deleted down to a placeholder. */
+  async hasCommentsByOthers(subjectId: Types.ObjectId, person: PersonRef): Promise<boolean> {
+    const other = await this.commentModel.exists({
+      movieId: subjectId,
+      $or: [{ authorId: { $ne: person.id } }, { authorRole: { $ne: person.role } }]
+    });
+    return !!other;
+  }
+
+  /** Moves every comment on a recommendation, and its notifications, to the movie it became. */
+  async moveToMovie(recommendationId: Types.ObjectId, movieId: Types.ObjectId, movieTitle: string): Promise<void> {
+    await this.commentModel.updateMany({ movieId: recommendationId }, { $set: { movieId } }).exec();
+    await this.notificationsService.moveToMovie(recommendationId, movieId, movieTitle);
+  }
+
+  /** Deletes every comment on a subject, along with their notifications. */
+  async deleteAllOn(subjectId: Types.ObjectId): Promise<void> {
+    const ids = (await this.commentModel.find({ movieId: subjectId }, { _id: 1 }).lean<Pick<Comment, '_id'>[]>().exec()).map(c => c._id);
+    await this.commentModel.deleteMany({ movieId: subjectId }).exec();
+    await this.notificationsService.deleteForComments(ids);
+  }
+
+  /** Public names and avatars, keyed by personKey. */
+  async findPeople(refs: PersonRef[]): Promise<People> {
+    const ids: Record<Role, Map<string, Types.ObjectId>> = { admin: new Map(), member: new Map() };
+    for (const ref of refs) {
+      ids[ref.role].set(ref.id.toHexString(), ref.id);
+    }
+
+    const [accounts, admins] = await Promise.all([
+      this.accountsService.findByIds([...ids.member.values()]),
+      this.usersService.findAdminsByIds([...ids.admin.values()])
+    ]);
+
+    const people: People = new Map();
+    for (const account of accounts) {
+      people.set(personKey('member', account.id), { id: account.id, role: 'member', displayName: account.displayName, avatarUrl: account.avatarUrl });
+    }
+    for (const admin of admins) {
+      people.set(personKey('admin', admin.id), { id: admin.id, role: 'admin', displayName: admin.displayName || ADMIN_FALLBACK_NAME });
+    }
+    return people;
+  }
+
   private async findVisible(id: Types.ObjectId): Promise<Comment> {
     const comment = await this.commentModel.findById(id).lean<Comment>().exec();
     if (!comment || comment.deleted) {
@@ -264,30 +343,17 @@ export class CommentsService {
   }
 
   // Names and avatars are looked up on every read so a changed display name shows everywhere.
-  private async loadPeople(comments: Comment[]): Promise<People> {
-    const ids: Record<Role, Map<string, Types.ObjectId>> = { admin: new Map(), member: new Map() };
+  private loadPeople(comments: Comment[]): Promise<People> {
+    const refs: PersonRef[] = [];
     for (const comment of comments) {
       if (!comment.deleted) {
-        ids[comment.authorRole].set(comment.authorId.toHexString(), comment.authorId);
+        refs.push({ id: comment.authorId, role: comment.authorRole });
       }
       if (comment.replyToId && comment.replyToRole) {
-        ids[comment.replyToRole].set(comment.replyToId.toHexString(), comment.replyToId);
+        refs.push({ id: comment.replyToId, role: comment.replyToRole });
       }
     }
-
-    const [accounts, admins] = await Promise.all([
-      this.accountsService.findByIds([...ids.member.values()]),
-      this.usersService.findAdminsByIds([...ids.admin.values()])
-    ]);
-
-    const people: People = new Map();
-    for (const account of accounts) {
-      people.set(personKey('member', account.id), { id: account.id, role: 'member', displayName: account.displayName, avatarUrl: account.avatarUrl });
-    }
-    for (const admin of admins) {
-      people.set(personKey('admin', admin.id), { id: admin.id, role: 'admin', displayName: admin.displayName || ADMIN_FALLBACK_NAME });
-    }
-    return people;
+    return this.findPeople(refs);
   }
 
   private toMovieComment(comment: Comment, people: People, viewer: Viewer): MovieComment {

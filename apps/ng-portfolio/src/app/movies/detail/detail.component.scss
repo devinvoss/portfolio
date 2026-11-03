@@ -49,3 +49,12 @@
 .poster {
   @apply block w-full h-auto;
 }
+
+.recommended-by {
+  @apply inline-flex items-center gap-1 mr-4 align-top pt-1 text-sm md:text-base;
+}
+
+// The text buttons are styled for light panels; this one sits on the dark poster
+.remove-cancel {
+  color: white;
+}

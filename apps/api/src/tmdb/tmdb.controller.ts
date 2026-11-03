@@ -1,10 +1,14 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { TmdbMovieDetails, TmdbSearchResult } from '@portfolio/models';
 import { Auth } from '../auth/auth.decorator';
 import { TmdbService } from './tmdb.service';
 
-// Admin-only, like adding movies, so the TMDB key's quota isn't open to the public
-@Auth('admin')
+// Signed-in users only, so recommending works but the TMDB key's quota isn't open to the public.
+// Rate limited too, since a search makes several TMDB requests.
+@Auth()
+@UseGuards(ThrottlerGuard)
+@Throttle({ default: { limit: 60, ttl: 60_000 } })
 @Controller('tmdb')
 export class TmdbController {
 

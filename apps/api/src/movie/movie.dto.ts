@@ -2,6 +2,11 @@ import { IsArray, IsInt, IsMongoId, IsNotEmpty, IsOptional, IsString, Max, MaxLe
 
 // Only these fields can be written through the API; anything else in the body is stripped.
 export class MovieDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  tmdbId?: number;
+
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)

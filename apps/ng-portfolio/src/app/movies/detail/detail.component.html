@@ -9,19 +9,33 @@
         </button>
         <div class="min-w-0">
           <span class="block text-2xl font-medium md:text-3xl">
-            {{ movie.title }} ({{ movie.year }})
+            {{ movie.title }}@if (movie.year) { ({{ movie.year }})}
             @if (isAdmin$ | async) {
-              <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="editMovie()">
-                <mat-icon class="-mb-[6px]">movie_edit</mat-icon> Edit
-              </dvoss-button>
+              @if (watched()) {
+                <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="editMovie()">
+                  <mat-icon class="-mb-[6px]">movie_edit</mat-icon> Edit
+                </dvoss-button>
+              } @else {
+                <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="addToWatched()">
+                  <mat-icon class="-mb-[6px]">playlist_add_check</mat-icon> Add to Watched
+                </dvoss-button>
+              }
             }
           </span>
           <div class="block">
-            <div class="rating-container">
-              @for (num of [1,2,3,4,5]; track num) {
-                <span class="text-2xl md:text-3xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
-              }
-            </div>
+            @if (watched(); as watched) {
+              <div class="rating-container">
+                @for (num of [1,2,3,4,5]; track num) {
+                  <span class="text-2xl md:text-3xl material-icons">{{ num <= watched.rating ? 'star' : 'star_border' }}</span>
+                }
+              </div>
+            }
+            @if (recommendation(); as recommendation) {
+              <div class="recommended-by">
+                <span class="material-icons" aria-hidden="true">recommend</span>
+                Recommended by {{ recommendation.recommendedBy?.displayName ?? 'a deleted user' }} on {{ recommendation.createdDate | date: 'mediumDate' }}
+              </div>
+            }
             <div class="inline-block">
               <mat-chip-set>
                 @for (genre of movie.genre; track genre) {
@@ -38,12 +52,14 @@
           </div>
           <div>
             <span class="block">Rated</span>
-            <span class="mt-2 text-lg font-medium">{{ movie.mpaaRating }}</span>
+            <span class="mt-2 text-lg font-medium">{{ movie.mpaaRating || 'NR' }}</span>
           </div>
-          <div>
-            <span class="block">Duration</span>
-            <span class="mt-2 text-lg font-medium">{{ movie.runtimeMinutes | minutes }}</span>
-          </div>
+          @if (movie.runtimeMinutes) {
+            <div>
+              <span class="block">Duration</span>
+              <span class="mt-2 text-lg font-medium">{{ movie.runtimeMinutes | minutes }}</span>
+            </div>
+          }
           <div class="w-full">
             <span class="block">Starring</span>
             @for (actor of movie.actors; track i; let i = $index) {
@@ -57,12 +73,27 @@
           <span class="block p-2 font-medium bg-dvBrown-50">Synopsis</span>
           <p class="p-2 mt-1">{{ movie.synopsis }}</p>
         </div>
-        <div class="w-full mx-4 my-2 text-black bg-dvGreen-50">
-          <span class="block p-2 font-medium bg-dvGreen-100">My Thoughts</span>
-          <p class="p-2 mt-1">{{ movie.notes }}</p>
-        </div>
+        @if (watched(); as watched) {
+          <div class="w-full mx-4 my-2 text-black bg-dvGreen-50">
+            <span class="block p-2 font-medium bg-dvGreen-100">My Thoughts</span>
+            <p class="p-2 mt-1">{{ watched.notes }}</p>
+          </div>
+        }
+        @if (recommendation(); as recommendation) {
+          @if (recommendation.canRemove) {
+            <div class="flex items-center justify-end w-full gap-2 mx-4 my-1">
+              @if (confirmingRemove()) {
+                <span class="text-sm" role="alert">This also deletes its comments.</span>
+                <button type="button" class="dv-text-button remove-cancel" (click)="confirmingRemove.set(false)">Cancel</button>
+              }
+              <dvoss-button [class]="'dv-button delete'" type="button" [loading]="removing()" (click)="removeRecommendation()">
+                {{ confirmingRemove() ? 'Click again to remove' : (isAdmin$ | async) ? 'Dismiss' : 'Withdraw recommendation' }}
+              </dvoss-button>
+            </div>
+          }
+        }
         <div class="w-full mx-4 my-2">
-          <portfolio-comments [movieId]="movie.id" [focusCommentId]="focusCommentId()" />
+          <portfolio-comments [movieId]="movie.id" [subjectType]="isRecommended ? 'recommendation' : 'movie'" [focusCommentId]="focusCommentId()" />
         </div>
       </div>
     </div>

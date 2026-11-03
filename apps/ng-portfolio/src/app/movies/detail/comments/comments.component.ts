@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { CommentService, ToastService, UserService } from '@app/services';
-import { MovieComment } from '@portfolio/models';
+import { CommentSubjectType, MovieComment } from '@portfolio/models';
 import { catchError, forkJoin, of, Subscription } from 'rxjs';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { CommentComposerComponent } from './comment-composer.component';
@@ -47,7 +47,9 @@ export class CommentsComponent {
   private location = inject(Location);
   private injector = inject(Injector);
 
+  /** The movie or recommendation the comments are on. */
   movieId = input.required<string>();
+  subjectType = input<CommentSubjectType>('movie');
   /** A comment to show first and highlight, from a notification link. */
   focusCommentId = input<string | null>(null);
 
@@ -84,7 +86,7 @@ export class CommentsComponent {
     this.replyingTo.set(null);
 
     const focused$ = focusId ? this.commentService.getThread(focusId).pipe(catchError(() => of(null))) : of(null);
-    this.loadSub = forkJoin([this.commentService.getComments(movieId), focused$]).subscribe({
+    this.loadSub = forkJoin([this.commentService.getComments(movieId, undefined, this.subjectType()), focused$]).subscribe({
       next: ([page, focused]) => {
         const pinned = focused?.movieId === movieId ? focused : null;
         const listed = page.comments.filter(comment => comment.id !== pinned?.id);
@@ -110,7 +112,7 @@ export class CommentsComponent {
 
   loadMore() {
     this.loadingMore.set(true);
-    this.commentService.getComments(this.movieId(), this.cursor).subscribe({
+    this.commentService.getComments(this.movieId(), this.cursor, this.subjectType()).subscribe({
       next: page => {
         const known = new Set(this.threads().map(thread => thread.comment.id));
         this.threads.update(threads => [...threads, ...page.comments.filter(c => !known.has(c.id)).map(toThreadView)]);
@@ -154,7 +156,7 @@ export class CommentsComponent {
 
   post(body: string) {
     this.posting.set(true);
-    this.commentService.addComment(this.movieId(), body).subscribe({
+    this.commentService.addComment(this.movieId(), body, undefined, this.subjectType()).subscribe({
       next: comment => {
         this.posting.set(false);
         this.composer()?.clear();
@@ -183,7 +185,7 @@ export class CommentsComponent {
     }
 
     this.replying.set(true);
-    this.commentService.addComment(this.movieId(), body, replyingTo.target.id).subscribe({
+    this.commentService.addComment(this.movieId(), body, replyingTo.target.id, this.subjectType()).subscribe({
       next: reply => {
         this.replying.set(false);
         this.replyingTo.set(null);

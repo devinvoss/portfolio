@@ -1,4 +1,5 @@
 export enum EditorMode {
   EDIT = 'Edit',
-  ADD = 'Add'
+  ADD = 'Add',
+  RECOMMEND = 'Recommend'
 }
