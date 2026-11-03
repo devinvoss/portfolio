@@ -1,7 +1,8 @@
 @use './colors' as *;
 
 .dv-button {
-  @apply text-white py-3 px-4 dark:bg-dvDarkGray-50 dark:text-white relative;
+  // Same size, padding and corners as .dv-text-button, like the Cancel button in the comment editor
+  @apply text-white px-2 py-1 text-sm font-medium rounded-md dark:bg-dvDarkGray-50 dark:text-white relative;
   min-width: 72px;
   background-color: $button;
 
@@ -16,6 +17,8 @@
   }
 
   &.clear {
+    // The header's Sign in keeps its full size
+    @apply px-4 text-base;
     height: 100%;
     box-shadow: none;
     border-radius: 0px;

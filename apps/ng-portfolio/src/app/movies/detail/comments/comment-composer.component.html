@@ -9,6 +9,6 @@
     @if (cancellable()) {
       <button type="button" class="dv-text-button" (click)="cancelled.emit()">Cancel</button>
     }
-    <dvoss-button [class]="'dv-button py-2'" type="submit" [disabled]="!canSubmit()" [loading]="busy()">{{ submitLabel() }}</dvoss-button>
+    <dvoss-button [class]="'dv-button'" type="submit" [disabled]="!canSubmit()" [loading]="busy()">{{ submitLabel() }}</dvoss-button>
   </div>
 </form>

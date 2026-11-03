@@ -11,6 +11,7 @@
 @include meta.load-css('./global/forms');
 @include meta.load-css('./global/headings');
 @include meta.load-css('./global/animations');
+@include meta.load-css('./global/dark-panel');
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -12,7 +12,7 @@
       <p class="italic dv-muted">[deleted]</p>
     } @else {
       <div class="flex flex-wrap items-baseline gap-x-2">
-        <span class="font-semibold">{{ c.author?.displayName ?? 'Deleted user' }}</span>
+        <span class="font-medium">{{ c.author?.displayName ?? 'Deleted user' }}</span>
         @if (c.author?.role === 'admin') {
           <span class="author-badge">Author</span>
         }
@@ -28,11 +28,11 @@
             [autofocus]="true" [cancellable]="true" (submitted)="saveEdit($event)" (cancelled)="editing.set(false)" />
         </div>
       } @else {
-        <p class="comment-body">@if (c.replyTo) {<span class="mention">&#64;{{ c.replyTo.displayName }}</span> }{{ c.body }}</p>
+        <p class="comment-body">@if (c.replyTo) {<span class="mention">&#64;{{ c.replyTo.displayName }}</span>}{{ c.body }}</p>
       }
 
       @if (!editing()) {
-        <div class="flex flex-wrap items-center mt-1 -ml-2 gap-x-1">
+        <div class="flex flex-wrap items-center -ml-2 gap-x-1">
           <button type="button" class="dv-text-button" [class.liked]="c.likedByMe" [attr.aria-pressed]="c.likedByMe"
             [attr.aria-label]="(c.likedByMe ? 'Unlike' : 'Like') + ', ' + c.likeCount + (c.likeCount === 1 ? ' like' : ' likes')" (click)="toggleLike()">
             <mat-icon aria-hidden="true">{{ c.likedByMe ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>

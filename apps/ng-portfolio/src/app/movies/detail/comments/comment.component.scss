@@ -1,12 +1,12 @@
 @use '../../../../styles/global/colors' as *;
 
 .comment {
-  @apply flex gap-3 p-2 rounded-md;
+  @apply flex gap-3 py-1 rounded-md;
   transition: background-color 600ms ease;
 
   // A comment opened from a notification
   &.highlighted {
-    background-color: rgba($dv-green, 0.35);
+    background-color: rgba($dv-green, 0.2);
   }
 }
 
@@ -25,20 +25,20 @@
 }
 
 .comment-body {
-  @apply mt-1;
   // Comments are plain text: keep the line breaks people typed and wrap long words.
   white-space: pre-line;
   overflow-wrap: anywhere;
 }
 
 .mention {
-  @apply font-medium;
-  color: $info;
+  // A margin rather than a space, so a body starting on a new line has no stray space before it.
+  @apply font-medium mr-1;
+  color: $dark-link;
 }
 
 .confirm-row {
   @apply flex flex-wrap items-center justify-between gap-2 p-2 mt-1 text-sm rounded-md;
-  background-color: rgba($error, 0.08);
+  background-color: rgba($error, 0.18);
 }
 
 :host {
