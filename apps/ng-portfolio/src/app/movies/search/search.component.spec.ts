@@ -6,7 +6,7 @@ import { NgxsModule } from '@ngxs/store';
 import { ImagekitioAngularModule } from 'imagekitio-angular';
 import { MovieService, ToastService } from '@app/services';
 import { MovieState } from '@app/store/state/movie.state';
-import { COLLAPSED_GENRE_COUNT, SearchComponent, TEXT_SEARCH_DEBOUNCE_MS } from './search.component';
+import { COLLAPSED_GENRE_COUNT, FILTERS_OPEN_STORAGE_KEY, SearchComponent, TEXT_SEARCH_DEBOUNCE_MS } from './search.component';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -192,5 +192,45 @@ describe('SearchComponent', () => {
 
     expect(component.loading()).toBe(false);
     expect(toastError).toHaveBeenCalledWith('Movie search failed.');
+  });
+
+  describe('collapsing the filters', () => {
+    const toggle = () => fixture.nativeElement.querySelector('.filters-toggle') as HTMLButtonElement;
+    const body = () => fixture.nativeElement.querySelector('#movieFilters') as HTMLElement;
+
+    afterEach(() => localStorage.removeItem(FILTERS_OPEN_STORAGE_KEY));
+
+    it('should start open, and collapse and reopen from the header', () => {
+      expect(toggle().getAttribute('aria-expanded')).toBe('true');
+      expect(body().inert).toBe(false);
+
+      toggle().click();
+      fixture.detectChanges();
+      expect(toggle().getAttribute('aria-expanded')).toBe('false');
+      expect(body().classList).not.toContain('open');
+      // Collapsed fields can't be tabbed to
+      expect(body().inert).toBe(true);
+
+      toggle().click();
+      fixture.detectChanges();
+      expect(toggle().getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('should remember being collapsed', () => {
+      toggle().click();
+      expect(localStorage.getItem(FILTERS_OPEN_STORAGE_KEY)).toBe('false');
+
+      const next = TestBed.createComponent(SearchComponent);
+      expect(next.componentInstance.filtersOpen()).toBe(false);
+    });
+
+    it('should show how many filters are active', () => {
+      const count = () => fixture.nativeElement.querySelector('.filters-count')?.textContent?.trim();
+      expect(count()).toBeUndefined();
+
+      component.movieSearchForm.patchValue({ title: 'Alien', genre: ['Horror', 'Sci-Fi'], rating: [5] });
+      fixture.detectChanges();
+      expect(count()).toBe('4 active');
+    });
   });
 });

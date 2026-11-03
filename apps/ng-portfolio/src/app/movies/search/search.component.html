@@ -1,62 +1,80 @@
 <div class="center-container">
-  <form [formGroup]="movieSearchForm" class="search-panel" role="search" (submit)="$event.preventDefault()">
-    <div class="search-row">
-      <label class="dv-field">
-        <span class="dv-field-label">Title</span>
-        <span class="dv-input-wrapper">
-          <span class="material-icons dv-input-icon" aria-hidden="true">movie</span>
-          <input class="dv-input has-icon" type="search" formControlName="title" placeholder="Search by title" autocomplete="off">
-        </span>
-      </label>
-      <label class="dv-field">
-        <span class="dv-field-label">Person</span>
-        <span class="dv-input-wrapper">
-          <span class="material-icons dv-input-icon" aria-hidden="true">person</span>
-          <input class="dv-input has-icon" type="search" formControlName="person" placeholder="Director, actor, writer..." autocomplete="off">
-        </span>
-      </label>
+  <form [formGroup]="movieSearchForm" class="flex flex-col w-full gap-2 p-4 mt-2 bg-white rounded-lg search-panel" role="search" (submit)="$event.preventDefault()">
+    <button type="button" class="flex items-center w-full gap-2 px-3 py-2 font-medium text-left text-white rounded-md cursor-pointer filters-toggle" aria-controls="movieFilters" [attr.aria-expanded]="filtersOpen()" (click)="toggleFilters()">
+      <span class="material-icons" aria-hidden="true">tune</span>
+      <span class="text-sm font-medium tracking-wide uppercase">Filters</span>
+      @if (activeFilterCount(); as count) {
+        <span class="px-2 text-xs font-medium bg-white rounded-full filters-count">{{ count }} active</span>
+      }
+      <span class="ml-auto material-icons filters-chevron" [class.open]="filtersOpen()" aria-hidden="true">expand_more</span>
+    </button>
 
-      <fieldset class="search-group rating-group">
-        <legend class="dv-field-label">Rating</legend>
-        <div class="chip-list">
-          @for (rating of ratingOptions; track rating) {
-            <button type="button" class="chip"
-              [class.chip-selected]="movieSearchForm.controls.rating.value.includes(rating)"
-              [attr.aria-pressed]="movieSearchForm.controls.rating.value.includes(rating)"
-              [attr.aria-label]="rating + ' star' + (rating === 1 ? '' : 's')"
-              (click)="toggleOption(movieSearchForm.controls.rating, rating)">
-              {{ rating }}<span class="material-icons chip-star" aria-hidden="true">star</span>
-            </button>
-          }
+    <!-- Collapses smoothly by animating the grid row; inert keeps the hidden fields out of the tab order -->
+    <div id="movieFilters" class="grid px-1 -mx-1 overflow-hidden filters-body" [class.open]="filtersOpen()" [inert]="!filtersOpen()">
+      <!-- No padding here: padding would keep it from collapsing to zero, so the spacing is on the fields -->
+      <div class="flex flex-col min-h-0 gap-3">
+        <!-- At full width the rating chips sit beside the text inputs instead of on their own row -->
+        <div class="grid gap-3 pt-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+          <label class="dv-field">
+            <span class="dv-field-label">Title</span>
+            <span class="dv-input-wrapper">
+              <span class="material-icons dv-input-icon" aria-hidden="true">movie</span>
+              <input class="dv-input has-icon" type="search" formControlName="title" placeholder="Search by title" autocomplete="off">
+            </span>
+          </label>
+          <label class="dv-field">
+            <span class="dv-field-label">Person</span>
+            <span class="dv-input-wrapper">
+              <span class="material-icons dv-input-icon" aria-hidden="true">person</span>
+              <input class="dv-input has-icon" type="search" formControlName="person" placeholder="Director, actor, writer..." autocomplete="off">
+            </span>
+          </label>
+    
+          <fieldset class="flex flex-col gap-2 sm:col-span-2 lg:col-span-1">
+            <legend class="dv-field-label">Rating</legend>
+            <!-- min-h-11 matches the text inputs so the chips line up with them -->
+            <div class="flex items-center gap-2 flex-nowrap min-h-11">
+              @for (rating of ratingOptions; track rating) {
+                <button type="button" class="chip"
+                  [class.chip-selected]="movieSearchForm.controls.rating.value.includes(rating)"
+                  [attr.aria-pressed]="movieSearchForm.controls.rating.value.includes(rating)"
+                  [attr.aria-label]="rating + ' star' + (rating === 1 ? '' : 's')"
+                  (click)="toggleOption(movieSearchForm.controls.rating, rating)">
+                  {{ rating }}<span class="material-icons chip-star" aria-hidden="true">star</span>
+                </button>
+              }
+            </div>
+          </fieldset>
         </div>
-      </fieldset>
+    
+        <!-- pb-1 leaves room under the last chips for their focus ring, which the collapsing area would clip -->
+        <fieldset class="flex flex-col gap-2 pb-1">
+          <legend class="dv-field-label">Genre</legend>
+          <div class="flex flex-wrap gap-2">
+            @for (item of visibleGenres(); track item.genre) {
+              <button type="button" class="chip"
+                [class.chip-selected]="selectedGenres().includes(item.genre)"
+                [class.chip-empty]="item.count === 0"
+                [attr.aria-pressed]="selectedGenres().includes(item.genre)"
+                (click)="toggleOption(movieSearchForm.controls.genre, item.genre)">
+                {{ item.genre }}
+                @if (item.count !== undefined) {
+                  <span class="chip-count">{{ item.count }}</span>
+                }
+              </button>
+            }
+            @if (hasMoreGenres()) {
+              <button type="button" class="inline-flex items-center h-8 pl-2 pr-1 text-sm font-medium rounded-md cursor-pointer gap-0.5 plain-button" [attr.aria-expanded]="showAllGenres()" (click)="showAllGenres.set(!showAllGenres())">
+                {{ showAllGenres() ? 'Show less' : 'Show more' }}
+                <span class="material-icons" aria-hidden="true">{{ showAllGenres() ? 'expand_less' : 'expand_more' }}</span>
+              </button>
+            }
+          </div>
+        </fieldset>
+      </div>
     </div>
 
-    <fieldset class="search-group">
-      <legend class="dv-field-label">Genre</legend>
-      <div class="chip-list">
-        @for (item of visibleGenres(); track item.genre) {
-          <button type="button" class="chip"
-            [class.chip-selected]="selectedGenres().includes(item.genre)"
-            [class.chip-empty]="item.count === 0"
-            [attr.aria-pressed]="selectedGenres().includes(item.genre)"
-            (click)="toggleOption(movieSearchForm.controls.genre, item.genre)">
-            {{ item.genre }}
-            @if (item.count !== undefined) {
-              <span class="chip-count">{{ item.count }}</span>
-            }
-          </button>
-        }
-        @if (hasMoreGenres()) {
-          <button type="button" class="show-more-button" [attr.aria-expanded]="showAllGenres()" (click)="showAllGenres.set(!showAllGenres())">
-            {{ showAllGenres() ? 'Show less' : 'Show more' }}
-            <span class="material-icons" aria-hidden="true">{{ showAllGenres() ? 'expand_less' : 'expand_more' }}</span>
-          </button>
-        }
-      </div>
-    </fieldset>
-
-    <div class="search-status">
+    <div class="flex items-center justify-between text-sm min-h-8 dv-muted">
       <span aria-live="polite">
         @if (loading()) {
           Searching...
@@ -65,7 +83,7 @@
         }
       </span>
       @if (hasFilters()) {
-        <button type="button" class="clear-button" (click)="clearFilters()">
+        <button type="button" class="inline-flex items-center h-8 gap-1 px-2 text-sm font-medium rounded-md cursor-pointer plain-button" (click)="clearFilters()">
           <span class="material-icons" aria-hidden="true">close</span>
           Clear filters
         </button>
@@ -82,7 +100,7 @@
       <dvoss-skeleton-loader class="col-span-4 sm:col-span-2 2xl:col-span-1"></dvoss-skeleton-loader>
     </div>
   } @else if (!movies.length) {
-    <p class="no-results">No movies match those filters.</p>
+    <p class="my-10 text-center dv-muted">No movies match those filters.</p>
   } @else {
     <div class="grid grid-cols-4 gap-3 my-2 3xl:grid-cols-5 results" [class.results-loading]="loading()">
       @for (movie of movies; track movie.id) {

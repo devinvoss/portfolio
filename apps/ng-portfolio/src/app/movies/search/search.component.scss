@@ -1,34 +1,66 @@
 @use '../../../styles/global/colors' as *;
 
+// Layout and spacing are Tailwind classes in the template. This file keeps what utilities
+// can't express cleanly: the theme colors, hover and focus states, transitions and the chips.
+
 .search-panel {
-  @apply flex flex-col gap-3 w-full mt-2 p-4 rounded-lg bg-white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.search-row {
-  @apply grid gap-3 sm:grid-cols-2;
-
-  // At full width the rating chips sit beside the text inputs instead of on their own row
-  @screen lg {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+// One focus ring for every button in the panel
+.filters-toggle,
+.plain-button,
+.chip {
+  &:focus-visible {
+    @apply outline-none;
+    box-shadow: 0 0 0 3px rgba($button-focus, 0.3);
   }
 }
 
-.rating-group {
-  @apply sm:col-span-2 lg:col-span-1;
+// A primary button, so the collapsed filters are easy to find
+.filters-toggle {
+  background-color: $button;
+  transition: background-color 150ms ease;
 
-  .chip-list {
-    // Match the text input height so the chips line up with the inputs
-    @apply flex-nowrap items-center min-h-11;
+  &:hover {
+    background-color: $button-focus;
   }
 }
 
-.search-group {
-  @apply flex flex-col gap-2 m-0 p-0 border-0;
+.filters-count {
+  color: $button;
 }
 
-.chip-list {
-  @apply flex flex-wrap gap-2;
+.filters-chevron {
+  transition: transform 200ms ease;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+// Animating the grid row from 0fr to 1fr collapses to the content's height without measuring it.
+// The extra side padding leaves room for the chips' focus rings, which overflow-hidden would clip.
+.filters-body {
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+
+  &.open {
+    grid-template-rows: 1fr;
+  }
+}
+
+// The plain text buttons: Show more and Clear filters
+.plain-button {
+  color: $button;
+
+  .material-icons {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background-color: $dv-light-gray;
+  }
 }
 
 .chip {
@@ -40,11 +72,6 @@
   &:hover {
     border-color: $button-focus;
     background-color: $dv-light-gray;
-  }
-
-  &:focus-visible {
-    @apply outline-none;
-    box-shadow: 0 0 0 3px rgba($button-focus, 0.3);
   }
 
   // No movies match this genre with the current filters
@@ -73,50 +100,9 @@
   }
 }
 
-.show-more-button {
-  @apply inline-flex items-center gap-0.5 h-8 pl-2 pr-1 rounded-md text-sm font-medium bg-transparent cursor-pointer;
-  color: $button;
-
-  .material-icons {
-    font-size: 18px;
-  }
-
-  &:hover {
-    background-color: $dv-light-gray;
-  }
-
-  &:focus-visible {
-    @apply outline-none;
-    box-shadow: 0 0 0 3px rgba($button-focus, 0.3);
-  }
-}
-
 .chip-star {
   font-size: 16px;
   color: $dv-orange;
-}
-
-.search-status {
-  @apply flex items-center justify-between min-h-8 text-sm;
-  color: $field-muted;
-}
-
-.clear-button {
-  @apply inline-flex items-center gap-1 h-8 px-2 rounded-md text-sm font-medium bg-transparent cursor-pointer;
-  color: $button;
-
-  .material-icons {
-    font-size: 18px;
-  }
-
-  &:hover {
-    background-color: $dv-light-gray;
-  }
-
-  &:focus-visible {
-    @apply outline-none;
-    box-shadow: 0 0 0 3px rgba($button-focus, 0.3);
-  }
 }
 
 .results {
@@ -126,9 +112,4 @@
 .results-loading {
   opacity: 0.5;
   pointer-events: none;
-}
-
-.no-results {
-  @apply my-10 text-center;
-  color: $field-muted;
 }

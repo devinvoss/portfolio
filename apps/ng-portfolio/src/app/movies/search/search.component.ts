@@ -33,6 +33,9 @@ export const TEXT_SEARCH_DEBOUNCE_MS = 300;
 // How many genres show before the "Show more" toggle
 export const COLLAPSED_GENRE_COUNT = 10;
 
+// Remembers whether the filters were collapsed, per browser
+export const FILTERS_OPEN_STORAGE_KEY = 'movieFiltersOpen';
+
 // A genre chip; count is missing when counts couldn't be loaded
 type GenreOption = Omit<GenreCount, 'count'> & { count?: number };
 
@@ -120,6 +123,8 @@ export class SearchComponent implements OnInit {
   });
   hasMoreGenres = computed(() => this.genreCounts().length > COLLAPSED_GENRE_COUNT);
 
+  filtersOpen = signal(readFiltersOpen());
+
   constructor() {
     // Keep loading pages while the end of the list is in view, so a tall screen still fills up
     effect(() => {
@@ -202,6 +207,22 @@ export class SearchComponent implements OnInit {
       : [...selected, option]);
   }
 
+  toggleFilters() {
+    const open = !this.filtersOpen();
+    this.filtersOpen.set(open);
+    try {
+      localStorage.setItem(FILTERS_OPEN_STORAGE_KEY, String(open));
+    } catch {
+      // Storage can be blocked; the toggle still works for this visit
+    }
+  }
+
+  // How many filters are set, shown in the header so collapsed filters aren't forgotten
+  activeFilterCount(): number {
+    const { title, person, genre, rating } = this.currentFilters();
+    return (title ? 1 : 0) + (person ? 1 : 0) + genre.length + rating.length;
+  }
+
   hasFilters(): boolean {
     const { title, person, genre, rating } = this.currentFilters();
     return !!(title || person || genre.length || rating.length);
@@ -228,5 +249,13 @@ export class SearchComponent implements OnInit {
           this.toastService.error('Loading more movies failed.');
         }
       });
+  }
+}
+
+function readFiltersOpen(): boolean {
+  try {
+    return localStorage.getItem(FILTERS_OPEN_STORAGE_KEY) !== 'false';
+  } catch {
+    return true;
   }
 }
