@@ -1,0 +1,64 @@
+@use './colors' as *;
+
+// Dark versions of the shared buttons and fields, for anything inside a .dv-dark panel.
+// Loaded after buttons.scss and forms.scss so these win.
+.dv-dark {
+  background-color: $dark-panel;
+  color: $dark-text;
+
+  .dv-muted,
+  .dv-field-hint,
+  .dv-field-label {
+    color: $dark-muted;
+  }
+
+  .dv-input {
+    background-color: $dark-input;
+    border-color: $dark-border;
+    color: $dark-text;
+
+    &::placeholder {
+      color: $dark-muted;
+    }
+
+    &:hover {
+      border-color: $dark-border-hover;
+    }
+
+    &:focus {
+      border-color: $dark-muted;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  .dv-text-button {
+    color: $dark-muted;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: $dark-text;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px $dark-muted;
+    }
+
+    &.liked {
+      color: $dark-link;
+    }
+
+    &.danger {
+      color: $dark-danger;
+    }
+  }
+
+  // The usual dark slate button would disappear against the panel
+  .dv-button:not(.clear) {
+    background-color: $button-focus;
+
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      background-color: #56707d;
+    }
+  }
+}

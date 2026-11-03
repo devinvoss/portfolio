@@ -1,0 +1,78 @@
+<section class="comments dv-dark" aria-labelledby="commentsHeading">
+  <h2 id="commentsHeading" class="comments-header">
+    Comments
+    @if (!loading() && totalCount() > 0) {
+      <span class="dv-muted">({{ totalCount() }})</span>
+    }
+  </h2>
+
+  <div class="p-2 mt-1">
+    @if (user()) {
+      <div class="mb-2">
+        <portfolio-comment-composer #composer [busy]="posting()" (submitted)="post($event)" />
+      </div>
+    } @else {
+      <div class="flex flex-wrap items-center justify-between gap-3 p-3 mb-6 rounded-md sign-in-prompt">
+        <span>Sign in to join the conversation.</span>
+        <dvoss-button [class]="'dv-button'" type="button" (click)="signIn()">Sign in to comment</dvoss-button>
+      </div>
+    }
+
+    @if (loading()) {
+      <p class="dv-muted">Loading comments...</p>
+    } @else if (loadFailed()) {
+      <p class="dv-muted">
+        Comments could not be loaded.
+        <button type="button" class="dv-text-button" (click)="load()">Try again</button>
+      </p>
+    } @else if (!threads().length) {
+      <p class="dv-muted">No comments yet. Be the first!</p>
+    } @else {
+      <ol class="flex flex-col gap-4">
+        @for (thread of threads(); track thread.comment.id) {
+          <li>
+            <portfolio-comment [comment]="thread.comment" [user]="user()" [highlighted]="highlightId() === thread.comment.id"
+              (replyRequested)="startReply(thread, thread.comment)" (changed)="onCommentChanged(thread, $event)"
+              (removed)="onCommentRemoved(thread, thread.comment)" (banned)="load()" />
+
+            @if (thread.replies.length || thread.hiddenReplies || replyingTo()?.threadId === thread.comment.id) {
+              <div class="replies">
+                <ol class="flex flex-col gap-1">
+                  @for (reply of thread.replies; track reply.id) {
+                    <li>
+                      <portfolio-comment [comment]="reply" [user]="user()" [highlighted]="highlightId() === reply.id"
+                        (replyRequested)="startReply(thread, reply)" (changed)="onCommentChanged(thread, $event)"
+                        (removed)="onCommentRemoved(thread, reply)" (banned)="load()" />
+                    </li>
+                  }
+                </ol>
+
+                @if (thread.hiddenReplies) {
+                  <button type="button" class="ml-10 dv-text-button" [disabled]="thread.loadingReplies" (click)="loadMoreReplies(thread)">
+                    {{ thread.loadingReplies ? 'Loading...' : 'Show ' + thread.hiddenReplies + (thread.hiddenReplies === 1 ? ' more reply' : ' more replies') }}
+                  </button>
+                }
+
+                @if (replyingTo(); as replyingTo) {
+                  @if (replyingTo.threadId === thread.comment.id) {
+                    <div class="pb-3 pr-4 mt-2">
+                      <portfolio-comment-composer label="Write a reply" submitLabel="Reply" [placeholder]="replyPlaceholder(replyingTo.target)"
+                        [busy]="replying()" [autofocus]="true" [cancellable]="true"
+                        (submitted)="postReply($event)" (cancelled)="cancelReply()" />
+                    </div>
+                  }
+                }
+              </div>
+            }
+          </li>
+        }
+      </ol>
+
+      @if (hasMore()) {
+        <div class="mt-6 text-center">
+          <dvoss-button [class]="'dv-button'" type="button" [loading]="loadingMore()" (click)="loadMore()">Show more comments</dvoss-button>
+        </div>
+      }
+    }
+  </div>
+</section>

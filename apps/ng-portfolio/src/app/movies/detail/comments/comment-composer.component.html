@@ -1,0 +1,14 @@
+<form class="dv-field" (submit)="$event.preventDefault(); submit()">
+  <textarea #textarea class="dv-input dv-textarea" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="12"
+    [attr.aria-label]="label()" [placeholder]="placeholder()" [attr.maxlength]="maxLength"
+    [value]="text()" (input)="text.set(textarea.value)" (keydown)="onKeydown($event)"></textarea>
+  <div class="flex items-center justify-end gap-2 mt-1">
+    @if (showCounter()) {
+      <span class="mr-auto dv-field-hint" aria-live="polite">{{ text().length }} / {{ maxLength }}</span>
+    }
+    @if (cancellable()) {
+      <button type="button" class="dv-text-button" (click)="cancelled.emit()">Cancel</button>
+    }
+    <dvoss-button [class]="'dv-button'" type="submit" [disabled]="!canSubmit()" [loading]="busy()">{{ submitLabel() }}</dvoss-button>
+  </div>
+</form>

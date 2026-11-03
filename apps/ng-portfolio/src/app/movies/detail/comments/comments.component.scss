@@ -1,0 +1,26 @@
+@use '../../../../styles/global/colors' as *;
+
+.comments {
+  // Full width under My Thoughts, like the Synopsis and My Thoughts panels. Dark colors come from .dv-dark.
+  @apply w-full;
+}
+
+// A header bar like Synopsis and My Thoughts have
+.comments-header {
+  @apply block p-2 m-0 text-base font-medium;
+  background-color: $dark-header;
+}
+
+.sign-in-prompt {
+  background-color: $dark-surface;
+}
+
+// Replies sit under their comment, lined up with its text rather than its avatar.
+.replies {
+  @apply mt-1 ml-6 pt-1 pl-4 sm:ml-10;
+  background-color: $dark-surface;
+}
+
+:host {
+  display: block;
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService, ToastService, UserService } from '@app/services';
 import { Movie } from '@portfolio/models';
@@ -9,12 +9,16 @@ import { MatChipSet, MatChip } from '@angular/material/chips';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { AsyncPipe } from '@angular/common';
 import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
+import { map } from 'rxjs';
+import { CommentsComponent } from './comments/comments.component';
+
+export const COMMENT_FRAGMENT_PREFIX = 'comment-';
 
 @Component({
   selector: 'portfolio-detail',
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
-  imports: [ButtonComponent, MatIcon, MatChipSet, MatChip, SkeletonLoaderComponent, AsyncPipe, MinutesPipe]
+  imports: [ButtonComponent, MatIcon, MatChipSet, MatChip, SkeletonLoaderComponent, AsyncPipe, MinutesPipe, CommentsComponent]
 })
 export class DetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -26,6 +30,10 @@ export class DetailComponent implements OnInit {
 
   movie = signal<Movie | undefined>(undefined);
   isAdmin$ = this.userService.isAdmin$;
+  // Notification links point at a comment with a #comment-<id> fragment.
+  focusCommentId = toSignal(this.route.fragment.pipe(
+    map(fragment => fragment?.startsWith(COMMENT_FRAGMENT_PREFIX) ? fragment.slice(COMMENT_FRAGMENT_PREFIX.length) : null)
+  ), { initialValue: null });
 
   ngOnInit(): void {
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {

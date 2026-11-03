@@ -1,5 +1,5 @@
 @if (movie(); as movie) {
-  <div animate.enter="fade-in" class="relative text-white h-[1280px]">
+  <div animate.enter="fade-in" class="relative text-white min-h-[1280px]">
     <img class="movie-image" [src]="movie.imageUrl">
     <div class="poster-overlay"></div>
     <div class="text-container">
@@ -51,6 +51,9 @@
         <div class="w-full mx-4 my-2 text-black bg-dvGreen-50">
           <span class="block p-2 font-medium bg-dvGreen-100">My Thoughts</span>
           <p class="p-2 mt-1">{{ movie.notes }}</p>
+        </div>
+        <div class="w-full mx-4 my-2">
+          <portfolio-comments [movieId]="movie.id" [focusCommentId]="focusCommentId()" />
         </div>
       </div>
     </div>

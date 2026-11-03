@@ -1,0 +1,77 @@
+@let c = comment();
+<article class="comment" [id]="'comment-' + c.id" [class.highlighted]="highlighted()">
+  @if (c.author?.avatarUrl) {
+    <!-- no-referrer, as in the header, since Google's avatar host can refuse requests with a referrer -->
+    <img class="avatar" [src]="c.author?.avatarUrl" alt="" referrerpolicy="no-referrer">
+  } @else {
+    <span class="avatar avatar-initial" aria-hidden="true">{{ initial() }}</span>
+  }
+
+  <div class="flex-1 min-w-0">
+    @if (c.deleted) {
+      <p class="italic dv-muted">[deleted]</p>
+    } @else {
+      <div class="flex flex-wrap items-baseline gap-x-2">
+        <span class="font-medium">{{ c.author?.displayName ?? 'Deleted user' }}</span>
+        @if (c.author?.role === 'admin') {
+          <span class="author-badge">Author</span>
+        }
+        <time class="text-xs dv-muted" [attr.datetime]="c.createdDate" [title]="c.createdDate | date: 'medium'">{{ c.createdDate | timeAgo }}</time>
+        @if (c.editedDate) {
+          <span class="text-xs dv-muted" [title]="'Edited ' + (c.editedDate | date: 'medium')">(edited)</span>
+        }
+      </div>
+
+      @if (editing()) {
+        <div class="mt-2">
+          <portfolio-comment-composer label="Edit your comment" submitLabel="Save" [initialValue]="c.body" [busy]="busy()"
+            [autofocus]="true" [cancellable]="true" (submitted)="saveEdit($event)" (cancelled)="editing.set(false)" />
+        </div>
+      } @else {
+        <p class="comment-body">@if (c.replyTo) {<span class="mention">&#64;{{ c.replyTo.displayName }}</span>}{{ c.body }}</p>
+      }
+
+      @if (!editing()) {
+        <div class="flex flex-wrap items-center -ml-2 gap-x-1">
+          <button type="button" class="dv-text-button" [class.liked]="c.likedByMe" [attr.aria-pressed]="c.likedByMe"
+            [attr.aria-label]="(c.likedByMe ? 'Unlike' : 'Like') + ', ' + c.likeCount + (c.likeCount === 1 ? ' like' : ' likes')" (click)="toggleLike()">
+            <mat-icon aria-hidden="true">{{ c.likedByMe ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
+            @if (c.likeCount > 0) {
+              <span>{{ c.likeCount }}</span>
+            }
+          </button>
+          @if (user()) {
+            <button type="button" class="dv-text-button" (click)="replyRequested.emit()">Reply</button>
+          }
+          @if (isMine()) {
+            <button type="button" class="dv-text-button" (click)="editing.set(true); confirming.set(null)">Edit</button>
+          }
+          @if (canDelete()) {
+            <button type="button" class="dv-text-button" (click)="confirming.set('delete')">Delete</button>
+          }
+          @if (canBan()) {
+            <button type="button" class="dv-text-button danger" (click)="confirming.set('ban')">Ban</button>
+          }
+        </div>
+      }
+
+      @if (confirming(); as action) {
+        <div class="confirm-row" role="alert">
+          <span>
+            @if (action === 'delete') {
+              Delete this comment?
+            } @else {
+              Ban {{ c.author?.displayName }}? This signs them out, blocks them from signing in, and removes all of their comments.
+            }
+          </span>
+          <span class="flex gap-1 shrink-0">
+            <button type="button" class="dv-text-button danger" [disabled]="busy()" (click)="action === 'delete' ? confirmDelete() : confirmBan()">
+              {{ action === 'delete' ? 'Delete' : 'Ban' }}
+            </button>
+            <button type="button" class="dv-text-button" [disabled]="busy()" (click)="confirming.set(null)">Cancel</button>
+          </span>
+        </div>
+      }
+    }
+  </div>
+</article>

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { isValidObjectId, Model } from 'mongoose';
+import { isValidObjectId, Model, Types } from 'mongoose';
 import { SessionUser, User } from '@portfolio/models';
 
 const ADMIN_FILTER = { isAdmin: { $gt: 0 } };
@@ -30,5 +30,9 @@ export class UsersService {
       return null;
     }
     return this.userModel.findOne({ ...ADMIN_FILTER, _id: id }).exec();
+  }
+
+  findAdminsByIds(ids: Types.ObjectId[]): Promise<User[]> {
+    return ids.length ? this.userModel.find({ ...ADMIN_FILTER, _id: { $in: ids } }).exec() : Promise.resolve([]);
   }
 }
