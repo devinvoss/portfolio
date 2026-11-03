@@ -11,6 +11,8 @@ import { AsyncPipe } from '@angular/common';
 import { MinutesPipe } from '../../shared/pipes/minutes.pipe';
 import { map } from 'rxjs';
 import { CommentsComponent } from './comments/comments.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { PosterViewerComponent, PosterViewerData } from './poster-viewer/poster-viewer.component';
 
 export const COMMENT_FRAGMENT_PREFIX = 'comment-';
 
@@ -27,6 +29,7 @@ export class DetailComponent implements OnInit {
   private toastService = inject(ToastService);
   private userService = inject(UserService);
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(Dialog);
 
   movie = signal<Movie | undefined>(undefined);
   isAdmin$ = this.userService.isAdmin$;
@@ -50,6 +53,18 @@ export class DetailComponent implements OnInit {
         this.toastService.error('Movie not found.');
         this.router.navigate(['/movie']);
       }
+    });
+  }
+
+  openPoster(movie: Movie) {
+    this.dialog.open<void, PosterViewerData>(PosterViewerComponent, {
+      data: { imageUrl: movie.imageUrl, title: movie.title },
+      ariaLabel: `${movie.title} poster`,
+      // The viewer covers the page itself, so no backdrop
+      hasBackdrop: false,
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
     });
   }
 

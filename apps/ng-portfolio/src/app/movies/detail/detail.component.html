@@ -1,49 +1,58 @@
 @if (movie(); as movie) {
   <div animate.enter="fade-in" class="relative text-white min-h-[1280px]">
-    <img class="movie-image" [src]="movie.imageUrl">
+    <img class="movie-image" [src]="movie.imageUrl" alt="">
     <div class="poster-overlay"></div>
     <div class="text-container">
-      <span class="block text-2xl font-medium md:text-3xl">
-        {{ movie.title }} ({{ movie.year }})
-        @if (isAdmin$ | async) {
-          <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="editMovie()">
-            <mat-icon class="-mb-[6px]">movie_edit</mat-icon> Edit
-          </dvoss-button>
-        }
-      </span>
-      <div class="block">
-        <div class="rating-container">
-          @for (num of [1,2,3,4,5]; track num) {
-            <span class="text-2xl md:text-3xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
-          }
-        </div>
-        <div class="inline-block">
-          <mat-chip-set>
-            @for (genre of movie.genre; track genre) {
-              <mat-chip [color]="'accent'" [highlighted]="true">{{ genre }}</mat-chip>
+      <div class="movie-header">
+        <button type="button" class="poster-button" [attr.aria-label]="'View the ' + movie.title + ' poster full size'" (click)="openPoster(movie)">
+          <img class="poster" [src]="movie.imageUrl" alt="">
+        </button>
+        <div class="min-w-0">
+          <span class="block text-2xl font-medium md:text-3xl">
+            {{ movie.title }} ({{ movie.year }})
+            @if (isAdmin$ | async) {
+              <dvoss-button [class]="'dv-edit-button'" class="float-right text-lg" type="button" (click)="editMovie()">
+                <mat-icon class="-mb-[6px]">movie_edit</mat-icon> Edit
+              </dvoss-button>
             }
-          </mat-chip-set>
+          </span>
+          <div class="block">
+            <div class="rating-container">
+              @for (num of [1,2,3,4,5]; track num) {
+                <span class="text-2xl md:text-3xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
+              }
+            </div>
+            <div class="inline-block">
+              <mat-chip-set>
+                @for (genre of movie.genre; track genre) {
+                  <mat-chip [color]="'accent'" [highlighted]="true">{{ genre }}</mat-chip>
+                }
+              </mat-chip-set>
+            </div>
+          </div>
+        </div>
+        <div class="movie-facts">
+          <div>
+            <span class="block">Directed By</span>
+            <span class="mt-2 text-lg font-medium">{{ movie.director }}</span>
+          </div>
+          <div>
+            <span class="block">Rated</span>
+            <span class="mt-2 text-lg font-medium">{{ movie.mpaaRating }}</span>
+          </div>
+          <div>
+            <span class="block">Duration</span>
+            <span class="mt-2 text-lg font-medium">{{ movie.runtimeMinutes | minutes }}</span>
+          </div>
+          <div class="w-full">
+            <span class="block">Starring</span>
+            @for (actor of movie.actors; track i; let i = $index) {
+              <span class="mt-2 text-lg font-medium">{{ i > 0 ? ', ' + actor : actor }}</span>
+            }
+          </div>
         </div>
       </div>
       <div class="flex flex-wrap mt-3 -mx-4">
-        <div class="mx-4 my-2">
-          <span class="block">Directed By</span>
-          <span class="mt-2 text-lg font-medium">{{ movie.director }}</span>
-        </div>
-        <div class="mx-4 my-2">
-          <span class="block">Rated</span>
-          <span class="mt-2 text-lg font-medium">{{ movie.mpaaRating }}</span>
-        </div>
-        <div class="mx-4 my-2">
-          <span class="block">Duration</span>
-          <span class="mt-2 text-lg font-medium">{{ movie.runtimeMinutes | minutes }}</span>
-        </div>
-        <div class="mx-4 my-2">
-          <span class="block">Starring</span>
-          @for (actor of movie.actors; track i; let i = $index) {
-            <span class="mt-2 text-lg font-medium">{{ i > 0 ? ', ' + actor : actor }}</span>
-          }
-        </div>
         <div class="w-full mx-4 my-2 text-black bg-dvLightBrown-50">
           <span class="block p-2 font-medium bg-dvBrown-50">Synopsis</span>
           <p class="p-2 mt-1">{{ movie.synopsis }}</p>
