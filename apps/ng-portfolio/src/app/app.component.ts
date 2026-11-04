@@ -32,7 +32,17 @@ export class AppComponent implements OnInit {
     this.windowService.isPhoneOrTablet$.pipe(
       map(result => result ? 'over' : 'side'),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(mode => this.sideNavMode.set(mode));
+    ).subscribe(mode => {
+      if (mode === 'over' && this.sideNavIsOpen()) {
+        this.toggleSideNav();
+      }
+
+      if (mode === 'side' && !this.sideNavIsOpen()) {
+        this.toggleSideNav();
+      }
+      
+      this.sideNavMode.set(mode);
+    });
 
     // If a user navigates on mobile, close the side menu
     this.navigationEnd$.pipe(
