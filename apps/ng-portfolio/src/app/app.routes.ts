@@ -25,6 +25,10 @@ export const routes: Routes = [
     loadChildren: () => import('./movies/movies.routes').then(m => m.MOVIE_ROUTES)
   },
   {
+    path: 'recommendations',
+    loadChildren: () => import('./movies/movies.routes').then(m => m.RECOMMENDATION_ROUTES)
+  },
+  {
     path: '**',
     redirectTo: 'home'
   }

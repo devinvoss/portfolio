@@ -23,13 +23,25 @@ export class UserService {
       name: 'Home'
     },
     {
-      route: 'movie',
-      type: NavigationType.Internal,
-      name: 'Movies'
+      type: NavigationType.Menu,
+      name: 'Movies',
+      items: [
+        {
+          route: 'movie',
+          type: NavigationType.Internal,
+          name: "Devin's Watched"
+        },
+        {
+          route: 'recommendations',
+          type: NavigationType.Internal,
+          name: 'Recommendations'
+        }
+      ]
     }
   ];
 
-  readonly memberRoutes = <INavigation[]>[
+  // The admin gets the same navigation; adding a movie is a button on the watched list
+  readonly signedInRoutes = <INavigation[]>[
     ...this.unauthenticatedRoutes,
     {
       name: 'Log Out',
@@ -39,37 +51,6 @@ export class UserService {
       }
     }
   ];
-
-  readonly adminRoutes = <INavigation[]>[
-    {
-      route: 'home',
-      type: NavigationType.Internal,
-      name: 'Home'
-    },
-    {
-      type: NavigationType.Menu,
-      name: 'Movies',
-      items: [
-        {
-          route: 'movie',
-          type: NavigationType.Internal,
-          name: 'Search'
-        },
-        {
-          route: 'movie/add',
-          type: NavigationType.Internal,
-          name: 'Add Movie'
-        }
-      ]
-    },
-    {
-      name: 'Log Out',
-      type: NavigationType.Action,
-      action: () => {
-        this.logout();
-      }
-    }
-  ]
 
   user$: BehaviorSubject<SessionUser | null> = new BehaviorSubject<SessionUser | null>(null);
   isAdmin$ = this.user$.pipe(map(user => user?.role === 'admin'));
@@ -89,12 +70,7 @@ export class UserService {
 
   getUserRoutes(): Observable<INavigation[]> {
     return this.user$.pipe(
-      map(user => {
-        if (!user) {
-          return [...this.unauthenticatedRoutes];
-        }
-        return user.role === 'admin' ? [...this.adminRoutes] : [...this.memberRoutes];
-      })
+      map(user => user ? [...this.signedInRoutes] : [...this.unauthenticatedRoutes])
     );
   }
 

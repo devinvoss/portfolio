@@ -1,14 +1,18 @@
 import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
-import { GenreCount, Movie, MovieSearchCriteria } from '@portfolio/models';
-import { MovieService, ToastService } from '@app/services';
-import { catchError, debounce, distinctUntilChanged, map, of, pairwise, skip, startWith, tap, timer } from 'rxjs';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { GenreCount, MovieSearchCriteria, MovieSortFields } from '@portfolio/models';
+import { MovieService, RecommendationService, ToastService, UserService } from '@app/services';
+import { catchError, debounce, distinctUntilChanged, map, Observable, of, pairwise, skip, startWith, tap, timer } from 'rxjs';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { MOVIE_STATE_TOKEN } from '@app/store/state/movie.state';
 import * as MovieActions from '@app/store/actions/movie.actions';
+import { RECOMMENDATION_STATE_TOKEN } from '@app/store/state/recommendation.state';
+import * as RecommendationActions from '@app/store/actions/recommendation.actions';
+import { ListedMovie } from '../../shared/components/movie-list-item/movie-list-item.component';
+import { getListKind, MovieListKind } from '../movie-list-kind';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { MovieListItemComponent } from '../../shared/components/movie-list-item/movie-list-item.component';
 import { InViewportDirective } from '../../shared/directives';
@@ -36,6 +40,19 @@ export const COLLAPSED_GENRE_COUNT = 10;
 // Remembers whether the filters were collapsed, per browser
 export const FILTERS_OPEN_STORAGE_KEY = 'movieFiltersOpen';
 
+// Recommendations can be sorted by how much they've been talked about
+export const SORT_OPTIONS: { label: string; fields: MovieSortFields }[] = [
+  { label: 'Newest', fields: { createdDate: -1 } },
+  { label: 'Most discussed', fields: { commentCount: -1 } }
+];
+
+// What both the movie and recommendation stores hold for their list
+interface ListState {
+  lastSearchCriteria: MovieSearchCriteria | null;
+  searchResults: ListedMovie[];
+  genreCounts: GenreCount[] | null;
+}
+
 // A genre chip; count is missing when counts couldn't be loaded
 type GenreOption = Omit<GenreCount, 'count'> & { count?: number };
 
@@ -43,15 +60,25 @@ type GenreOption = Omit<GenreCount, 'count'> & { count?: number };
   selector: 'portfolio-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  imports: [ReactiveFormsModule, SkeletonLoaderComponent, MovieListItemComponent, InViewportDirective]
+  imports: [ReactiveFormsModule, RouterLink, SkeletonLoaderComponent, MovieListItemComponent, InViewportDirective]
 })
 export class SearchComponent implements OnInit {
   private movieService = inject(MovieService);
+  private recommendationService = inject(RecommendationService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private store = inject(Store);
   private toastService = inject(ToastService);
+  private userService = inject(UserService);
   private destroyRef = inject(DestroyRef);
+
+  // The same page lists both the watched movies and the recommendations
+  readonly kind = getListKind(this.route);
+  readonly isRecommended = this.kind === MovieListKind.Recommended;
+  private state$: Observable<ListState> = this.isRecommended ? this.store.select(RECOMMENDATION_STATE_TOKEN) : this.store.select(MOVIE_STATE_TOKEN);
+  readonly sortOptions = SORT_OPTIONS;
+  isAdmin = toSignal(this.userService.isAdmin$, { initialValue: false });
 
   searchCriteria = signal<MovieSearchCriteria>({ ...defaultCriteria });
   // A fresh search, which replaces the results
@@ -61,7 +88,7 @@ export class SearchComponent implements OnInit {
   // Whether the end of the list is close enough to start loading the next page
   nearEndOfList = signal(false);
 
-  movies = toSignal(this.store.select(MOVIE_STATE_TOKEN).pipe(
+  movies = toSignal(this.state$.pipe(
     tap((data) => {
       this.loading.set(false);
       this.loadingMore.set(false);
@@ -70,7 +97,7 @@ export class SearchComponent implements OnInit {
       }
     }),
     map(x => x.searchResults)
-  ), { initialValue: <Movie[]>[] });
+  ), { initialValue: <ListedMovie[]>[] });
   hasMoreMovies = computed(() => this.movies().length < (this.searchCriteria().totalCount ?? 0));
 
   ratingOptions = this.movieService.getRatingOptions();
@@ -84,11 +111,11 @@ export class SearchComponent implements OnInit {
 
   // Every genre in use, most popular overall first. This fixes the chip order so it doesn't shuffle as filters change.
   // Falls back to the static list (without counts) if the request fails.
-  private allGenres = toSignal(this.movieService.getGenreCounts().pipe(
+  private allGenres = toSignal((this.isRecommended ? this.recommendationService.getGenreCounts() : this.movieService.getGenreCounts()).pipe(
     catchError(() => of(this.movieService.getGenres().map((genre): GenreOption => ({ genre }))))
   ), { initialValue: <GenreOption[]>[] });
   // Counts from the latest search, reflecting the current filters
-  private filteredGenreCounts = toSignal(this.store.select(MOVIE_STATE_TOKEN).pipe(map(x => x.genreCounts)), {
+  private filteredGenreCounts = toSignal(this.state$.pipe(map(x => x.genreCounts)), {
     initialValue: null
   });
 
@@ -135,7 +162,10 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const previousCriteria = this.store.selectSnapshot(MOVIE_STATE_TOKEN).lastSearchCriteria;
+    const previousState: ListState = this.isRecommended
+      ? this.store.selectSnapshot(RECOMMENDATION_STATE_TOKEN)
+      : this.store.selectSnapshot(MOVIE_STATE_TOKEN);
+    const previousCriteria = previousState.lastSearchCriteria;
     if (previousCriteria) {
       // Reload from the first page rather than appending onto the list from last time
       this.searchCriteria.set({ ...previousCriteria, page: 0 });
@@ -190,12 +220,12 @@ export class SearchComponent implements OnInit {
     }));
 
     this.loading.set(true);
-    this.store.dispatch(new MovieActions.SearchMovies(this.searchCriteria()))
+    this.store.dispatch(this.searchAction(this.searchCriteria()))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         error: () => {
           this.loading.set(false);
-          this.toastService.error('Movie search failed.');
+          this.toastService.error(this.isRecommended ? 'Loading recommendations failed.' : 'Movie search failed.');
         }
       });
   }
@@ -232,13 +262,29 @@ export class SearchComponent implements OnInit {
     this.movieSearchForm.reset();
   }
 
-  navigateToMovie(movie: Movie) {
-    this.router.navigate([`/movie/detail/${movie.id}`]);
+  navigateToMovie(movie: ListedMovie) {
+    this.router.navigate(this.isRecommended ? ['/recommendations', movie.id] : ['/movie/detail', movie.id]);
+  }
+
+  isSortedBy(option: typeof SORT_OPTIONS[number]): boolean {
+    return JSON.stringify(this.searchCriteria().sortFields ?? defaultCriteria.sortFields) === JSON.stringify(option.fields);
+  }
+
+  sortBy(option: typeof SORT_OPTIONS[number]) {
+    if (this.isSortedBy(option)) {
+      return;
+    }
+    this.searchCriteria.update(criteria => ({ ...criteria, sortFields: option.fields, page: 0 }));
+    this.search();
+  }
+
+  private searchAction(criteria: MovieSearchCriteria) {
+    return this.isRecommended ? new RecommendationActions.SearchRecommendations(criteria) : new MovieActions.SearchMovies(criteria);
   }
 
   loadMore() {
     this.loadingMore.set(true);
-    this.store.dispatch(new MovieActions.SearchMovies({
+    this.store.dispatch(this.searchAction({
       ...this.searchCriteria(),
       page: this.searchCriteria().page + 1
     }))

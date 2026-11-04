@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { CommentPage, LikeResult, MovieComment, ReplyPage } from '@portfolio/models';
+import { CommentPage, CommentSubjectType, LikeResult, MovieComment, ReplyPage } from '@portfolio/models';
 import { Observable } from 'rxjs';
+
+const subjectUrl = (type: CommentSubjectType, id: string) => type === 'recommendation' ? `api/recommendation/${id}` : `api/movie/${id}`;
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +11,8 @@ import { Observable } from 'rxjs';
 export class CommentService {
   private http = inject(HttpClient);
 
-  getComments(movieId: string, before?: string): Observable<CommentPage> {
-    return this.http.get<CommentPage>(`api/movie/${movieId}/comments`, { params: before ? { before } : {} });
+  getComments(movieId: string, before?: string, subjectType: CommentSubjectType = 'movie'): Observable<CommentPage> {
+    return this.http.get<CommentPage>(`${subjectUrl(subjectType, movieId)}/comments`, { params: before ? { before } : {} });
   }
 
   getReplies(commentId: string, after?: string): Observable<ReplyPage> {
@@ -22,8 +24,8 @@ export class CommentService {
     return this.http.get<MovieComment>(`api/comments/${commentId}/thread`);
   }
 
-  addComment(movieId: string, body: string, replyToCommentId?: string): Observable<MovieComment> {
-    return this.http.post<MovieComment>(`api/movie/${movieId}/comments`, { body, replyToCommentId });
+  addComment(movieId: string, body: string, replyToCommentId?: string, subjectType: CommentSubjectType = 'movie'): Observable<MovieComment> {
+    return this.http.post<MovieComment>(`${subjectUrl(subjectType, movieId)}/comments`, { body, replyToCommentId });
   }
 
   editComment(commentId: string, body: string): Observable<MovieComment> {

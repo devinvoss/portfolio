@@ -6,6 +6,41 @@ import ImageKit = require('imagekit');
 import { environment } from '../environments/environment';
 import { MovieDto, UpdateMovieDto } from './movie.dto';
 
+export const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Shared with recommendations, which have the same fields apart from the rating.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function buildSearchFilter(fields: MovieSearchFields): QueryFilter<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let filter: QueryFilter<any> = {};
+  if (!fields) {
+    return filter;
+  }
+
+  if (fields.genre && fields.genre.length > 0) {
+    filter = { ...filter, genre: { $in: fields.genre }};
+  }
+
+  if (fields.person) {
+    const pattern = new RegExp(fields.person, 'i');
+    filter = { ...filter, $or: [
+      { director: { $regex: pattern } },
+      { actors: { $elemMatch: { $regex: pattern } } }
+    ]};
+  }
+
+  if (fields.title) {
+    const pattern = new RegExp(fields.title, 'i');
+    filter = { ...filter, title: { $regex: pattern }}
+  }
+
+  if (fields.rating && fields.rating.length > 0) {
+    filter = { ...filter, rating: { $in: fields.rating }};
+  }
+
+  return filter;
+}
+
 @Injectable()
 export class MovieService {
 
@@ -37,8 +72,17 @@ export class MovieService {
     return await updatedMovie.save();
   }
 
+  /** The watched movie with this TMDB id, or for movies saved before TMDB ids were, the same title and year. */
+  async findWatched(tmdbId: number, title: string, year: number | null): Promise<Movie | null> {
+    const byTitle: QueryFilter<Movie> = { title: { $regex: new RegExp(`^${escapeRegExp(title)}$`, 'i') }, tmdbId: { $exists: false } };
+    if (year) {
+      byTitle.year = year;
+    }
+    return this.movieModel.findOne({ $or: [{ tmdbId }, byTitle] }).exec();
+  }
+
   async searchMovies(search: MovieSearch): Promise<MovieSearch> {
-    const filter = this.buildSearchFilter(search.criteria.searchFields);
+    const filter = buildSearchFilter(search.criteria.searchFields);
     const query = this.movieModel.find(filter)
       .sort(this.buildSortFilter(search.criteria.sortFields))
       .skip(search.criteria.page > 0 ? (search.criteria.page * search.criteria.pageSize) : 0)
@@ -61,7 +105,7 @@ export class MovieService {
   // Movies per genre, most popular first. The genre filter itself is ignored so the counts
   // reflect the other filters without collapsing to just the selected genres.
   async getGenreCounts(fields?: MovieSearchFields): Promise<GenreCount[]> {
-    const filter = fields ? this.buildSearchFilter({ ...fields, genre: [] }) : {};
+    const filter = fields ? buildSearchFilter({ ...fields, genre: [] }) : {};
     return this.movieModel.aggregate<GenreCount>([
       { $match: filter },
       { $unwind: '$genre' },
@@ -69,36 +113,6 @@ export class MovieService {
       { $sort: { count: -1, _id: 1 } },
       { $project: { _id: 0, genre: '$_id', count: 1 } }
     ]).exec();
-  }
-
-  private buildSearchFilter(fields: MovieSearchFields) {
-    let filter: QueryFilter<Movie> = {};
-    if (!fields) {
-      return filter;
-    }
-
-    if (fields.genre && fields.genre.length > 0) {
-      filter = { ...filter, genre: { $in: fields.genre }};
-    }
-
-    if (fields.person) {
-      const pattern = new RegExp(fields.person, 'i');
-      filter = { ...filter, $or: [
-        { director: { $regex: pattern } },
-        { actors: { $elemMatch: { $regex: pattern } } }
-      ]};
-    }
-
-    if (fields.title) {
-      const pattern = new RegExp(fields.title, 'i');
-      filter = { ...filter, title: { $regex: pattern }}
-    }
-
-    if (fields.rating && fields.rating.length > 0) {
-      filter = { ...filter, rating: { $in: fields.rating }};
-    }
-
-    return filter;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

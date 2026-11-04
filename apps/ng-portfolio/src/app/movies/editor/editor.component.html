@@ -4,7 +4,7 @@
       @if (isLoadingTmdbMovie()) {
         <mat-progress-bar mode="indeterminate" class="absolute top-0 left-0"></mat-progress-bar>
       }
-      <h1 class="mb-4">{{ mode() }} Movie</h1>
+      <h1 class="mb-4">{{ isRecommending() ? 'Recommend a Movie' : mode() + ' Movie' }}</h1>
       <form [formGroup]="movieForm" class="flex flex-col gap-4" (ngSubmit)="save()">
         <div class="title-row">
           <label class="dv-field">
@@ -42,6 +42,7 @@
             }
           </mat-autocomplete>
 
+          @if (!isRecommending()) {
           <fieldset class="dv-field">
             <legend class="dv-field-label">Rating</legend>
             <div class="star-rating" role="radiogroup" aria-label="Rating" (mouseleave)="hoveredRating.set(0)">
@@ -56,7 +57,26 @@
               }
             </div>
           </fieldset>
+          }
         </div>
+
+        @if (recommendation(); as recommendation) {
+          <div class="recommendation-note" role="status">
+            <span class="material-icons" aria-hidden="true">{{ isRecommending() ? 'group' : 'recommend' }}</span>
+            <span>
+              <a [routerLink]="['/recommendations', recommendation.id]" class="font-medium underline">Already recommended</a>
+              @if (recommendation.recommendedBy) {
+                by {{ recommendation.recommendedBy.displayName }}
+              }
+              ({{ recommendation.commentCount }} {{ recommendation.commentCount === 1 ? 'comment' : 'comments' }}).
+              @if (isRecommending()) {
+                Your note will be added to it as a comment.
+              } @else {
+                Saving adds it to your watched movies, and its comments move with it.
+              }
+            </span>
+          </div>
+        }
 
         @if (movieInfo(); as info) {
           <section class="movie-info" aria-label="Movie details">
@@ -107,9 +127,11 @@
 
         <label class="dv-field">
           <span class="dv-field-label">Notes</span>
-          <textarea class="dv-input dv-textarea" formControlName="notes" placeholder="My thoughts..."
+          <textarea class="dv-input dv-textarea" formControlName="notes" [placeholder]="isRecommending() ? 'Why should Devin watch it? This is posted as your comment.' : 'My thoughts...'"
             cdkTextareaAutosize cdkAutosizeMinRows="3"></textarea>
         </label>
+        <!-- Recommenders pick from TMDB's posters instead of pasting a URL -->
+        @if (!isRecommending()) {
         <label class="dv-field">
           <span class="dv-field-label">Poster URL</span>
           <span class="dv-input-wrapper">
@@ -117,6 +139,7 @@
             <input class="dv-input has-icon" type="url" formControlName="imageUrl" placeholder="https://..." autocomplete="off">
           </span>
         </label>
+        }
         <!-- On smaller screens the poster lives in the form instead of beside it -->
         @if (imageUrl(); as imageUrl) {
           <div class="flex flex-col gap-1 lg:hidden">
@@ -124,7 +147,7 @@
             <ng-container *ngTemplateOutlet="posterPicker; context: { $implicit: imageUrl }"></ng-container>
           </div>
         }
-        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving()" type="submit">Save</dvoss-button>
+        <dvoss-button [class]="'dv-button'" class="w-full rounded-md h-14" [loading]="isSaving()" type="submit">{{ isRecommending() ? 'Recommend' : 'Save' }}</dvoss-button>
       </form>
     </div>
     @if (imageUrl(); as imageUrl) {

@@ -7,6 +7,7 @@ import { CommentsModule } from '../comments/comments.module';
 import { environment } from '../environments/environment';
 import { MovieModule } from '../movie/movie.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { RecommendationsModule } from '../recommendations/recommendations.module';
 import { TmdbModule } from '../tmdb/tmdb.module';
 import { UsersModule } from '../users/users.module';
 
@@ -22,7 +23,8 @@ import { AppController } from './app.controller';
     AccountsModule,
     AuthModule,
     CommentsModule,
-    NotificationsModule
+    NotificationsModule,
+    RecommendationsModule
   ],
   controllers: [AppController],
   providers: [],

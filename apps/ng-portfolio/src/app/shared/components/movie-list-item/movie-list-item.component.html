@@ -1,14 +1,25 @@
 <div class="movie-list-item-container" tabindex="0" (click)="movieSelected.emit(movie)" (keyup.enter)="movieSelected.emit(movie)">
   <div class="relative">
-    <ik-image class="movie-list-item-image" [src]="movie.imageUrl" [transformation]="transformations"></ik-image>
+    @if (tmdbPosterUrl; as posterUrl) {
+      <img class="movie-list-item-image" [src]="posterUrl" alt="">
+    } @else {
+      <ik-image class="movie-list-item-image" [src]="movie.imageUrl" [transformation]="transformations"></ik-image>
+    }
     <div class="poster-overlay"></div>
     <div class="movie-list-item-text-container">
       <div class="flex items-center justify-center w-full h-full">
         <div class="inline">
           {{movie.title}}
           <br>
-            @for (num of [1,2,3,4,5]; track num) {
-              <span class="text-2xl material-icons">{{ num <= movie.rating ? 'star' : 'star_border' }}</span>
+            @if (rating !== undefined) {
+              @for (num of [1,2,3,4,5]; track num) {
+                <span class="text-2xl material-icons">{{ num <= rating ? 'star' : 'star_border' }}</span>
+              }
+            } @else if (commentCount !== undefined) {
+              <span class="inline-flex items-center gap-1 text-base">
+                <span class="text-xl material-icons" aria-hidden="true">chat_bubble_outline</span>
+                {{ commentCount }} {{ commentCount === 1 ? 'comment' : 'comments' }}
+              </span>
             }
           </div>
         </div>
