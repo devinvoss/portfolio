@@ -2,18 +2,32 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { Request } from 'express';
 import type { StateStore } from 'passport-oauth2';
 import { OAUTH_STATE_COOKIE, oauthStateCookieOptions } from '../../session/session.constants';
+import { isCodeChallenge, safeAppRedirect } from '../app-auth/app-redirect';
 import { safeReturnTo } from './providers';
 
 const STATE_TTL = 10 * 60 * 1000;
 
 export interface OAuthAppState {
   returnTo?: string;
+  /** Set when the mobile app started the sign-in: where to send its one-time code. */
+  appRedirect?: string;
+  /** The app's PKCE challenge, which its token exchange has to answer. */
+  codeChallenge?: string;
 }
 
 interface SavedState {
   state: string;
   verifier?: string;
   returnTo: string;
+  appRedirect?: string;
+  codeChallenge?: string;
+}
+
+// An app sign-in needs both a redirect it may use and a challenge; anything less is a web sign-in.
+function appSignIn(appState: OAuthAppState | undefined): Pick<OAuthAppState, 'appRedirect' | 'codeChallenge'> {
+  const appRedirect = safeAppRedirect(appState?.appRedirect);
+  const codeChallenge = appState?.codeChallenge;
+  return appRedirect && isCodeChallenge(codeChallenge) ? { appRedirect, codeChallenge } : {};
 }
 
 type StoreCallback = (err: Error | null, state?: string) => void;
@@ -35,7 +49,8 @@ export class CookieStateStore {
     const saved: SavedState = {
       state: randomBytes(24).toString('base64url'),
       verifier,
-      returnTo: safeReturnTo(appState?.returnTo)
+      returnTo: safeReturnTo(appState?.returnTo),
+      ...appSignIn(appState)
     };
     req.res.cookie(OAUTH_STATE_COOKIE, JSON.stringify(saved), { ...oauthStateCookieOptions, maxAge: STATE_TTL });
     callback(null, saved.state);
@@ -56,7 +71,24 @@ export class CookieStateStore {
       return callback(null, false, { message: 'Invalid or expired sign-in request.' });
     }
 
-    callback(null, saved.verifier ?? true, { returnTo: saved.returnTo });
+    callback(null, saved.verifier ?? true, { returnTo: saved.returnTo, ...appSignIn(saved) });
+  }
+}
+
+/**
+ * The app redirect saved by a sign-in that failed before passport checked the state (the user cancelled
+ * at the provider), so the error can go back to the app. Clears the cookie.
+ */
+export function pendingAppRedirect(req: Request): string | null {
+  const raw = req.signedCookies?.[OAUTH_STATE_COOKIE];
+  if (typeof raw !== 'string') {
+    return null;
+  }
+  req.res?.clearCookie(OAUTH_STATE_COOKIE, oauthStateCookieOptions);
+  try {
+    return appSignIn(JSON.parse(raw)).appRedirect ?? null;
+  } catch {
+    return null;
   }
 }
 
