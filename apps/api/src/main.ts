@@ -9,6 +9,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app/app.module';
+import { isAllowedCorsOrigin } from './auth/app-auth/app-redirect';
 import { environment } from './environments/environment';
 
 async function bootstrap() {
@@ -20,6 +21,13 @@ async function bootstrap() {
   app.set('trust proxy', 'loopback, uniquelocal');
   app.use(cookieParser(environment.secretKey));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  // The Expo web dev server (rn-portfolio) calls the API from another localhost port with a Bearer
+  // token. Only allowed in development, and without cookies, so the website's session is never exposed.
+  app.enableCors({
+    origin: (origin, callback) => callback(null, isAllowedCorsOrigin(origin)),
+    credentials: false,
+    allowedHeaders: ['Authorization', 'Content-Type', 'Accept']
+  });
   const port = process.env.PORT || 3333;
   await app.listen(port);
   Logger.log(

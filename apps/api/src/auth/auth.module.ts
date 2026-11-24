@@ -3,6 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AccountsModule } from '../accounts/accounts.module';
 import { SessionModule } from '../session/session.module';
 import { UsersModule } from '../users/users.module';
+import { AppAuthCodeService } from './app-auth/app-auth-code.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -25,7 +26,7 @@ const providerStrategies = [
     SessionModule,
     PassportModule
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, OAuthLoginService, ...providerStrategies],
+  providers: [AuthService, LocalStrategy, JwtStrategy, OAuthLoginService, AppAuthCodeService, ...providerStrategies],
   controllers: [AuthController]
 })
 export class AuthModule {}

@@ -27,7 +27,12 @@ export function OAuthGuard(provider: SsoProvider): Type<IAuthGuard> {
 
     getAuthenticateOptions(context: ExecutionContext) {
       const req = context.switchToHttp().getRequest();
-      const state: OAuthAppState = { returnTo: req.query?.returnTo };
+      // The mobile app adds redirectUri and codeChallenge; the state store drops them unless both are valid.
+      const state: OAuthAppState = {
+        returnTo: req.query?.returnTo,
+        appRedirect: req.query?.redirectUri,
+        codeChallenge: req.query?.codeChallenge
+      };
       return { session: false, state };
     }
 

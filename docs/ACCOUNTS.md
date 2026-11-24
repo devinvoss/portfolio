@@ -11,7 +11,7 @@ Visitors sign in with Google or GitHub to get a member account. The site admin u
 | Session length | 12 hours | 7 days |
 | Can | add and edit movies | edit their display name, delete their account |
 
-- Both kinds of session are a JWT in an HttpOnly `session` cookie (`SameSite=Lax`, `Path=/api`). The frontend never sees the token. It calls `GET /api/auth/me` to find out who is signed in.
+- On the website, both kinds of session are a JWT in an HttpOnly `session` cookie (`SameSite=Lax`, `Path=/api`). The frontend never sees the token. It calls `GET /api/auth/me` to find out who is signed in. The mobile app (`apps/rn-portfolio`) sends the same JWT as a Bearer token instead; see [Mobile app sign-in](#mobile-app-sign-in).
 - Every authenticated request reloads the admin or account record, so deleting an account or setting its `status` to `banned` signs that person out immediately.
 - Accounts are matched on the provider's user id, never on email. Only Google emails marked verified are stored. GitHub is asked for no scopes, so no email is stored for GitHub accounts.
 - Routes are protected with `@Auth('admin')`, `@Auth('member')` or `@Auth()` (any signed-in user) from `apps/api/src/auth/auth.decorator.ts`.
@@ -39,6 +39,25 @@ A provider with blank keys is turned off: its button doesn't appear and its rout
 ### GitHub
 
 GitHub OAuth apps allow one callback URL each, so create one app for dev and one for prod. Settings → Developer settings → OAuth Apps → New OAuth App, with callback URL `<publicUrl>/api/auth/github/callback`.
+
+## Mobile app sign-in
+
+A native app can't share the website's cookie, so members sign in to `apps/rn-portfolio` with a one-time code. Nothing changes for the website, and no new provider settings are needed: the provider still calls back to `<publicUrl>/api/auth/<provider>/callback`.
+
+1. The app makes a PKCE verifier and opens `GET /api/auth/<provider>?redirectUri=<app URL>&codeChallenge=<S256 challenge>` in an in-app browser. Both are kept in the signed `oauth_state` cookie with the rest of the sign-in state.
+2. After the provider's callback, the API sends the browser to `<redirectUri>?code=<one-time code>` instead of setting the session cookie. A failed or cancelled sign-in goes to `<redirectUri>?error=cancelled|suspended|failed`.
+3. The app sends `POST /api/auth/app/token` with `{ code, codeVerifier }` and gets `{ token, user }`. The token is the same JWT the cookie holds, with the same lifetime, and the app sends it as `Authorization: Bearer <token>`.
+
+Safeguards:
+
+- **Allowed redirects** (`apps/api/src/auth/app-auth/app-redirect.ts`): the app's own scheme `rnportfolio://`; Expo Go's `exp://` only on a loopback or private LAN address; and `http://localhost` only while `publicUrl` is http (development). Anything else is dropped and the sign-in finishes as a normal website sign-in.
+- **Codes** last 60 seconds, work once (even after a wrong verifier), and are useless without the verifier, which never leaves the app. They're kept in memory, which is fine while the API runs as a single instance.
+- `POST /api/auth/app/token` is limited to 10 requests a minute per IP.
+- The cookie wins when a request has both. Bearer tokens don't need the cookie's `SameSite` CSRF protection, because a browser never adds the header on its own.
+- **CORS** is only turned on in development, for the Expo web dev server: `http://` origins on localhost or a private LAN address (a phone's browser opening the dev machine), without credentials.
+- Signing out of the app forgets the token. JWTs can't be revoked, so a copied token works until it expires (7 days), as a copied cookie would. Banning or deleting the account still cuts it off immediately.
+
+The admin can't sign in to the app yet; that comes with the app's admin screens.
 
 ## Setting the admin password
 

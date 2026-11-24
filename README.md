@@ -15,3 +15,10 @@ Run `nx graph` to see a diagram of the dependencies of the projects.
 ## Further help
 
 Visit the [Nx Documentation](https://nx.dev) to learn more.
+
+## Projects
+
+- `apps/ng-portfolio`: the website (Angular). `npm start`
+- `apps/api`: the API (NestJS + MongoDB). `npm run start:api`
+- `apps/rn-portfolio`: the mobile app (React Native + Expo). `npm run start:rn`, see [its README](apps/rn-portfolio/README.md)
+- `libs/models`: types shared by all three

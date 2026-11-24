@@ -8,11 +8,15 @@ import { JwtPayload, SESSION_COOKIE, SESSION_TTL, sessionCookieOptions } from '.
 export class SessionService {
   constructor(private jwtService: JwtService) {}
 
+  /** Sets the session cookie, for the website. */
   start(res: Response, user: SessionUser) {
-    const ttl = SESSION_TTL[user.role];
+    res.cookie(SESSION_COOKIE, this.issueToken(user), { ...sessionCookieOptions, maxAge: SESSION_TTL[user.role] });
+  }
+
+  /** The session JWT. The website gets it in a cookie; the mobile app keeps it and sends it as a Bearer token. */
+  issueToken(user: SessionUser): string {
     const payload: JwtPayload = { sub: user.id, role: user.role };
-    const token = this.jwtService.sign(payload, { expiresIn: ttl / 1000 });
-    res.cookie(SESSION_COOKIE, token, { ...sessionCookieOptions, maxAge: ttl });
+    return this.jwtService.sign(payload, { expiresIn: SESSION_TTL[user.role] / 1000 });
   }
 
   end(res: Response) {
